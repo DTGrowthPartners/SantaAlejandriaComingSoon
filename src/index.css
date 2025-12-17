@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Gotham:wght@100;300;500&family=Gothic+A1:wght@100&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Santa Alejandría Brand Colors */
+    --background: 47 73% 95%;
+    --foreground: 24 80% 15%;
+
+    --card: 47 73% 98%;
+    --card-foreground: 24 80% 15%;
+
+    --popover: 47 73% 98%;
+    --popover-foreground: 24 80% 15%;
+
+    /* Primary: Deep Teal #006766 */
+    --primary: 179 100% 20%;
+    --primary-foreground: 47 73% 95%;
+
+    /* Secondary: Rich Brown #823d0f */
+    --secondary: 24 80% 28%;
+    --secondary-foreground: 47 73% 95%;
+
+    /* Muted */
+    --muted: 47 40% 90%;
+    --muted-foreground: 24 40% 40%;
+
+    /* Accent: Golden #b37e15 */
+    --accent: 38 79% 39%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Light Gold #eed582 */
+    --highlight: 47 73% 72%;
+    --highlight-foreground: 24 80% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 47 40% 85%;
+    --input: 47 40% 85%;
+    --ring: 179 100% 20%;
+
+    --radius: 0.25rem;
+
+    /* Typography */
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-gotham: 'Gotham', sans-serif;
+    --font-gothic: 'Gothic A1', serif;
+
+    /* Shadows */
+    --shadow-elegant: 0 4px 30px rgba(130, 61, 15, 0.08);
+    --shadow-card: 0 2px 20px rgba(130, 61, 15, 0.06);
+  }
+
+  .dark {
+    --background: 24 80% 8%;
+    --foreground: 47 73% 95%;
+
+    --card: 24 70% 12%;
+    --card-foreground: 47 73% 95%;
+
+    --popover: 24 70% 12%;
+    --popover-foreground: 47 73% 95%;
+
+    --primary: 179 100% 20%;
+    --primary-foreground: 47 73% 95%;
+
+    --secondary: 24 80% 28%;
+    --secondary-foreground: 47 73% 95%;
+
+    --muted: 24 50% 18%;
+    --muted-foreground: 47 40% 70%;
+
+    --accent: 38 79% 39%;
+    --accent-foreground: 0 0% 100%;
+
+    --highlight: 47 73% 72%;
+    --highlight-foreground: 24 80% 15%;
+
+    --border: 24 50% 20%;
+    --input: 24 50% 20%;
+    --ring: 38 79% 39%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    line-height: 0.8;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .text-serif {
+    font-family: var(--font-serif);
+  }
+
+  .text-sans {
+    font-family: var(--font-sans);
+  }
+  .text-gotham {
+    font-family: var(--font-gotham);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-delay {
+    animation: fadeIn 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fadeIn 0.8s ease-out 0.4s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-delay-3 {
+    animation: fadeIn 0.8s ease-out 0.6s forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
