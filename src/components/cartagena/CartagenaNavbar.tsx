@@ -61,14 +61,17 @@ const CartagenaNavbar = () => {
           : "bg-transparent"
       )}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className={cn(
+        "container mx-auto flex items-center justify-between px-6 transition-all duration-300",
+        isScrolled ? "h-16" : "h-20"
+      )}>
         <Link to="/" className="shrink-0">
           <img
             src={logo}
             alt="Santa Alejandría"
             className={cn(
-              "transition-all duration-300",
-              isScrolled ? "h-8" : "h-10"
+              "transition-all duration-300 origin-left",
+              isScrolled ? "h-8 scale-125" : "h-10 scale-150"
             )}
           />
         </Link>
