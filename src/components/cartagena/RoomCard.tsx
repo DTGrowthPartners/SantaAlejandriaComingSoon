@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import type { RoomType } from "@/data/cartagena-rooms";
+import { useTranslation } from "@/i18n/LanguageContext";
 import RoomGalleryDialog from "./RoomGalleryDialog";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -41,6 +42,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const { t } = useTranslation();
 
   const handleApiChange = (carouselApi: CarouselApi) => {
     setApi(carouselApi);
@@ -56,8 +58,9 @@ const RoomCard = ({ room }: RoomCardProps) => {
     setGalleryOpen(true);
   };
 
+  const roomName = t("roomNames", room.id);
   const whatsappMessage = encodeURIComponent(
-    `Hola, me gustaría reservar la ${room.name} en Santa Alejandría Hotel – Cartagena`
+    `Hola, me gustaría reservar la ${roomName} en Santa Alejandría Hotel – Cartagena`
   );
 
   return (
@@ -79,7 +82,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                   >
                     <img
                       src={img}
-                      alt={`${room.name} - Foto ${i + 1}`}
+                      alt={`${roomName} - ${t("gallery", "foto")} ${i + 1}`}
                       className="aspect-[16/10] w-full object-cover transition-transform duration-500 hover:scale-105"
                       loading="lazy"
                     />
@@ -102,7 +105,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                     ? "w-6 bg-accent"
                     : "w-1.5 bg-border hover:bg-muted-foreground"
                 }`}
-                aria-label={`Ir a foto ${i + 1}`}
+                aria-label={`${t("cartagenaRooms", "irAFoto")} ${i + 1}`}
               />
             ))}
           </div>
@@ -112,19 +115,19 @@ const RoomCard = ({ room }: RoomCardProps) => {
         <div className="lg:col-span-2 flex flex-col">
           {/* Name & price */}
           <h3 className="font-serif text-2xl font-medium text-foreground">
-            {room.name}
+            {roomName}
           </h3>
 
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-serif text-3xl font-medium text-accent">
               {formatPrice(room.pricePerNight)}
             </span>
-            <span className="font-sans text-sm text-muted-foreground">/ noche</span>
+            <span className="font-sans text-sm text-muted-foreground">{t("cartagenaRooms", "noche")}</span>
           </div>
 
           {/* Description */}
           <p className="mt-4 font-sans text-sm text-muted-foreground leading-relaxed">
-            {room.description}
+            {t("roomDescriptions", room.id)}
           </p>
 
           {/* Highlights */}
@@ -135,7 +138,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                 variant="secondary"
                 className="bg-primary/10 text-primary border-none font-sans text-xs"
               >
-                {h}
+                {t("roomHighlights", h)}
               </Badge>
             ))}
           </div>
@@ -143,20 +146,20 @@ const RoomCard = ({ room }: RoomCardProps) => {
           {/* Room details */}
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-md bg-background p-3">
-              <span className="text-muted-foreground">Piso</span>
-              <p className="font-medium text-foreground">{room.floor}</p>
+              <span className="text-muted-foreground">{t("cartagenaRooms", "piso")}</span>
+              <p className="font-medium text-foreground">{t("roomFloors", room.floor)}</p>
             </div>
             <div className="rounded-md bg-background p-3">
-              <span className="text-muted-foreground">Cama</span>
-              <p className="font-medium text-foreground">{room.bedType}</p>
+              <span className="text-muted-foreground">{t("cartagenaRooms", "cama")}</span>
+              <p className="font-medium text-foreground">{t("roomBedTypes", room.bedType)}</p>
             </div>
             <div className="rounded-md bg-background p-3">
-              <span className="text-muted-foreground">Capacidad</span>
-              <p className="font-medium text-foreground">{room.maxGuests} personas</p>
+              <span className="text-muted-foreground">{t("cartagenaRooms", "capacidad")}</span>
+              <p className="font-medium text-foreground">{room.maxGuests} {t("cartagenaRooms", "personas")}</p>
             </div>
             <div className="rounded-md bg-background p-3">
-              <span className="text-muted-foreground">Disponibles</span>
-              <p className="font-medium text-foreground">{room.quantity} hab.</p>
+              <span className="text-muted-foreground">{t("cartagenaRooms", "disponibles")}</span>
+              <p className="font-medium text-foreground">{room.quantity} {t("cartagenaRooms", "hab")}</p>
             </div>
           </div>
 
@@ -170,7 +173,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                   className="flex items-center gap-2 text-xs text-muted-foreground"
                 >
                   {Icon && <Icon className="h-3.5 w-3.5 text-accent" />}
-                  <span>{amenity}</span>
+                  <span>{t("roomAmenities", amenity)}</span>
                 </div>
               );
             })}
@@ -184,14 +187,14 @@ const RoomCard = ({ room }: RoomCardProps) => {
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-sans text-sm font-medium text-white tracking-wide transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02] hover:shadow-lg"
           >
             <MessageCircle className="h-4 w-4" />
-            Reservar esta Habitación
+            {t("cartagenaRooms", "reservarHabitacion")}
           </a>
         </div>
       </div>
 
       <RoomGalleryDialog
         images={room.images}
-        roomName={room.name}
+        roomName={roomName}
         open={galleryOpen}
         onOpenChange={setGalleryOpen}
         startIndex={galleryIndex}

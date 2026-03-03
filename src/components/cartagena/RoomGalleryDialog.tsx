@@ -12,6 +12,7 @@ import {
   CarouselNext,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface RoomGalleryDialogProps {
   images: string[];
@@ -30,6 +31,7 @@ const RoomGalleryDialog = ({
 }: RoomGalleryDialogProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(startIndex);
+  const { t } = useTranslation();
 
   const handleApiChange = (api: CarouselApi) => {
     setApi(api);
@@ -45,7 +47,7 @@ const RoomGalleryDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-black/95 border-none">
         <DialogTitle className="sr-only">
-          Galería de fotos — {roomName}
+          {t("gallery", "titulo")} — {roomName}
         </DialogTitle>
         <div className="relative">
           <Carousel
@@ -59,7 +61,7 @@ const RoomGalleryDialog = ({
                   <div className="flex items-center justify-center min-h-[50vh] max-h-[85vh]">
                     <img
                       src={img}
-                      alt={`${roomName} - Foto ${i + 1}`}
+                      alt={`${roomName} - ${t("gallery", "foto")} ${i + 1}`}
                       className="max-w-full max-h-[85vh] object-contain"
                     />
                   </div>

@@ -1,6 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
@@ -8,6 +9,7 @@ const WHATSAPP_URL =
 const WhatsAppFloatingButton = () => {
   const { scrollY } = useScrollProgress();
   const isVisible = scrollY > window.innerHeight * 0.5;
+  const { t } = useTranslation();
 
   return (
     <a
@@ -20,7 +22,7 @@ const WhatsAppFloatingButton = () => {
           ? "translate-y-0 opacity-100"
           : "translate-y-4 opacity-0 pointer-events-none"
       )}
-      aria-label="Reservar por WhatsApp"
+      aria-label={t("whatsapp", "reservarPorWhatsApp")}
     >
       {/* Pulse ring */}
       <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-20" />

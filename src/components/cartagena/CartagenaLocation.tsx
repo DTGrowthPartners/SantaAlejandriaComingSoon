@@ -2,6 +2,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { MapPin, Phone, Clock, Mail, Instagram, MessageCircle } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
@@ -9,34 +10,35 @@ const WHATSAPP_URL =
 const MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.9487923431166!2d-75.5467512!3d10.425638399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef6256ffa796155%3A0x10db7b27a315cbd3!2sHotel%20Santa%20Alejandr%C3%ADa!5e0!3m2!1ses-419!2sco!4v1772551734782!5m2!1ses-419!2sco";
 
-const contactInfo = [
-  {
-    icon: MapPin,
-    label: "Dirección",
-    value: "Calle de la Cruz N° 9-42, Barrio San Diego",
-    sublabel: "Centro Histórico, Cartagena, Colombia 13001",
-  },
-  {
-    icon: Phone,
-    label: "Teléfono",
-    value: "+57 312 6915453",
-    href: "tel:+573126915453",
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    value: "reservatiosantaalejandria@gmail.com",
-    href: "mailto:reservatiosantaalejandria@gmail.com",
-  },
-  {
-    icon: Clock,
-    label: "Horario",
-    value: "Servicio 24 horas",
-  },
-];
-
 const CartagenaLocation = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { t } = useTranslation();
+
+  const contactInfo = [
+    {
+      icon: MapPin,
+      label: t("cartagenaLocation", "direccion"),
+      value: "Calle de la Cruz N° 9-42, Barrio San Diego",
+      sublabel: "Centro Histórico, Cartagena, Colombia 13001",
+    },
+    {
+      icon: Phone,
+      label: t("cartagenaLocation", "telefono"),
+      value: "+57 312 6915453",
+      href: "tel:+573126915453",
+    },
+    {
+      icon: Mail,
+      label: t("cartagenaLocation", "email"),
+      value: "reservatiosantaalejandria@gmail.com",
+      href: "mailto:reservatiosantaalejandria@gmail.com",
+    },
+    {
+      icon: Clock,
+      label: t("cartagenaLocation", "horario"),
+      value: t("cartagenaLocation", "servicio24h"),
+    },
+  ];
 
   // Load Elfsight script for Google Reviews
   useEffect(() => {
@@ -64,10 +66,10 @@ const CartagenaLocation = () => {
           )}
         >
           <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-accent font-medium">
-            Cómo Llegar
+            {t("cartagenaLocation", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
-            Encuéntranos
+            {t("cartagenaLocation", "heading")}
           </h2>
           <div className="mx-auto h-px w-16 bg-accent" />
         </div>
@@ -178,7 +180,7 @@ const CartagenaLocation = () => {
           )}
         >
           <p className="mb-6 text-center font-sans text-xs tracking-[0.25em] uppercase text-accent font-medium">
-            Lo que dicen nuestros huéspedes
+            {t("cartagenaLocation", "reviewsLabel")}
           </p>
           <div
             className="elfsight-app-e498e6bf-ac7c-48be-9eb4-68b9777fc54e min-h-[200px]"

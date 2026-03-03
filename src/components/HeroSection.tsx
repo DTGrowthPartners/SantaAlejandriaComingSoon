@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/i18n/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 import heroImage from "@/assets/pillow-bed.jpg";
 import logo from "@/assets/logo-santa-alejandria.png";
 import cartagenaImage from "@/assets/Que.png";
@@ -6,6 +8,7 @@ import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-col
 
 const HeroSection = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleReservarCartagena = () => {
     navigate("/cartagena");
@@ -17,6 +20,11 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
+      {/* Language toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageToggle />
+      </div>
+
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -24,7 +32,6 @@ const HeroSection = () => {
           alt="Santa Alejandría Hotel - Interior colonial elegante"
           className="h-full w-full object-cover grayscale"
         />
-        {/* Elegant overlay gradient - darker for better text legibility */}
         <div className="absolute inset-0 bg-primary/80" />
       </div>
 
@@ -43,14 +50,14 @@ const HeroSection = () => {
         <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl animate-fade-in-delay-2 mb-6 text-center md:text-left">
           <div className="flex-1 text-center md:text-right pr-0 md:pr-6 mb-4 md:mb-0">
             <p className="font-sans text-xl md:text-4xl font-light uppercase text-[#FDFCF6] leading-none">
-              <span className="text-highlight">SITIO WEB EN</span><br />
-              CONSTRUCCIÓN
+              <span className="text-highlight">{t("mainHero", "sitioWebEn")}</span><br />
+              {t("mainHero", "construccion")}
             </p>
           </div>
           <div className="h-px md:h-12 w-1/2 md:w-px mx-auto bg-[#FDFCF6]/50"></div>
           <div className="flex-1 text-center md:text-left pl-0 md:pl-6">
             <p className="text-gotham text-lg md:text-2xl font-thin tracking-wide text-[#FDFCF6]/85 leading-none">
-              <span className="text-highlight block md:inline mt-2 md:mt-6">Mientras tanto, puedes reservar</span> directamente con nosotros.
+              <span className="text-highlight block md:inline mt-2 md:mt-6">{t("mainHero", "mientrasTanto")}</span> {t("mainHero", "directamente")}
             </p>
           </div>
         </div>
@@ -67,7 +74,7 @@ const HeroSection = () => {
               className="h-full w-full object-cover transform scale-110"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[#FDFCF6] text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[-1.5rem] md:ml-[-5rem]">RESERVA AHORA EN</span></p>
+              <p className="text-[#FDFCF6] text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[-1.5rem] md:ml-[-5rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
               <p className="text-highlight text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center">CARTAGENA</p>
             </div>
           </div>
@@ -82,7 +89,7 @@ const HeroSection = () => {
             />
             <div className="absolute inset-0 bg-[#D3D3D3]/80" />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-primary text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[0rem] md:ml-[-2.8rem]">RESERVA AHORA EN</span></p>
+              <p className="text-primary text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[0rem] md:ml-[-2.8rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
               <p className="text-primary text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center">MEDELLÍN</p>
             </div>
           </div>

@@ -1,18 +1,15 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n/LanguageContext";
 import entradaImg from "@/assets/cartagena/entrada-2.jpg";
 import imgGeneral from "@/assets/cartagena/img_6215.jpg";
 
-const badges = [
-  "14 Habitaciones",
-  "Estilo Colonial",
-  "Centro Histórico",
-  "24 Horas",
-];
+const badgeKeys = ["badge14", "badgeColonial", "badgeCentro", "badge24h"] as const;
 
 const CartagenaAbout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { t } = useTranslation();
 
   return (
     <section
@@ -66,12 +63,12 @@ const CartagenaAbout = () => {
           >
             {/* Label */}
             <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-accent font-medium">
-              Nuestra Historia
+              {t("cartagenaAbout", "label")}
             </p>
 
             {/* Heading */}
             <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl leading-tight">
-              Un Legado Colonial en el Corazón de Cartagena
+              {t("cartagenaAbout", "heading")}
             </h2>
 
             {/* Separator */}
@@ -80,29 +77,22 @@ const CartagenaAbout = () => {
             {/* Body text */}
             <div className="space-y-4 font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
               <p>
-                Santa Alejandría Hotel se encuentra situado en la tradicional calle de la Cruz
-                del Barrio San Diego, en pleno corazón del Centro Histórico. Una tradicional
-                calle de la ciudad nos presta una de sus antiguas casonas para hacer realidad
-                el sueño de combinar las comodidades del siglo XXI con la magia que evocan
-                las casonas viejas que la colonia española dejó en Cartagena.
+                {t("cartagenaAbout", "paragraph1")}
               </p>
 <p>
-                Nuestro Hotel es una propuesta que combina el compromiso de atenderle como si
-                estuviera en su hogar, con unos buenos estándares de servicio. Santa Alejandría
-                está diseñada para que usted encuentre la comodidad, tranquilidad y la fina
-                atención de estar como en su propia casa.
+                {t("cartagenaAbout", "paragraph2")}
               </p>
             </div>
 
             {/* Badges */}
             <div className="mt-8 flex flex-wrap gap-2">
-              {badges.map((label) => (
+              {badgeKeys.map((key) => (
                 <Badge
-                  key={label}
+                  key={key}
                   variant="outline"
                   className="border-accent/40 text-accent bg-accent/5 font-sans text-xs px-3 py-1.5"
                 >
-                  {label}
+                  {t("cartagenaAbout", key)}
                 </Badge>
               ))}
             </div>
@@ -110,11 +100,11 @@ const CartagenaAbout = () => {
             {/* Check-in/out info */}
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-background p-4 text-center">
-                <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-in</p>
+                <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">{t("cartagenaAbout", "checkIn")}</p>
                 <p className="mt-1 font-serif text-lg font-medium text-foreground">3:00 PM</p>
               </div>
               <div className="rounded-lg bg-background p-4 text-center">
-                <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-out</p>
+                <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">{t("cartagenaAbout", "checkOut")}</p>
                 <p className="mt-1 font-serif text-lg font-medium text-foreground">12:00 M</p>
               </div>
             </div>

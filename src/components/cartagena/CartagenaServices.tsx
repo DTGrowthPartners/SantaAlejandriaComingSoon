@@ -16,6 +16,7 @@ import {
   Droplets,
 } from "lucide-react";
 import { includedServices, additionalServices, roomAmenities } from "@/data/cartagena-services";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const iconComponents: Record<string, React.ElementType> = {
   UtensilsCrossed,
@@ -35,6 +36,7 @@ const iconComponents: Record<string, React.ElementType> = {
 
 const CartagenaServices = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { t } = useTranslation();
 
   return (
     <section
@@ -51,17 +53,17 @@ const CartagenaServices = () => {
           )}
         >
           <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-highlight font-medium">
-            Comodidades
+            {t("cartagenaServices", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-primary-foreground md:text-4xl">
-            Servicios & Amenidades
+            {t("cartagenaServices", "heading")}
           </h2>
           <div className="mx-auto h-px w-16 bg-highlight" />
         </div>
 
         {/* Included services label */}
         <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
-          Incluidos en la tarifa
+          {t("cartagenaServices", "includedLabel")}
         </p>
 
         {/* Included services grid */}
@@ -85,10 +87,10 @@ const CartagenaServices = () => {
                   <Icon className="mx-auto mb-3 h-8 w-8 text-highlight" />
                 )}
                 <h3 className="font-serif text-lg font-medium text-primary-foreground">
-                  {service.name}
+                  {t("serviceNames", service.name)}
                 </h3>
                 <p className="mt-1 font-sans text-sm text-primary-foreground/60">
-                  {service.description}
+                  {t("serviceDescriptions", service.description)}
                 </p>
               </div>
             );
@@ -100,7 +102,7 @@ const CartagenaServices = () => {
 
         {/* Additional services label */}
         <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
-          Servicios Adicionales
+          {t("cartagenaServices", "additionalLabel")}
         </p>
 
         {/* Additional services */}
@@ -123,10 +125,10 @@ const CartagenaServices = () => {
                 {Icon && <Icon className="h-5 w-5 text-highlight shrink-0" />}
                 <div>
                   <p className="font-sans text-sm font-medium text-primary-foreground">
-                    {service.name}
+                    {t("serviceNames", service.name)}
                   </p>
                   <p className="font-sans text-xs text-primary-foreground/50">
-                    {service.description}
+                    {t("serviceDescriptions", service.description)}
                   </p>
                 </div>
               </div>
@@ -137,7 +139,7 @@ const CartagenaServices = () => {
         {/* Room amenities strip */}
         <div className="border-t border-primary-foreground/10 pt-8">
           <p className="mb-5 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
-            En cada habitación
+            {t("cartagenaServices", "roomAmenitiesLabel")}
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             {roomAmenities.map((amenity) => {
@@ -148,7 +150,7 @@ const CartagenaServices = () => {
                   className="flex items-center gap-2 text-primary-foreground/70"
                 >
                   {Icon && <Icon className="h-4 w-4 text-highlight/60" />}
-                  <span className="font-sans text-xs">{amenity.name}</span>
+                  <span className="font-sans text-xs">{t("amenityNames", amenity.name)}</span>
                 </div>
               );
             })}

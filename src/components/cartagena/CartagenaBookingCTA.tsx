@@ -1,6 +1,7 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { MessageCircle, Phone } from "lucide-react";
+import { useTranslation } from "@/i18n/LanguageContext";
 import kingRoomImg from "@/assets/cartagena/king-room-1.jpg";
 
 const WHATSAPP_URL =
@@ -8,6 +9,7 @@ const WHATSAPP_URL =
 
 const CartagenaBookingCTA = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.15 });
+  const { t } = useTranslation();
 
   return (
     <section ref={ref} className="relative min-h-[60vh] flex items-center overflow-hidden">
@@ -40,13 +42,12 @@ const CartagenaBookingCTA = () => {
           </div>
 
           <h2 className="mb-4 font-serif text-3xl font-medium text-[#FDFCF6] md:text-5xl leading-tight">
-            Vive la experiencia<br />
-            <span className="text-highlight">Santa Alejandría</span>
+            {t("cartagenaBookingCTA", "heading1")}<br />
+            <span className="text-highlight">{t("cartagenaBookingCTA", "heading2")}</span>
           </h2>
 
           <p className="mb-8 mx-auto max-w-lg font-sans text-sm text-[#FDFCF6]/70 leading-relaxed">
-            14 habitaciones de encanto colonial en el corazón de Cartagena de Indias.
-            Nos hemos propuesto lograr que su estadía sea una experiencia inolvidable.
+            {t("cartagenaBookingCTA", "subtitle")}
           </p>
 
           <a
@@ -56,7 +57,7 @@ const CartagenaBookingCTA = () => {
             className="inline-flex items-center gap-2 rounded-full bg-accent px-10 py-4 font-sans text-base font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-xl"
           >
             <MessageCircle className="h-5 w-5" />
-            Reservar Ahora
+            {t("cartagenaBookingCTA", "reservar")}
           </a>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-[#FDFCF6]/50">

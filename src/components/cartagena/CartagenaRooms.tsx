@@ -3,6 +3,9 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { rooms, ADDITIONAL_PRICING } from "@/data/cartagena-rooms";
 import { Users, Baby } from "lucide-react";
+import { useTranslation } from "@/i18n/LanguageContext";
+import translations from "@/i18n/translations";
+import type { Lang } from "@/i18n/translations";
 import RoomCard from "./RoomCard";
 
 function formatPrice(price: number) {
@@ -16,6 +19,7 @@ function formatPrice(price: number) {
 
 const CartagenaRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
+  const { t, lang } = useTranslation();
 
   return (
     <section
@@ -32,16 +36,14 @@ const CartagenaRooms = () => {
           )}
         >
           <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-accent font-medium">
-            Alojamiento
+            {t("cartagenaRooms", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
-            Nuestras Habitaciones
+            {t("cartagenaRooms", "heading")}
           </h2>
           <div className="mx-auto h-px w-16 bg-accent" />
           <p className="mt-4 mx-auto max-w-2xl font-sans text-sm text-muted-foreground leading-relaxed">
-            14 cómodas y bien dotadas habitaciones que conservan detalles del estilo colonial,
-            grandes ventanas con barrotes, viejos baúles y los tradicionales farolitos
-            que llenan de magia los espacios.
+            {t("cartagenaRooms", "description")}
           </p>
         </div>
 
@@ -60,7 +62,7 @@ const CartagenaRooms = () => {
                   value={room.id}
                   className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary transition-all duration-300 hover:border-primary/50"
                 >
-                  {room.shortName}
+                  {t("roomShortNames", room.id)}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -85,7 +87,7 @@ const CartagenaRooms = () => {
               <Users className="h-5 w-5 text-accent" />
               <div>
                 <p className="font-sans text-sm font-medium text-foreground">
-                  Persona adicional
+                  {t("cartagenaRooms", "personaAdicional")}
                 </p>
                 <p className="font-serif text-lg text-accent">
                   {formatPrice(ADDITIONAL_PRICING.additionalPerson)}
@@ -97,7 +99,7 @@ const CartagenaRooms = () => {
               <Baby className="h-5 w-5 text-accent" />
               <div>
                 <p className="font-sans text-sm font-medium text-foreground">
-                  Niños (3-10 años)
+                  {t("cartagenaRooms", "ninos")}
                 </p>
                 <p className="font-serif text-lg text-accent">
                   {formatPrice(ADDITIONAL_PRICING.children3to10)}
@@ -106,7 +108,7 @@ const CartagenaRooms = () => {
             </div>
           </div>
           <p className="mt-4 text-center font-sans text-xs text-muted-foreground">
-            {ADDITIONAL_PRICING.note}
+            {translations.pricingNote[lang as Lang]}
           </p>
         </div>
       </div>

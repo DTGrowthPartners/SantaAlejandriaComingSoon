@@ -1,4 +1,6 @@
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface LocationCardProps {
   city: string;
@@ -6,6 +8,7 @@ interface LocationCardProps {
   description: string;
   whatsappNumber: string;
   reversed?: boolean;
+  link?: string;
 }
 
 const LocationCard = ({
@@ -14,12 +17,20 @@ const LocationCard = ({
   description,
   whatsappNumber,
   reversed = false,
+  link,
 }: LocationCardProps) => {
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hola, me gustaría hacer una reserva en Santa Alejandría – ${city}`
-    );
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (link) {
+      navigate(link);
+    } else {
+      const message = encodeURIComponent(
+        `Hola, me gustaría hacer una reserva en Santa Alejandría – ${city}`
+      );
+      window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+    }
   };
 
   return (
@@ -35,14 +46,13 @@ const LocationCard = ({
           alt={`Santa Alejandría – ${city}`}
           className="h-full w-full object-cover transition-transform duration-700 hover:scale-105 border-2 border-secondary"
         />
-        {/* Subtle overlay on hover */}
         <div className="absolute inset-0 bg-secondary/0 transition-colors duration-500 hover:bg-secondary/10" />
       </div>
 
       {/* Content */}
       <div className={`flex flex-col justify-center p-4 lg:[direction:ltr] ${reversed ? '' : 'lg:ml-12'}`}>
         <span className="mb-3 font-sans text-xs font-medium uppercase tracking-[0.2em] text-accent">
-          Sede
+          {t("locations", "sede")}
         </span>
         <h3 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
           Santa Alejandría – {city}
@@ -52,11 +62,15 @@ const LocationCard = ({
           {description}
         </p>
         <button
-          onClick={handleWhatsApp}
+          onClick={handleClick}
           className="group inline-flex w-fit items-center gap-3 border border-primary bg-transparent px-8 py-4 font-sans text-sm font-medium uppercase tracking-widest text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
         >
-          <MessageCircle className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-          <span>Reservar en WhatsApp</span>
+          {link ? (
+            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+          ) : (
+            <MessageCircle className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+          )}
+          <span>{link ? t("locations", "verSede") : t("locations", "reservarWhatsApp")}</span>
         </button>
       </div>
     </div>

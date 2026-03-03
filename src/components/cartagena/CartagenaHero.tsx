@@ -1,5 +1,6 @@
 import { MessageCircle, ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
+import { useTranslation } from "@/i18n/LanguageContext";
 import entradaImg from "@/assets/cartagena/entrada-1.jpg";
 import logo from "@/assets/logo-santa-alejandria.png";
 
@@ -8,6 +9,7 @@ const WHATSAPP_URL =
 
 const CartagenaHero = () => {
   const { scrollY } = useScrollProgress();
+  const { t } = useTranslation();
 
   return (
     <section id="inicio" className="relative min-h-screen w-full overflow-hidden">
@@ -42,7 +44,7 @@ const CartagenaHero = () => {
 
         {/* Label */}
         <p className="mb-3 font-sans text-xs tracking-[0.3em] uppercase text-highlight animate-fade-in-delay">
-          Hotel Boutique
+          {t("cartagenaHero", "hotelBoutique")}
         </p>
 
         {/* Main heading */}
@@ -52,7 +54,7 @@ const CartagenaHero = () => {
 
         {/* Subtitle */}
         <p className="mb-6 font-serif text-xl italic text-[#FDFCF6]/85 md:text-2xl animate-fade-in-delay-2">
-          Cartagena de Indias
+          {t("cartagenaHero", "subtitle")}
         </p>
 
         {/* Decorative dots */}
@@ -64,7 +66,7 @@ const CartagenaHero = () => {
 
         {/* Tagline */}
         <p className="mb-10 max-w-lg font-sans text-sm tracking-wide text-[#FDFCF6]/70 animate-fade-in-delay-2 leading-relaxed">
-          Donde la historia colonial se encuentra con el lujo contemporáneo
+          {t("cartagenaHero", "tagline")}
         </p>
 
         {/* CTA Buttons */}
@@ -76,13 +78,13 @@ const CartagenaHero = () => {
             className="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 font-sans text-sm font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-lg"
           >
             <MessageCircle className="h-4 w-4" />
-            Reservar Ahora
+            {t("cartagenaHero", "reservar")}
           </a>
           <a
             href="#habitaciones"
             className="inline-flex items-center gap-2 rounded-full border border-[#FDFCF6]/40 px-8 py-3.5 font-sans text-sm font-medium text-[#FDFCF6] tracking-wide uppercase transition-all duration-300 hover:bg-[#FDFCF6]/10 hover:border-[#FDFCF6]/60"
           >
-            Explorar
+            {t("cartagenaHero", "explorar")}
           </a>
         </div>
       </div>
