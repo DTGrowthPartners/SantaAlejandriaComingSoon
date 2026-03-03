@@ -9,7 +9,6 @@ import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-col
 const HeroSection = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const handleReservarCartagena = () => {
     navigate("/cartagena");
   };
@@ -25,7 +24,7 @@ const HeroSection = () => {
         <LanguageToggle />
       </div>
 
-      {/* Background Image */}
+      {/* Background Image with Parallax */}
       <div className="absolute inset-0">
         <img
           src={heroImage}
@@ -37,60 +36,50 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        {/* Logo */}
+        {/* Logo with floating animation */}
         <div className="-mt-16 mb-6 animate-fade-in">
           <img
             src={logo}
             alt="Santa Alejandría Hotel"
-            className="h-32 w-auto drop-shadow-lg md:h-48 lg:h-56"
+            className="h-32 w-auto drop-shadow-lg md:h-48 lg:h-56 animate-float"
           />
         </div>
 
-        {/* Text Section */}
-        <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl animate-fade-in-delay-2 mb-6 text-center md:text-left">
-          <div className="flex-1 text-center md:text-right pr-0 md:pr-6 mb-4 md:mb-0">
-            <p className="font-sans text-xl md:text-4xl font-light uppercase text-[#FDFCF6] leading-none">
-              <span className="text-highlight">{t("mainHero", "sitioWebEn")}</span><br />
-              {t("mainHero", "construccion")}
-            </p>
-          </div>
-          <div className="h-px md:h-12 w-1/2 md:w-px mx-auto bg-[#FDFCF6]/50"></div>
-          <div className="flex-1 text-center md:text-left pl-0 md:pl-6">
-            <p className="text-gotham text-lg md:text-2xl font-thin tracking-wide text-[#FDFCF6]/85 leading-none">
-              <span className="text-highlight block md:inline mt-2 md:mt-6">{t("mainHero", "mientrasTanto")}</span> {t("mainHero", "directamente")}
-            </p>
-          </div>
-        </div>
+        {/* Subtitle */}
+        <p className="animate-fade-in-delay-2 mb-8 font-sans text-lg md:text-2xl font-light tracking-wide text-[#FDFCF6]/85">
+          {t("mainHero", "seleccionaSede")}
+        </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col gap-6 w-full max-w-md animate-fade-in-delay-3 sm:flex-row sm:gap-8 sm:max-w-none sm:justify-center mt-8">
+        <div className="flex flex-col gap-6 w-full max-w-md animate-fade-in-delay-3 sm:flex-row sm:gap-8 sm:max-w-none sm:justify-center">
           <div
             onClick={handleReservarCartagena}
-            className="relative w-full max-w-[720px] h-[100px] md:h-[300px] rounded-3xl overflow-hidden cursor-pointer group transition-transform duration-300 hover:scale-105"
+            className="relative w-full max-w-[720px] h-[100px] md:h-[300px] rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:-translate-y-1"
           >
             <img
               src={cartagenaImage}
               alt="Cartagena"
-              className="h-full w-full object-cover transform scale-110"
+              className="h-full w-full object-cover transform scale-110 transition-transform duration-700 group-hover:scale-125"
             />
+            <div className="absolute inset-0 bg-black/0 transition-all duration-500 group-hover:bg-black/10" />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[#FDFCF6] text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[-1.5rem] md:ml-[-5rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
-              <p className="text-highlight text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center">CARTAGENA</p>
+              <p className="text-[#FDFCF6] text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]"><span className="text-left ml-[-1.5rem] md:ml-[-5rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
+              <p className="text-highlight text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.15em]">CARTAGENA</p>
             </div>
           </div>
           <div
             onClick={handleReservarMedellin}
-            className="relative w-full max-w-[720px] h-[100px] md:h-[300px] rounded-3xl overflow-hidden cursor-pointer group transition-transform duration-300 hover:scale-105"
+            className="relative w-full max-w-[720px] h-[100px] md:h-[300px] rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:-translate-y-1"
           >
             <img
               src={medellinImage}
               alt="Medellín"
-              className="h-full w-full object-cover grayscale"
+              className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-[#D3D3D3]/80" />
+            <div className="absolute inset-0 bg-[#D3D3D3]/80 transition-all duration-700 group-hover:bg-[#D3D3D3]/60" />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-primary text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center"><span className="text-left ml-[0rem] md:ml-[-2.8rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
-              <p className="text-primary text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center">MEDELLÍN</p>
+              <p className="text-primary text-xs md:text-sm text-gotham font-thin uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]"><span className="text-left ml-[0rem] md:ml-[-2.8rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
+              <p className="text-primary text-2xl md:text-4xl text-gotham font-bold uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.15em]">MEDELLÍN</p>
             </div>
           </div>
         </div>

@@ -6,12 +6,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+
 
 const InformativeSection = () => {
   const [dataConsent, setDataConsent] = useState(false);
   const [howYouFoundUs, setHowYouFoundUs] = useState("");
   const { t } = useTranslation();
-
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -65,34 +67,55 @@ Saludos cordiales.`;
   };
 
   return (
-    <section className="relative min-h-screen flex items-center" style={{ backgroundImage: `url(${medalloImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden">
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${medalloImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
       <div className="absolute inset-0 bg-primary/80" />
+
       <div className="container relative z-10 w-full">
         <div className="mx-auto max-w-3xl text-center">
           {/* Decorative element */}
-          <div className="mb-8 flex justify-center">
+          <div className={`mb-8 flex justify-center transition-all duration-700 ${
+            isVisible ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+          }`}>
             <div className="h-px w-20 bg-highlight" />
           </div>
 
-          <h2 className="mb-6 font-serif text-2xl font-medium text-primary-foreground md:text-3xl lg:text-4xl">
+          <h2 className={`mb-6 font-serif text-2xl font-medium text-primary-foreground md:text-3xl lg:text-4xl transition-all duration-700 delay-100 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}>
             {t("informative", "heading")}
           </h2>
 
-          <p className="mb-8 font-sans text-base font-light leading-relaxed text-primary-foreground/85 md:text-lg">
+          <p className={`mb-8 font-sans text-base font-light leading-relaxed text-primary-foreground/85 md:text-lg transition-all duration-700 delay-200 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}>
             {t("informative", "subtitle")}
           </p>
 
-          <p className="font-serif text-lg italic text-highlight md:text-xl">
+          <p className={`font-serif text-lg italic text-highlight md:text-xl transition-all duration-700 delay-300 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}>
             {t("informative", "sedesAbiertas")}
           </p>
 
           {/* Contact Form */}
-          <div className="mt-12">
+          <div className={`mt-12 transition-all duration-700 delay-[400ms] ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+          }`}>
             <p className="mb-6 font-sans text-base font-light text-primary-foreground/85 md:text-lg">
               {t("informative", "formIntro")}
             </p>
-            <form onSubmit={handleSubmit} className="mx-auto max-w-md space-y-4 bg-[#C9952F]/80 p-6 rounded-xl shadow-2xl">
-              <div>
+            <form onSubmit={handleSubmit} className="mx-auto max-w-md space-y-4 bg-[#C9952F]/80 p-6 rounded-xl shadow-2xl backdrop-blur-sm">
+              <div className={`transition-all duration-500 delay-500 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
                 <Label htmlFor="name" className="text-[#FDFCF6] mb-2 leading-relaxed">{t("informative", "nombre")}</Label>
                 <Input
                   id="name"
@@ -100,10 +123,12 @@ Saludos cordiales.`;
                   type="text"
                   placeholder={t("informative", "placeholderNombre")}
                   required
-                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg"
+                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg transition-shadow duration-300 focus:shadow-lg"
                 />
               </div>
-              <div>
+              <div className={`transition-all duration-500 delay-[600ms] ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
                 <Label htmlFor="email" className="text-[#FDFCF6] mb-2 leading-relaxed">{t("informative", "correo")}</Label>
                 <Input
                   id="email"
@@ -111,10 +136,12 @@ Saludos cordiales.`;
                   type="email"
                   placeholder="tu@email.com"
                   required
-                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg"
+                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg transition-shadow duration-300 focus:shadow-lg"
                 />
               </div>
-              <div>
+              <div className={`transition-all duration-500 delay-700 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
                 <Label htmlFor="phone" className="text-[#FDFCF6] mb-2 leading-relaxed">{t("informative", "telefono")}</Label>
                 <Input
                   id="phone"
@@ -122,10 +149,12 @@ Saludos cordiales.`;
                   type="tel"
                   placeholder="+57 300 123 4567"
                   required
-                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg"
+                  className="bg-white border-2 border-white text-primary-foreground placeholder:text-gray-400 focus-visible:ring-0 rounded-lg transition-shadow duration-300 focus:shadow-lg"
                 />
               </div>
-              <div>
+              <div className={`transition-all duration-500 delay-[800ms] ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
                 <Label htmlFor="how-you-found-us" className="text-[#FDFCF6] mb-2 leading-relaxed">{t("informative", "comoNosConociste")}</Label>
                 <Select value={howYouFoundUs} onValueChange={setHowYouFoundUs}>
                   <SelectTrigger className="bg-white border-2 border-white text-gray-700 focus-visible:ring-0 rounded-lg">
@@ -142,7 +171,9 @@ Saludos cordiales.`;
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className={`flex items-center space-x-2 transition-all duration-500 delay-[900ms] ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
                 <Checkbox
                   id="data-consent"
                   checked={dataConsent}
@@ -153,14 +184,20 @@ Saludos cordiales.`;
                   {t("informative", "consentimiento")}
                 </Label>
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/80 text-white rounded-xl transition-all duration-300">
-                {t("informative", "enviar")}
-              </Button>
+              <div className={`transition-all duration-500 delay-[1000ms] ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/80 text-white rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
+                  {t("informative", "enviar")}
+                </Button>
+              </div>
             </form>
           </div>
 
           {/* Decorative element */}
-          <div className="mt-10 flex justify-center">
+          <div className={`mt-10 flex justify-center transition-all duration-700 delay-[1100ms] ${
+            isVisible ? "opacity-100" : "opacity-0"
+          }`}>
             <div className="flex items-center gap-3">
               <div className="h-1 w-1 rounded-full bg-highlight" />
               <div className="h-1.5 w-1.5 rounded-full bg-highlight" />

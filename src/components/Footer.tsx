@@ -3,24 +3,30 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo-santa-alejandria.png";
 import fondoImage from "@/assets/Fondo LV.png";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { t } = useTranslation();
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.15 });
 
   return (
-    <footer className="relative py-12 md:py-16" style={{ backgroundImage: `url(${fondoImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <footer ref={ref} className="relative py-12 md:py-16" style={{ backgroundImage: `url(${fondoImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="container">
         <div className="flex flex-col items-center text-center">
           {/* Logo */}
           <img
             src={logo}
             alt="Santa Alejandría Hotel"
-            className="mb-8 h-24 w-auto md:h-32"
+            className={`mb-8 h-24 w-auto md:h-32 transition-all duration-700 ${
+              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
+            }`}
           />
 
           {/* Contact Icons */}
-          <div className="mb-8 flex items-center gap-6">
+          <div className={`mb-8 flex items-center gap-6 transition-all duration-700 delay-200 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}>
             <Link
               to="/cartagena"
               className="group flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
@@ -43,7 +49,9 @@ const Footer = () => {
           </div>
 
           {/* Instagram */}
-          <div className="mb-8">
+          <div className={`mb-8 transition-all duration-700 delay-300 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}>
             <a
               href="https://www.instagram.com/santaalejandriahotel/"
               target="_blank"
@@ -57,10 +65,14 @@ const Footer = () => {
           </div>
 
           {/* Divider */}
-          <div className="mb-8 h-px w-32 bg-secondary-foreground/20" />
+          <div className={`mb-8 h-px bg-secondary-foreground/20 transition-all duration-700 delay-[400ms] ${
+            isVisible ? "w-32 opacity-100" : "w-0 opacity-0"
+          }`} />
 
           {/* Legal */}
-          <p className="font-sans text-xs font-light tracking-wide text-secondary-foreground/60">
+          <p className={`font-sans text-xs font-light tracking-wide text-secondary-foreground/60 transition-all duration-700 delay-500 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}>
             © {currentYear} {t("footer", "derechos")}{" "}
             <a
               href="https://dtgrowthpartners.com/"

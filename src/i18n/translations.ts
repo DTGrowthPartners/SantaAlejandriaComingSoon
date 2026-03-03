@@ -227,10 +227,7 @@ const translations = {
 
   // ===== HERO (Main page) =====
   mainHero: {
-    sitioWebEn: { es: "SITIO WEB EN", en: "WEBSITE UNDER" },
-    construccion: { es: "CONSTRUCCIÓN", en: "CONSTRUCTION" },
-    mientrasTanto: { es: "Mientras tanto, puedes reservar", en: "In the meantime, you can book" },
-    directamente: { es: "directamente con nosotros.", en: "directly with us." },
+    seleccionaSede: { es: "Selecciona una sede", en: "Select a location" },
     reservaAhoraEn: { es: "RESERVA AHORA EN", en: "BOOK NOW IN" },
   },
 
