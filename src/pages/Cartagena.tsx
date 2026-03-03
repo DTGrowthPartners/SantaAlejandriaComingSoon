@@ -15,7 +15,7 @@ const Cartagena = () => {
   }, []);
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <CartagenaNavbar />
       <main>
         <CartagenaHero />
@@ -27,7 +27,7 @@ const Cartagena = () => {
         <Footer />
       </main>
       <WhatsAppFloatingButton />
-    </>
+    </div>
   );
 };
 
