@@ -1,11 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/pillow-bed.jpg";
 import logo from "@/assets/logo-santa-alejandria.png";
 import cartagenaImage from "@/assets/Que.png";
 import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   const handleReservarCartagena = () => {
-    window.open("https://wa.me/573126915453?text=Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Cartagena", "_blank");
+    navigate("/cartagena");
   };
 
   const handleReservarMedellin = () => {
