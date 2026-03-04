@@ -2,10 +2,58 @@ import HeroSection from "@/components/HeroSection";
 import LocationsSection from "@/components/LocationsSection";
 import InformativeSection from "@/components/InformativeSection";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
+
+const homeStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  "name": "Santa Alejandría Hotel",
+  "description":
+    "Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Experiencias únicas de hospedaje con arquitectura colonial y servicio personalizado.",
+  "url": "https://santalejandriahotels.com",
+  "logo": "https://santalejandriahotels.com/assets/logo-santa-alejandria.png",
+  "image": "https://santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
+  "address": [
+    {
+      "@type": "PostalAddress",
+      "streetAddress": "Centro Histórico",
+      "addressLocality": "Cartagena de Indias",
+      "addressRegion": "Bolívar",
+      "addressCountry": "CO",
+    },
+    {
+      "@type": "PostalAddress",
+      "addressLocality": "Medellín",
+      "addressRegion": "Antioquia",
+      "addressCountry": "CO",
+    },
+  ],
+  "telephone": "+57-300-123-4567",
+  "priceRange": "$$$",
+  "starRating": {
+    "@type": "Rating",
+    "ratingValue": "4",
+  },
+  "amenityFeature": [
+    { "@type": "LocationFeatureSpecification", "name": "WiFi gratuito", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Aire acondicionado", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Piscina", "value": true },
+  ],
+  "checkinTime": "15:00",
+  "checkoutTime": "12:00",
+  "availableLanguage": ["es", "en"],
+};
 
 const Index = () => {
   return (
     <main className="min-h-screen overflow-x-hidden">
+      <SEO
+        title="Santa Alejandría Hotel | Hotel Boutique en Cartagena y Medellín"
+        description="Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Arquitectura colonial, servicio personalizado y experiencias únicas de hospedaje. Reserva ahora."
+        canonical="https://santalejandriahotels.com/"
+        keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia"
+        structuredData={homeStructuredData}
+      />
       <HeroSection />
       <LocationsSection />
       <InformativeSection />

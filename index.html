@@ -9,6 +9,8 @@
     <meta name="keywords" content="hotel boutique, Cartagena, Medellín, Colombia, hospedaje premium, hotel colonial, reservas" />
     <link rel="canonical" href="https://santalejandriahotels.com" />
     <link rel="alternate" hreflang="es" href="https://santalejandriahotels.com" />
+    <link rel="alternate" hreflang="en" href="https://santalejandriahotels.com?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://santalejandriahotels.com" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
 
@@ -38,30 +40,31 @@
     <link rel="preload" href="/assets/hero-santa-alejandria.jpg" as="image" />
     <link rel="dns-prefetch" href="//wa.me" />
     
-    <!-- Structured Data para Hotels -->
+    <!-- Structured Data - Organization (global) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Hotel",
+      "@type": "Organization",
       "name": "Santa Alejandría Hotel",
-      "description": "Hotel boutique premium con sedes en Cartagena y Medellín",
       "url": "https://santalejandriahotels.com",
       "logo": "https://santalejandriahotels.com/assets/logo-santa-alejandria.png",
-      "image": "https://santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
-      "address": [
-        {
-          "@type": "PostalAddress",
-          "addressLocality": "Cartagena",
-          "addressCountry": "Colombia"
-        },
-        {
-          "@type": "PostalAddress",
-          "addressLocality": "Medellín",
-          "addressCountry": "Colombia"
-        }
-      ],
-      "telephone": "+57-300-123-4567",
-      "priceRange": "$$$"
+      "sameAs": [],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+57-300-123-4567",
+        "contactType": "reservations",
+        "availableLanguage": ["Spanish", "English"]
+      }
+    }
+    </script>
+    <!-- Structured Data - WebSite (for sitelinks search box) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Santa Alejandría Hotel",
+      "url": "https://santalejandriahotels.com",
+      "inLanguage": ["es", "en"]
     }
     </script>
   </head>
