@@ -63,6 +63,16 @@ server {
         try_files $uri =404;
     }
     
+    # Servir archivos SEO directamente
+    location = /sitemap.xml {
+        types { application/xml xml; }
+        try_files $uri =404;
+    }
+    location = /robots.txt {
+        types { text/plain txt; }
+        try_files $uri =404;
+    }
+
     # SPA routing - redirect all routes to index.html
     location / {
         try_files $uri $uri/ /index.html;
