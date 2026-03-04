@@ -1,0 +1,8 @@
+# Santa Alejandría Hotel - robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemaps
+Sitemap: https://santalejandriahotels.com/sitemap.xml
