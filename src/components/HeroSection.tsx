@@ -48,6 +48,11 @@ const HeroSection = () => {
           />
         </div>
 
+        {/* H1 for SEO */}
+        <h1 className="animate-fade-in-delay-1 mb-4 font-serif text-2xl md:text-4xl lg:text-5xl font-medium tracking-wide text-[#FDFCF6]">
+          {t("mainHero", "h1Title")}
+        </h1>
+
         {/* Subtitle */}
         <p className="animate-fade-in-delay-2 mb-8 font-sans text-lg md:text-2xl font-light tracking-wide text-[#FDFCF6]/85">
           {t("mainHero", "seleccionaSede")}

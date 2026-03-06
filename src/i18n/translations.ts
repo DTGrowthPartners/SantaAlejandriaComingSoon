@@ -227,6 +227,7 @@ const translations = {
 
   // ===== HERO (Main page) =====
   mainHero: {
+    h1Title: { es: "Hotel Boutique en Cartagena y Medellín", en: "Boutique Hotel in Cartagena & Medellín" },
     seleccionaSede: { es: "Selecciona una sede", en: "Select a location" },
     reservaAhoraEn: { es: "RESERVA AHORA EN", en: "BOOK NOW IN" },
   },
@@ -239,21 +240,21 @@ const translations = {
     reservarWhatsApp: { es: "Reservar en WhatsApp", en: "Book on WhatsApp" },
     verSede: { es: "Ver Sede", en: "View Location" },
     cartagenaDesc: {
-      es: "Ubicados en el corazón histórico de la ciudad amurallada. Una experiencia única donde la historia colonial se encuentra con el lujo contemporáneo.",
-      en: "Located in the historic heart of the walled city. A unique experience where colonial history meets contemporary luxury.",
+      es: "Nuestro hotel boutique en Cartagena Colombia se encuentra en el corazón de la ciudad amurallada. Un hotel en el centro histórico donde la arquitectura colonial se encuentra con el lujo contemporáneo.",
+      en: "Our boutique hotel in Cartagena Colombia is located in the heart of the walled city. A hotel in the historic center where colonial architecture meets contemporary luxury.",
     },
     medellinDesc: {
-      es: "Una experiencia boutique en la ciudad de la eterna primavera. Rodeados de montañas y naturaleza, con la calidez característica de nuestra marca.",
-      en: "A boutique experience in the city of eternal spring. Surrounded by mountains and nature, with the warmth that characterizes our brand.",
+      es: "Una experiencia de hotel boutique en Medellín, la ciudad de la eterna primavera. Rodeados de montañas y naturaleza, con la calidez y el servicio premium de Santa Alejandría.",
+      en: "A boutique hotel experience in Medellín, the city of eternal spring. Surrounded by mountains and nature, with the warmth and premium service of Santa Alejandría.",
     },
   },
 
   // ===== INFORMATIVE SECTION (Main page) =====
   informative: {
-    heading: { es: "Experimenta el lujo boutique en Colombia", en: "Experience boutique luxury in Colombia" },
+heading: { es: "Hoteles boutique en Cartagena y Medellín", en: "Boutique Hotels in Cartagena & Medellín" },
     subtitle: {
-      es: "Dos sedes exclusivas en los destinos más emblemáticos del país. Arquitectura colonial restaurada, servicio personalizado y experiencias únicas de hospedaje.",
-      en: "Two exclusive locations in the most emblematic destinations in the country. Restored colonial architecture, personalized service and unique lodging experiences.",
+      es: "Estamos construyendo nuestro nuevo sitio web. Muy pronto podrás conocer habitaciones, servicios y experiencias de nuestros hoteles en Cartagena de Indias y Medellín en un solo lugar.",
+      en: "We are building our new website. Very soon you will be able to discover rooms, services, and experiences at our Cartagena and Medellín hotels in one place.",
     },
     sedesAbiertas: {
       es: "Por ahora, nuestras sedes están abiertas y listas para recibirte.",

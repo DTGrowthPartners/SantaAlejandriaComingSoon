@@ -66,7 +66,7 @@ const Cartagena = () => {
     <div className="overflow-x-hidden">
       <SEO
         title="Hotel Boutique en Cartagena de Indias | Santa Alejandría Hotel"
-        description="Hotel boutique en el Centro Histórico de Cartagena de Indias, Colombia. Arquitectura colonial restaurada, habitaciones premium, piscina y servicio personalizado. Reserva por WhatsApp."
+        description="Santa Alejandría Hotel Boutique en el corazón histórico de Cartagena de Indias. Habitaciones premium, desayuno incluido. Reserva ahora por WhatsApp."
         canonical="https://santalejandriahotels.com/cartagena"
         keywords="hotel boutique Cartagena, hotel centro histórico Cartagena, hotel colonial Cartagena de Indias, alojamiento premium Cartagena, hotel con piscina Cartagena, hospedaje Cartagena Colombia"
         structuredData={cartagenaStructuredData}
