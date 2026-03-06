@@ -250,10 +250,10 @@ const translations = {
 
   // ===== INFORMATIVE SECTION (Main page) =====
   informative: {
-    heading: { es: "Estamos construyendo nuestro nuevo sitio web", en: "We are building our new website" },
+    heading: { es: "Experimenta el lujo boutique en Colombia", en: "Experience boutique luxury in Colombia" },
     subtitle: {
-      es: "Muy pronto podrás conocer habitaciones, servicios y experiencias en un solo lugar.",
-      en: "Very soon you will be able to discover rooms, services and experiences in one place.",
+      es: "Dos sedes exclusivas en los destinos más emblemáticos del país. Arquitectura colonial restaurada, servicio personalizado y experiencias únicas de hospedaje.",
+      en: "Two exclusive locations in the most emblematic destinations in the country. Restored colonial architecture, personalized service and unique lodging experiences.",
     },
     sedesAbiertas: {
       es: "Por ahora, nuestras sedes están abiertas y listas para recibirte.",

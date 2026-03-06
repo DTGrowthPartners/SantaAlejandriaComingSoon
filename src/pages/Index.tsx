@@ -51,7 +51,7 @@ const Index = () => {
         title="Santa Alejandría Hotel | Hotel Boutique en Cartagena y Medellín"
         description="Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Arquitectura colonial, servicio personalizado y experiencias únicas de hospedaje. Reserva ahora."
         canonical="https://santalejandriahotels.com/"
-        keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia"
+        keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia, Cartagena Hotels, hotel ciudad amurallada, hotel con piscina Cartagena, hotel patrimonio histórico Colombia"
         structuredData={homeStructuredData}
       />
       <HeroSection />
