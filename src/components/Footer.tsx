@@ -48,8 +48,8 @@ const Footer = () => {
             </a>
           </div>
 
-          {/* Instagram */}
-          <div className={`mb-8 transition-all duration-700 delay-300 ${
+          {/* Social & Booking Links */}
+          <div className={`mb-8 flex flex-wrap items-center justify-center gap-5 transition-all duration-700 delay-300 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}>
             <a
@@ -60,7 +60,29 @@ const Footer = () => {
               aria-label="Síguenos en Instagram"
             >
               <Instagram className="h-5 w-5 transition-transform group-hover:scale-110" />
-              <span>@santaalejandriahotel</span>
+              <span>Instagram</span>
+            </a>
+            <div className="h-4 w-px bg-secondary-foreground/30" />
+            <a
+              href="https://www.booking.com/Share-k86Psb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Reserva en Booking.com"
+            >
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Booking.com</span>
+            </a>
+            <div className="h-4 w-px bg-secondary-foreground/30" />
+            <a
+              href="https://expe.onelink.me/hnLd/4hpbhbph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Reserva en Expedia"
+            >
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Expedia</span>
             </a>
           </div>
 
