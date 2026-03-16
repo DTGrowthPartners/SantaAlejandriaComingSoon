@@ -89,8 +89,8 @@ const Medellin = () => {
   return (
     <div className="min-h-screen bg-[#FDFCF6]">
       <SEO
-        title="Hotel Boutique en Medellín | Santa Alejandría Hotel"
-        description="Hotel boutique en Medellín, la ciudad de la eterna primavera. Arquitectura moderna con toque colonial, spa, piscina infinity y servicio personalizado. Reserva ahora."
+        title="Santa Alejandría Hotel Medellín | Hotel Boutique en Medellín"
+        description="Hotel boutique en Medellín, la ciudad de la eterna primavera. Experiencia premium con servicio personalizado. Reserva tu estadía."
         canonical="https://www.santalejandriahotels.com/medellin"
         keywords="hotel boutique Medellín, hotel Medellín, hotel spa Medellín, hotel centro Medellín, hotel con piscina Medellín, alojamiento premium Medellín, hospedaje Antioquia"
         structuredData={medellinStructuredData}
@@ -129,9 +129,8 @@ const Medellin = () => {
         </div>
         <div className="relative z-10 text-center text-[#FDFCF6] px-4">
           <h1 className="text-5xl md:text-7xl font-serif font-bold mb-4">
-            Santa Alejandría
+            Hotel Santa Alejandría Medellín
           </h1>
-          <p className="text-xl md:text-2xl font-light mb-2">Medellín</p>
           <p className="text-lg md:text-xl text-highlight">
             La ciudad de la eterna primavera
           </p>

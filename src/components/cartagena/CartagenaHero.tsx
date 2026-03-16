@@ -49,7 +49,7 @@ const CartagenaHero = () => {
 
         {/* Main heading */}
         <h1 className="mb-3 font-serif text-5xl font-medium text-[#FDFCF6] md:text-7xl lg:text-8xl animate-fade-in-delay">
-          Santa Alejandría
+          Hotel Santa Alejandría Cartagena
         </h1>
 
         {/* Subtitle */}

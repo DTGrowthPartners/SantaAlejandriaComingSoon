@@ -16,7 +16,7 @@ const homeStructuredData = {
   "address": [
     {
       "@type": "PostalAddress",
-      "streetAddress": "Centro Histórico",
+      "streetAddress": "Calle de la Cruz N° 9-42, Barrio San Diego",
       "addressLocality": "Cartagena de Indias",
       "addressRegion": "Bolívar",
       "addressCountry": "CO",
