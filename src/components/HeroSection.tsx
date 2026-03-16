@@ -36,9 +36,6 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        {/* SEO H1 - Hidden but accessible to search engines */}
-        <h1 className="sr-only">Hotel Boutique en Cartagena de Indias | Santa Alejandría</h1>
-
         {/* Logo with floating animation */}
         <div className="-mt-16 mb-6 animate-fade-in">
           <img

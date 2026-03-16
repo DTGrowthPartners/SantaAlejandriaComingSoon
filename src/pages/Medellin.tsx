@@ -12,9 +12,9 @@ const medellinStructuredData = {
   "name": "Santa Alejandría Hotel Medellín",
   "description":
     "Hotel boutique en Medellín, la ciudad de la eterna primavera. Arquitectura moderna con toque colonial, habitaciones premium, spa y servicio personalizado.",
-  "url": "https://santalejandriahotels.com/medellin",
-  "logo": "https://santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg",
+  "url": "https://www.santalejandriahotels.com/medellin",
+  "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
+  "image": "https://www.santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Carrera 43A #7-50, El Poblado",
@@ -40,6 +40,10 @@ const medellinStructuredData = {
     { "@type": "LocationFeatureSpecification", "name": "Spa", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Desayuno incluido", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Gimnasio", "value": true },
+  ],
+  "sameAs": [
+    "https://www.booking.com/Share-k86Psb",
+    "https://expe.onelink.me/hnLd/4hpbhbph",
   ],
   "checkinTime": "15:00",
   "checkoutTime": "12:00",
@@ -87,7 +91,7 @@ const Medellin = () => {
       <SEO
         title="Hotel Boutique en Medellín | Santa Alejandría Hotel"
         description="Hotel boutique en Medellín, la ciudad de la eterna primavera. Arquitectura moderna con toque colonial, spa, piscina infinity y servicio personalizado. Reserva ahora."
-        canonical="https://santalejandriahotels.com/medellin"
+        canonical="https://www.santalejandriahotels.com/medellin"
         keywords="hotel boutique Medellín, hotel Medellín, hotel spa Medellín, hotel centro Medellín, hotel con piscina Medellín, alojamiento premium Medellín, hospedaje Antioquia"
         structuredData={medellinStructuredData}
       />

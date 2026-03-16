@@ -10,9 +10,9 @@ const homeStructuredData = {
   "name": "Santa Alejandría Hotel",
   "description":
     "Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Experiencias únicas de hospedaje con arquitectura colonial y servicio personalizado.",
-  "url": "https://santalejandriahotels.com",
-  "logo": "https://santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
+  "url": "https://www.santalejandriahotels.com",
+  "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
+  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
   "address": [
     {
       "@type": "PostalAddress",
@@ -28,7 +28,7 @@ const homeStructuredData = {
       "addressCountry": "CO",
     },
   ],
-  "telephone": "+57-300-123-4567",
+  "telephone": "+57-312-691-5453",
   "priceRange": "$$$",
   "starRating": {
     "@type": "Rating",
@@ -38,6 +38,10 @@ const homeStructuredData = {
     { "@type": "LocationFeatureSpecification", "name": "WiFi gratuito", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Aire acondicionado", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Piscina", "value": true },
+  ],
+  "sameAs": [
+    "https://www.booking.com/Share-k86Psb",
+    "https://expe.onelink.me/hnLd/4hpbhbph",
   ],
   "checkinTime": "15:00",
   "checkoutTime": "12:00",
@@ -50,7 +54,7 @@ const Index = () => {
       <SEO
         title="Santa Alejandría Hotel | Hotel Boutique en Cartagena y Medellín"
         description="Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Arquitectura colonial, servicio personalizado y experiencias únicas de hospedaje. Reserva ahora."
-        canonical="https://santalejandriahotels.com/"
+        canonical="https://www.santalejandriahotels.com/"
         keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia, Cartagena Hotels, hotel ciudad amurallada, hotel con piscina Cartagena, hotel patrimonio histórico Colombia"
         structuredData={homeStructuredData}
       />

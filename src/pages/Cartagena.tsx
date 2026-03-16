@@ -16,9 +16,9 @@ const cartagenaStructuredData = {
   "name": "Santa Alejandría Hotel Cartagena",
   "description":
     "Hotel boutique en el Centro Histórico de Cartagena de Indias. Arquitectura colonial restaurada, habitaciones premium con aire acondicionado, piscina y servicio personalizado.",
-  "url": "https://santalejandriahotels.com/cartagena",
-  "logo": "https://santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
+  "url": "https://www.santalejandriahotels.com/cartagena",
+  "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
+  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Centro Histórico",
@@ -32,7 +32,7 @@ const cartagenaStructuredData = {
     "latitude": 10.4236,
     "longitude": -75.5506,
   },
-  "telephone": "+57-300-123-4567",
+  "telephone": "+57-312-691-5453",
   "priceRange": "$$$",
   "starRating": {
     "@type": "Rating",
@@ -43,6 +43,10 @@ const cartagenaStructuredData = {
     { "@type": "LocationFeatureSpecification", "name": "Aire acondicionado", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Piscina", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Desayuno incluido", "value": true },
+  ],
+  "sameAs": [
+    "https://www.booking.com/Share-k86Psb",
+    "https://expe.onelink.me/hnLd/4hpbhbph",
   ],
   "checkinTime": "15:00",
   "checkoutTime": "12:00",
@@ -67,7 +71,7 @@ const Cartagena = () => {
       <SEO
         title="Hotel Boutique en Cartagena de Indias | Santa Alejandría Hotel"
         description="Santa Alejandría Hotel Boutique en el corazón histórico de Cartagena de Indias. Habitaciones premium, desayuno incluido. Reserva ahora por WhatsApp."
-        canonical="https://santalejandriahotels.com/cartagena"
+        canonical="https://www.santalejandriahotels.com/cartagena"
         keywords="hotel boutique Cartagena, hotel centro histórico Cartagena, hotel colonial Cartagena de Indias, alojamiento premium Cartagena, hotel con piscina Cartagena, hospedaje Cartagena Colombia"
         structuredData={cartagenaStructuredData}
       />

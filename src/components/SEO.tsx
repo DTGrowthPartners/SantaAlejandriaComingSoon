@@ -10,7 +10,7 @@ interface SEOProps {
   structuredData?: object;
 }
 
-const BASE_URL = "https://santalejandriahotels.com";
+const BASE_URL = "https://www.santalejandriahotels.com";
 const DEFAULT_IMAGE = `${BASE_URL}/assets/hero-santa-alejandria.jpg`;
 
 const SEO = ({

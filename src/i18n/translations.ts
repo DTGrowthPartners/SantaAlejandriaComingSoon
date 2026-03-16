@@ -251,18 +251,18 @@ const translations = {
 
   // ===== INFORMATIVE SECTION (Main page) =====
   informative: {
-heading: { es: "Hoteles boutique en Cartagena y Medellín", en: "Boutique Hotels in Cartagena & Medellín" },
+    heading: { es: "Reserva tu experiencia boutique", en: "Book Your Boutique Experience" },
     subtitle: {
-      es: "Estamos construyendo nuestro nuevo sitio web. Muy pronto podrás conocer habitaciones, servicios y experiencias de nuestros hoteles en Cartagena de Indias y Medellín en un solo lugar.",
-      en: "We are building our new website. Very soon you will be able to discover rooms, services, and experiences at our Cartagena and Medellín hotels in one place.",
+      es: "Dos hoteles boutique en las ciudades más fascinantes de Colombia. Arquitectura colonial, servicio personalizado y ubicaciones privilegiadas en Cartagena de Indias y Medellín.",
+      en: "Two boutique hotels in Colombia's most fascinating cities. Colonial architecture, personalized service, and prime locations in Cartagena de Indias and Medellín.",
     },
     sedesAbiertas: {
-      es: "Por ahora, nuestras sedes están abiertas y listas para recibirte.",
-      en: "For now, our locations are open and ready to welcome you.",
+      es: "Nuestras sedes están abiertas y listas para recibirte.",
+      en: "Our locations are open and ready to welcome you.",
     },
     formIntro: {
-      es: "Déjanos tu contacto para que te enteres de nuestro lanzamiento, ofertas y promociones.",
-      en: "Leave us your contact info to learn about our launch, offers and promotions.",
+      es: "Déjanos tu contacto para recibir ofertas exclusivas y novedades de Santa Alejandría Hotel.",
+      en: "Leave your contact info to receive exclusive offers and news from Santa Alejandría Hotel.",
     },
     nombre: { es: "Nombre", en: "Name" },
     placeholderNombre: { es: "Tu nombre", en: "Your name" },
