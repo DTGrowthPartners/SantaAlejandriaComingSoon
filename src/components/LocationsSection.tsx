@@ -55,7 +55,8 @@ const LocationsSection = () => {
               city="Medellín"
               image={medellinImage}
               description={t("locations", "medellinDesc")}
-              whatsappNumber="573126915453"
+              whatsappNumber="573053093723"
+              link="/medellin"
               reversed
             />
           </div>

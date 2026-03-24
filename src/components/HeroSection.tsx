@@ -14,7 +14,7 @@ const HeroSection = () => {
   };
 
   const handleReservarMedellin = () => {
-    window.open("https://wa.me/573126915453?text=Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín", "_blank");
+    navigate("/medellin");
   };
 
   return (

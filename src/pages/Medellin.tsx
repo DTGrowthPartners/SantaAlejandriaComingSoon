@@ -1,85 +1,81 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import MedellinNavbar from "@/components/medellin/MedellinNavbar";
+import MedellinHero from "@/components/medellin/MedellinHero";
+import MedellinAbout from "@/components/medellin/MedellinAbout";
+import MedellinRooms from "@/components/medellin/MedellinRooms";
+import MedellinServices from "@/components/medellin/MedellinServices";
+import MedellinLocation from "@/components/medellin/MedellinLocation";
+import MedellinBookingCTA from "@/components/medellin/MedellinBookingCTA";
+import MedellinWhatsAppButton from "@/components/medellin/MedellinWhatsAppButton";
+import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
-import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg";
-import logo from "@/assets/logo-santa-alejandria.png";
 
 const medellinStructuredData = {
   "@context": "https://schema.org",
   "@type": "Hotel",
-  "name": "Santa Alejandría Hotel Medellín",
-  "description":
-    "Hotel boutique en Medellín, la ciudad de la eterna primavera. Arquitectura moderna con toque colonial, habitaciones premium, spa y servicio personalizado.",
-  "url": "https://www.santalejandriahotels.com/medellin",
-  "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://www.santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg",
-  "address": {
+  name: "Santa Alejandría Hotel Medellín",
+  description:
+    "Hotel en el sector Estadio de Medellín, la ciudad de la eterna primavera. Capacidad para 176 personas, jardines, espacios libres de humo, gimnasio y desayuno incluido.",
+  url: "https://www.santalejandriahotels.com/medellin",
+  logo: "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
+  image:
+    "https://www.santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg",
+  address: {
     "@type": "PostalAddress",
-    "streetAddress": "Carrera 43A #7-50, El Poblado",
-    "addressLocality": "Medellín",
-    "addressRegion": "Antioquia",
-    "postalCode": "050010",
-    "addressCountry": "CO",
+    streetAddress: "CRA 77C No 48 – 91, Sector Estadio",
+    addressLocality: "Medellín",
+    addressRegion: "Antioquia",
+    postalCode: "050034",
+    addressCountry: "CO",
   },
-  "geo": {
+  geo: {
     "@type": "GeoCoordinates",
-    "latitude": 6.2087,
-    "longitude": -75.5744,
+    latitude: 6.2476,
+    longitude: -75.5898,
   },
-  "telephone": "+57-312-691-5453",
-  "priceRange": "$$$",
-  "starRating": {
-    "@type": "Rating",
-    "ratingValue": "4",
-  },
-  "amenityFeature": [
-    { "@type": "LocationFeatureSpecification", "name": "WiFi gratuito", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Aire acondicionado", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Spa", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Desayuno incluido", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Gimnasio", "value": true },
+  telephone: "+57-305-309-3723",
+  priceRange: "$$",
+  amenityFeature: [
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "WiFi gratuito",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Aire acondicionado",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Gimnasio",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Desayuno incluido",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Apartaestudios",
+      value: true,
+    },
   ],
-  "sameAs": [
-    "https://www.booking.com/Share-k86Psb",
-    "https://expe.onelink.me/hnLd/4hpbhbph",
-  ],
-  "checkinTime": "15:00",
-  "checkoutTime": "12:00",
-  "availableLanguage": ["es", "en"],
-  "containedInPlace": {
+  checkinTime: "15:00",
+  checkoutTime: "12:00",
+  availableLanguage: ["es", "en"],
+  numberOfRooms: 73,
+  petsAllowed: false,
+  containedInPlace: {
     "@type": "City",
-    "name": "Medellín",
-    "containedInPlace": {
+    name: "Medellín",
+    containedInPlace: {
       "@type": "Country",
-      "name": "Colombia",
+      name: "Colombia",
     },
   },
 };
-
-const medellinServices = [
-  {
-    icon: "🍳",
-    title: { es: "Desayuno Included", en: "Breakfast Included" },
-    description: { es: "Desayuno buffet con opciones locales e internacionales", en: "Buffet breakfast with local and international options" },
-  },
-  {
-    icon: "🏊",
-    title: { es: "Piscina Infinity", en: "Infinity Pool" },
-    description: { es: "Piscina en la azotea con vista a la ciudad", en: "Rooftop pool with city views" },
-  },
-  {
-    icon: "💆",
-    title: { es: "Spa & Bienestar", en: "Spa & Wellness" },
-    description: { es: "Tratamientos rejuvenecedores y masajes relajantes", en: "Rejuvenating treatments and relaxing massages" },
-  },
-  {
-    icon: "🍽️",
-    title: { es: "Restaurante Gourmet", en: "Gourmet Restaurant" },
-    description: { es: "Cocina colombiana contemporánea con ingredientes locales", en: "Contemporary Colombian cuisine with local ingredients" },
-  },
-];
 
 const Medellin = () => {
   useEffect(() => {
@@ -87,150 +83,25 @@ const Medellin = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FDFCF6]">
+    <div className="overflow-x-hidden">
       <SEO
-        title="Santa Alejandría Hotel Medellín | Hotel Boutique en Medellín"
-        description="Hotel boutique en Medellín, la ciudad de la eterna primavera. Experiencia premium con servicio personalizado. Reserva tu estadía."
+        title="Santa Alejandría Hotel Medellín | Hotel Sector Estadio"
+        description="Hotel en el sector Estadio de Medellín. 176 personas de capacidad, habitaciones con A/C o ventilador, apartaestudios, gimnasio, desayuno incluido. A 3 min del Metro Floresta."
         canonical="https://www.santalejandriahotels.com/medellin"
-        keywords="hotel boutique Medellín, hotel Medellín, hotel spa Medellín, hotel centro Medellín, hotel con piscina Medellín, alojamiento premium Medellín, hospedaje Antioquia"
+        keywords="hotel Medellín, hotel sector Estadio Medellín, hotel cerca metro Medellín, hotel con desayuno Medellín, apartaestudio Medellín, hospedaje Medellín Colombia, hotel cerca Atanasio Girardot"
         structuredData={medellinStructuredData}
       />
-
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-sm shadow-lg">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Santa Alejandría" className="h-10" />
-          </Link>
-          <div className="flex gap-4">
-            <Link to="/">
-              <Button variant="ghost" className="text-[#FDFCF6] hover:text-highlight">
-                Inicio
-              </Button>
-            </Link>
-            <Link to="/cartagena">
-              <Button variant="ghost" className="text-[#FDFCF6] hover:text-highlight">
-                Cartagena
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={medellinImage}
-            alt="Santa Alejandra Hotel Medellin"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-primary/70" />
-        </div>
-        <div className="relative z-10 text-center text-[#FDFCF6] px-4">
-          <h1 className="text-5xl md:text-7xl font-serif font-bold mb-4">
-            Hotel Santa Alejandría Medellín
-          </h1>
-          <p className="text-lg md:text-xl text-highlight">
-            La ciudad de la eterna primavera
-          </p>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-serif text-primary mb-8">
-            Experiencia Boutique en Medellín
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed mb-8">
-            Ubicado en el exclusive barrio El Poblado, Santa Alejandría Medellín 
-            combina la modernidad de la ciudad con la calidez de la arquitectura colonial 
-            colombiana. Disfruta de vistas espectaculares, servicios premium y una 
-            experiencia de hospedaje inolvidable en la ciudad de la eterna primavera.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
-            <Card className="bg-primary text-[#FDFCF6]">
-              <CardContent className="p-4 text-center">
-                <p className="text-3xl font-bold text-highlight">5★</p>
-                <p className="text-sm">Categoría</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-primary text-[#FDFCF6]">
-              <CardContent className="p-4 text-center">
-                <p className="text-3xl font-bold text-highlight">42</p>
-                <p className="text-sm">Habitaciones</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-primary text-[#FDFCF6]">
-              <CardContent className="p-4 text-center">
-                <p className="text-3xl font-bold text-highlight">2</p>
-                <p className="text-sm">Restaurantes</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-primary text-[#FDFCF6]">
-              <CardContent className="p-4 text-center">
-                <p className="text-3xl font-bold text-highlight">24/7</p>
-                <p className="text-sm">Concierge</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 px-4 bg-primary text-[#FDFCF6]">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-3xl md:text-4xl font-serif text-center mb-12">
-            Servicios Premium
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {medellinServices.map((service, index) => (
-              <div
-                key={index}
-                className="text-center p-6 rounded-xl bg-[#FDFCF6]/5 hover:bg-[#FDFCF6]/10 transition-colors"
-              >
-                <div className="text-4xl mb-4">{service.icon}</div>
-                <h3 className="text-xl font-serif mb-2">{service.title.es}</h3>
-                <p className="text-sm text-[#FDFCF6]/80">{service.description.es}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-highlight text-center">
-        <div className="container mx-auto max-w-2xl">
-          <h2 className="text-3xl md:text-4xl font-serif text-primary mb-4">
-            Reserva tu experiencia en Medellín
-          </h2>
-          <p className="text-lg text-gray-700 mb-8">
-            Contáctanos directamente por WhatsApp para reservas y atención personalizada.
-          </p>
-          <a
-            href="https://wa.me/573126915453?text=Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-primary text-[#FDFCF6] px-8 py-4 rounded-xl text-lg hover:bg-primary/90 transition-colors"
-          >
-            <span>📱</span>
-            <span>Reservar por WhatsApp</span>
-          </a>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-primary text-[#FDFCF6] py-8 px-4">
-        <div className="container mx-auto text-center">
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <img src={logo} alt="Santa Alejandría" className="h-8" />
-          </div>
-          <p className="text-sm text-[#FDFCF6]/60">
-            © 2026 Santa Alejandría Hotel. Todos los derechos reservados.
-          </p>
-        </div>
-      </footer>
+      <MedellinNavbar />
+      <main>
+        <MedellinHero />
+        <MedellinAbout />
+        <MedellinRooms />
+        <MedellinServices />
+        <MedellinLocation />
+        <MedellinBookingCTA />
+        <Footer />
+      </main>
+      <MedellinWhatsAppButton />
     </div>
   );
 };

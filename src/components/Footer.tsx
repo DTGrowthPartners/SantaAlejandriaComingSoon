@@ -36,16 +36,14 @@ const Footer = () => {
               <span>Cartagena</span>
             </Link>
             <div className="h-4 w-px bg-secondary-foreground/30" />
-            <a
-              href="https://wa.me/573126915453"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/medellin"
               className="group flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
-              aria-label="Contactar por WhatsApp - Medellín"
+              aria-label="Ver sede Medellín"
             >
-              <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
+              <MapPin className="h-5 w-5 transition-transform group-hover:scale-110" />
               <span>Medellín</span>
-            </a>
+            </Link>
           </div>
 
           {/* Social & Booking Links */}
