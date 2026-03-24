@@ -23,12 +23,14 @@ const homeStructuredData = {
     },
     {
       "@type": "PostalAddress",
+      "streetAddress": "CRA 77C No 48 – 91, Sector Estadio",
       "addressLocality": "Medellín",
       "addressRegion": "Antioquia",
+      "postalCode": "050034",
       "addressCountry": "CO",
     },
   ],
-  "telephone": "+57-312-691-5453",
+  "telephone": ["+57-312-691-5453", "+57-305-309-3723"],
   "priceRange": "$$$",
   "starRating": {
     "@type": "Rating",
@@ -38,6 +40,8 @@ const homeStructuredData = {
     { "@type": "LocationFeatureSpecification", "name": "WiFi gratuito", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Aire acondicionado", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Piscina", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Gimnasio", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Desayuno incluido", "value": true },
   ],
   "sameAs": [
     "https://www.booking.com/Share-k86Psb",
@@ -55,7 +59,7 @@ const Index = () => {
         title="Santa Alejandría Hotel | Hotel Boutique en Cartagena y Medellín"
         description="Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Arquitectura colonial, servicio personalizado y experiencias únicas de hospedaje. Reserva ahora."
         canonical="https://www.santalejandriahotels.com/"
-        keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia, Cartagena Hotels, hotel ciudad amurallada, hotel con piscina Cartagena, hotel patrimonio histórico Colombia"
+        keywords="hotel boutique Cartagena, hotel boutique Medellín, hotel colonial Colombia, hospedaje premium Cartagena, hotel centro histórico Cartagena, alojamiento boutique Colombia, Cartagena Hotels, hotel ciudad amurallada, hotel con piscina Cartagena, hotel patrimonio histórico Colombia, hotel sector Estadio Medellín, hotel cerca metro Medellín, apartaestudio Medellín, hotel con gimnasio Medellín, hotel con desayuno Medellín"
         structuredData={homeStructuredData}
       />
       <HeroSection />

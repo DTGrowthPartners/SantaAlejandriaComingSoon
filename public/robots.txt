@@ -5,4 +5,4 @@ Disallow: /api/
 Disallow: /admin/
 
 # Sitemaps
-Sitemap: https://santalejandriahotels.com/sitemap.xml
+Sitemap: https://www.santalejandriahotels.com/sitemap.xml
