@@ -25,4 +25,12 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://www.santalejandriahotels.com/medellin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.santalejandriahotels.com/medellin?lang=en" />
   </url>
+  <url>
+    <loc>https://www.santalejandriahotels.com/reglamento</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.santalejandriahotels.com/reglamento" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.santalejandriahotels.com/reglamento?lang=en" />
+  </url>
 </urlset>

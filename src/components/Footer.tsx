@@ -1,4 +1,4 @@
-import { MessageCircle, Instagram, ArrowUpRight, MapPin } from "lucide-react";
+import { MessageCircle, Instagram, ArrowUpRight, MapPin, ScrollText } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo-santa-alejandria.png";
 import fondoImage from "@/assets/Fondo LV.png";
@@ -82,6 +82,20 @@ const Footer = () => {
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:scale-110" />
               <span>Expedia</span>
             </a>
+          </div>
+
+          {/* Reglamento link */}
+          <div className={`mb-8 transition-all duration-700 delay-[350ms] ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}>
+            <Link
+              to="/reglamento"
+              className="group inline-flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Reglamento y Normas"
+            >
+              <ScrollText className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Reglamento y Normas</span>
+            </Link>
           </div>
 
           {/* Divider */}
