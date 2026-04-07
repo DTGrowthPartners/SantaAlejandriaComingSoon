@@ -51,7 +51,13 @@ const LocationCard = ({
             isVisible ? "scale-100" : "scale-110"
           } group-hover:scale-105`}
         />
-        <div className="absolute inset-0 bg-secondary/0 transition-colors duration-500 group-hover:bg-secondary/10" />
+        <div
+          className="absolute inset-0 transition-colors duration-500"
+          style={{
+            backgroundColor:
+              city === "Cartagena" ? "#eed58233" : "transparent",
+          }}
+        />
       </div>
 
       {/* Content */}
