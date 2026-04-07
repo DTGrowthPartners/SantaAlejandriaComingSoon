@@ -25,13 +25,13 @@ const MedellinRooms = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-[#2d7a4a] font-medium">
+          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-primary font-medium">
             {t("medellinRooms", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
             {t("medellinRooms", "heading")}
           </h2>
-          <div className="mx-auto h-px w-16 bg-[#2d7a4a]" />
+          <div className="mx-auto h-px w-16 bg-primary" />
           <p className="mt-4 mx-auto max-w-2xl font-sans text-sm text-muted-foreground leading-relaxed">
             {t("medellinRooms", "description")}
           </p>
@@ -50,14 +50,14 @@ const MedellinRooms = () => {
                 <TabsTrigger
                   key={cat.id}
                   value={cat.id}
-                  className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-[#2d7a4a] data-[state=active]:text-white data-[state=active]:border-[#2d7a4a] transition-all duration-300 hover:border-[#2d7a4a]/50"
+                  className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary transition-all duration-300 hover:border-primary/50"
                 >
                   {t("medellinRoomNames", cat.id)}
                 </TabsTrigger>
               ))}
               <TabsTrigger
                 value="apartaestudios"
-                className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-[#2d7a4a] data-[state=active]:text-white data-[state=active]:border-[#2d7a4a] transition-all duration-300 hover:border-[#2d7a4a]/50"
+                className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary transition-all duration-300 hover:border-primary/50"
               >
                 {t("medellinRoomNames", "apartaestudios")}
               </TabsTrigger>

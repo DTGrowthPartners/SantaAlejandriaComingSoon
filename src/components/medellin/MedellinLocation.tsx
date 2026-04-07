@@ -69,13 +69,13 @@ const MedellinLocation = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-[#2d7a4a] font-medium">
+          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-primary font-medium">
             {t("medellinLocation", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
             {t("medellinLocation", "heading")}
           </h2>
-          <div className="mx-auto h-px w-16 bg-[#2d7a4a]" />
+          <div className="mx-auto h-px w-16 bg-primary" />
         </div>
 
         {/* Three columns layout - different from Cartagena's two columns */}
@@ -92,7 +92,7 @@ const MedellinLocation = () => {
                 const Icon = item.icon;
                 const content = (
                   <div className="flex items-start gap-3 group">
-                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2d7a4a]/10 text-[#2d7a4a] transition-colors group-hover:bg-[#2d7a4a] group-hover:text-white">
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
@@ -132,7 +132,7 @@ const MedellinLocation = () => {
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 font-sans text-sm font-medium text-white transition-all duration-300 hover:bg-[#20BD5A] hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02]"
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
@@ -156,7 +156,7 @@ const MedellinLocation = () => {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             )}
           >
-            <p className="mb-4 font-sans text-xs tracking-[0.2em] uppercase text-[#2d7a4a] font-medium">
+            <p className="mb-4 font-sans text-xs tracking-[0.2em] uppercase text-primary font-medium">
               {t("medellinLocation", "cercaDe")}
             </p>
             <div className="space-y-3">
@@ -165,9 +165,9 @@ const MedellinLocation = () => {
                 return (
                   <div
                     key={place.name}
-                    className="flex items-center gap-3 rounded-lg bg-[#2d7a4a]/5 border border-[#2d7a4a]/10 p-4"
+                    className="flex items-center gap-3 rounded-lg bg-primary/5 border border-primary/10 p-4"
                   >
-                    <Icon className="h-5 w-5 text-[#2d7a4a] shrink-0" />
+                    <Icon className="h-5 w-5 text-primary shrink-0" />
                     <div>
                       <p className="font-sans text-sm font-medium text-foreground">{place.name}</p>
                       <p className="font-sans text-xs text-muted-foreground">{place.time}</p>
@@ -185,7 +185,7 @@ const MedellinLocation = () => {
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
             )}
           >
-            <div className="overflow-hidden rounded-lg border-2 border-[#2d7a4a]/20 shadow-lg">
+            <div className="overflow-hidden rounded-lg border-2 border-primary/20 shadow-lg">
               <iframe
                 src={MAP_EMBED_URL}
                 width="100%"

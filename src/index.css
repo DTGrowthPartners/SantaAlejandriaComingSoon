@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Gotham:wght@100;300;500&family=Gothic+A1:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Raleway:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,84 +6,118 @@
 
 @layer base {
   :root {
-    /* Santa Alejandría Brand Colors */
-    --background: 47 73% 95%;
-    --foreground: 24 80% 15%;
+    /* Santa Alejandría Brand Colors — Olive Green identity */
+    --background: 47 60% 96%;
+    --foreground: 84 40% 12%;
 
-    --card: 47 73% 98%;
-    --card-foreground: 24 80% 15%;
+    --card: 47 60% 98%;
+    --card-foreground: 84 40% 12%;
 
-    --popover: 47 73% 98%;
-    --popover-foreground: 24 80% 15%;
+    --popover: 47 60% 98%;
+    --popover-foreground: 84 40% 12%;
 
-    /* Primary: Deep Teal #006766 */
-    --primary: 179 100% 20%;
-    --primary-foreground: 47 73% 95%;
+    /* Primary: Olive Green #4D7D14 (brand color) */
+    --primary: 84 76% 28%;
+    --primary-foreground: 47 60% 96%;
 
-    /* Secondary: Rich Brown #823d0f */
-    --secondary: 24 80% 28%;
-    --secondary-foreground: 47 73% 95%;
+    /* Secondary: Rich Brown #7A3812 */
+    --secondary: 20 75% 28%;
+    --secondary-foreground: 47 60% 96%;
 
     /* Muted */
-    --muted: 47 40% 90%;
-    --muted-foreground: 24 40% 40%;
+    --muted: 84 20% 90%;
+    --muted-foreground: 84 15% 35%;
 
-    /* Accent: Golden #b37e15 */
-    --accent: 38 79% 39%;
+    /* Accent: Mustard Gold #B8841C */
+    --accent: 41 74% 42%;
     --accent-foreground: 0 0% 100%;
 
-    /* Light Gold #eed582 */
-    --highlight: 47 73% 72%;
-    --highlight-foreground: 24 80% 15%;
+    /* Highlight: Pale Cream #EFD98A */
+    --highlight: 47 76% 74%;
+    --highlight-foreground: 84 40% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 47 40% 85%;
-    --input: 47 40% 85%;
-    --ring: 179 100% 20%;
+    --border: 84 20% 85%;
+    --input: 84 20% 85%;
+    --ring: 84 76% 28%;
 
     --radius: 0.25rem;
 
-    /* Typography */
+    /* Typography — Brand font: Raleway */
     --font-serif: 'Playfair Display', Georgia, serif;
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --font-gotham: 'Gotham', sans-serif;
-    --font-gothic: 'Gothic A1', serif;
+    --font-sans: 'Raleway', system-ui, sans-serif;
 
     /* Shadows */
-    --shadow-elegant: 0 4px 30px rgba(130, 61, 15, 0.08);
-    --shadow-card: 0 2px 20px rgba(130, 61, 15, 0.06);
+    --shadow-elegant: 0 4px 30px rgba(77, 125, 20, 0.10);
+    --shadow-card: 0 2px 20px rgba(77, 125, 20, 0.08);
+  }
+
+  /* Medellín scoped theme — minimalist palette: olive green + grays + off-white */
+  .medellin-theme {
+    --background: 60 20% 98%;
+    --foreground: 84 35% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 84 35% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 84 35% 12%;
+
+    /* Primary: same olive green brand */
+    --primary: 84 76% 28%;
+    --primary-foreground: 60 20% 98%;
+
+    /* Secondary: light cool gray (replaces brown) */
+    --secondary: 220 8% 85%;
+    --secondary-foreground: 84 35% 12%;
+
+    /* Muted: cool light gray */
+    --muted: 220 10% 94%;
+    --muted-foreground: 220 8% 40%;
+
+    /* Accent: cream (newly added to Medellín palette) */
+    --accent: 47 76% 74%;
+    --accent-foreground: 84 35% 12%;
+
+    /* Highlight: cream pale #EFD98A */
+    --highlight: 47 76% 74%;
+    --highlight-foreground: 84 35% 12%;
+
+    --border: 220 12% 88%;
+    --input: 220 12% 88%;
+    --ring: 84 76% 28%;
   }
 
   .dark {
-    --background: 24 80% 8%;
-    --foreground: 47 73% 95%;
+    --background: 84 30% 8%;
+    --foreground: 47 60% 96%;
 
-    --card: 24 70% 12%;
-    --card-foreground: 47 73% 95%;
+    --card: 84 25% 12%;
+    --card-foreground: 47 60% 96%;
 
-    --popover: 24 70% 12%;
-    --popover-foreground: 47 73% 95%;
+    --popover: 84 25% 12%;
+    --popover-foreground: 47 60% 96%;
 
-    --primary: 179 100% 20%;
-    --primary-foreground: 47 73% 95%;
+    --primary: 84 76% 28%;
+    --primary-foreground: 47 60% 96%;
 
-    --secondary: 24 80% 28%;
-    --secondary-foreground: 47 73% 95%;
+    --secondary: 20 75% 28%;
+    --secondary-foreground: 47 60% 96%;
 
-    --muted: 24 50% 18%;
-    --muted-foreground: 47 40% 70%;
+    --muted: 84 20% 18%;
+    --muted-foreground: 47 30% 70%;
 
-    --accent: 38 79% 39%;
+    --accent: 41 74% 42%;
     --accent-foreground: 0 0% 100%;
 
-    --highlight: 47 73% 72%;
-    --highlight-foreground: 24 80% 15%;
+    --highlight: 47 76% 74%;
+    --highlight-foreground: 84 40% 12%;
 
-    --border: 24 50% 20%;
-    --input: 24 50% 20%;
-    --ring: 38 79% 39%;
+    --border: 84 25% 20%;
+    --input: 84 25% 20%;
+    --ring: 41 74% 42%;
   }
 }
 
@@ -112,9 +146,6 @@
 
   .text-sans {
     font-family: var(--font-sans);
-  }
-  .text-gotham {
-    font-family: var(--font-gotham);
   }
 }
 

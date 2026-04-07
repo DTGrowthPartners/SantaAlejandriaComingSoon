@@ -31,13 +31,13 @@ const MedellinAbout = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-[#2d7a4a] font-medium">
+          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-primary font-medium">
             {t("medellinAbout", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl leading-tight">
             {t("medellinAbout", "heading")}
           </h2>
-          <div className="mx-auto mb-6 h-px w-16 bg-[#2d7a4a]" />
+          <div className="mx-auto mb-6 h-px w-16 bg-primary" />
           <p className="font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
             {t("medellinAbout", "paragraph1")}
           </p>
@@ -55,10 +55,10 @@ const MedellinAbout = () => {
             return (
               <div
                 key={stat.labelKey}
-                className="text-center p-6 rounded-xl bg-[#2d7a4a]/5 border border-[#2d7a4a]/10"
+                className="text-center p-6 rounded-xl bg-primary/5 border border-primary/10"
                 style={{ transitionDelay: `${i * 100 + 300}ms` }}
               >
-                <Icon className="mx-auto mb-3 h-6 w-6 text-[#2d7a4a]" />
+                <Icon className="mx-auto mb-3 h-6 w-6 text-primary" />
                 <p className="font-serif text-2xl font-medium text-foreground">{stat.value}</p>
                 <p className="mt-1 font-sans text-xs text-muted-foreground uppercase tracking-wide">
                   {t("medellinAbout", stat.labelKey)}
@@ -77,13 +77,13 @@ const MedellinAbout = () => {
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
             )}
           >
-            <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-[#2d7a4a] font-medium">
+            <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-primary font-medium">
               {t("medellinAbout", "diferentesLabel")}
             </p>
             <h3 className="mb-4 font-serif text-2xl font-medium text-foreground md:text-3xl leading-tight">
               {t("medellinAbout", "diferentesHeading")}
             </h3>
-            <div className="mb-6 h-px w-16 bg-[#2d7a4a]" />
+            <div className="mb-6 h-px w-16 bg-primary" />
             <p className="font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
               {t("medellinAbout", "paragraph2")}
             </p>
@@ -94,7 +94,7 @@ const MedellinAbout = () => {
                 <Badge
                   key={key}
                   variant="outline"
-                  className="border-[#2d7a4a]/40 text-[#2d7a4a] bg-[#2d7a4a]/5 font-sans text-xs px-3 py-1.5"
+                  className="border-primary/40 text-primary bg-primary/5 font-sans text-xs px-3 py-1.5"
                 >
                   {t("medellinAbout", key)}
                 </Badge>
@@ -110,10 +110,10 @@ const MedellinAbout = () => {
             )}
           >
             {/* Image placeholder */}
-            <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-br from-[#2d7a4a]/10 to-[#2d7a4a]/5 border-2 border-dashed border-[#2d7a4a]/20 aspect-[4/3] flex items-center justify-center">
+            <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-dashed border-primary/20 aspect-[4/3] flex items-center justify-center">
               <div className="text-center p-6">
-                <TreePine className="mx-auto mb-3 h-12 w-12 text-[#2d7a4a]/30" />
-                <p className="font-sans text-sm text-[#2d7a4a]/40">
+                <TreePine className="mx-auto mb-3 h-12 w-12 text-primary/30" />
+                <p className="font-sans text-sm text-primary/40">
                   {t("medellinAbout", "imagePlaceholder")}
                 </p>
               </div>
@@ -121,14 +121,14 @@ const MedellinAbout = () => {
 
             {/* Check-in/out info */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-[#2d7a4a]/5 border border-[#2d7a4a]/10 p-4 text-center">
+              <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-in</p>
                 <p className="mt-1 font-serif text-lg font-medium text-foreground">3:00 PM</p>
                 <p className="mt-0.5 font-sans text-[10px] text-muted-foreground">
                   {t("medellinAbout", "earlyCheckIn")}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#2d7a4a]/5 border border-[#2d7a4a]/10 p-4 text-center">
+              <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-out</p>
                 <p className="mt-1 font-serif text-lg font-medium text-foreground">12:00 M</p>
                 <p className="mt-0.5 font-sans text-[10px] text-muted-foreground">

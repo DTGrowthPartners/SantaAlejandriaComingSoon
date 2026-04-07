@@ -24,7 +24,7 @@ const MedellinBookingCTA = () => {
       </div>
 
       {/* Green overlay - different from Cartagena */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1a3c2a]/70 to-[#1a3c2a]/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90" />
 
       {/* Content */}
       <div
@@ -36,17 +36,17 @@ const MedellinBookingCTA = () => {
         <div className="container mx-auto px-6">
           {/* Decorative element */}
           <div className="mb-6 flex items-center justify-center gap-3">
-            <span className="h-px w-8 bg-[#8FBF6B]" />
-            <span className="h-2 w-2 rounded-full bg-[#8FBF6B]" />
-            <span className="h-px w-8 bg-[#8FBF6B]" />
+            <span className="h-px w-8 bg-highlight" />
+            <span className="h-2 w-2 rounded-full bg-highlight" />
+            <span className="h-px w-8 bg-highlight" />
           </div>
 
-          <h2 className="mb-4 font-serif text-3xl font-medium text-[#FDFCF6] md:text-5xl leading-tight">
+          <h2 className="mb-4 font-serif text-3xl font-medium text-background md:text-5xl leading-tight">
             {t("medellinBookingCTA", "heading1")}<br />
-            <span className="text-[#8FBF6B]">{t("medellinBookingCTA", "heading2")}</span>
+            <span className="text-highlight">{t("medellinBookingCTA", "heading2")}</span>
           </h2>
 
-          <p className="mb-8 mx-auto max-w-lg font-sans text-sm text-[#FDFCF6]/70 leading-relaxed">
+          <p className="mb-8 mx-auto max-w-lg font-sans text-sm text-background/70 leading-relaxed">
             {t("medellinBookingCTA", "subtitle")}
           </p>
 
@@ -54,26 +54,26 @@ const MedellinBookingCTA = () => {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-10 py-4 font-sans text-base font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-[#20BD5A] hover:scale-105 hover:shadow-xl"
+            className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-10 py-4 font-sans text-base font-medium text-foreground tracking-wide uppercase transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-xl"
           >
             <MessageCircle className="h-5 w-5" />
             {t("medellinBookingCTA", "reservar")}
           </a>
 
-          <div className="mt-6 flex items-center justify-center gap-4 text-[#FDFCF6]/50">
+          <div className="mt-6 flex items-center justify-center gap-4 text-background/50">
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
               <a
                 href="tel:+573053093723"
-                className="font-sans text-sm hover:text-[#FDFCF6]/80 transition-colors"
+                className="font-sans text-sm hover:text-background/80 transition-colors"
               >
                 305 309 3723
               </a>
             </div>
-            <span className="text-[#FDFCF6]/30">|</span>
+            <span className="text-background/30">|</span>
             <a
               href="tel:+576043246004"
-              className="font-sans text-sm hover:text-[#FDFCF6]/80 transition-colors"
+              className="font-sans text-sm hover:text-background/80 transition-colors"
             >
               (604) 324 6004
             </a>

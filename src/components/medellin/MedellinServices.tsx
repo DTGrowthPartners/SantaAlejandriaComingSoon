@@ -44,7 +44,7 @@ const MedellinServices = () => {
     <section
       id="servicios"
       ref={ref}
-      className="scroll-mt-20 bg-[#1a3c2a] py-20 md:py-32"
+      className="scroll-mt-20 bg-primary py-20 md:py-32"
     >
       <div className="container mx-auto px-6">
         {/* Section header */}
@@ -54,17 +54,17 @@ const MedellinServices = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-[#8FBF6B] font-medium">
+          <p className="mb-3 font-sans text-xs tracking-[0.25em] uppercase text-highlight font-medium">
             {t("medellinServices", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-white md:text-4xl">
             {t("medellinServices", "heading")}
           </h2>
-          <div className="mx-auto h-px w-16 bg-[#8FBF6B]" />
+          <div className="mx-auto h-px w-16 bg-highlight" />
         </div>
 
         {/* Included services label */}
-        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-[#8FBF6B]/70">
+        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
           {t("medellinServices", "includedLabel")}
         </p>
 
@@ -76,14 +76,14 @@ const MedellinServices = () => {
               <div
                 key={service.id}
                 className={cn(
-                  "rounded-lg bg-white/10 backdrop-blur-sm border border-white/15 p-6 text-center transition-all duration-500 hover:scale-[1.03] hover:bg-white/15 hover:shadow-lg hover:shadow-[#8FBF6B]/5",
+                  "rounded-lg bg-white/10 backdrop-blur-sm border border-white/15 p-6 text-center transition-all duration-500 hover:scale-[1.03] hover:bg-white/15 hover:shadow-lg hover:shadow-highlight/5",
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 )}
                 style={{
                   transitionDelay: isVisible ? `${i * 100 + 200}ms` : "0ms",
                 }}
               >
-                {Icon && <Icon className="mx-auto mb-3 h-8 w-8 text-[#8FBF6B]" />}
+                {Icon && <Icon className="mx-auto mb-3 h-8 w-8 text-highlight" />}
                 <h3 className="font-serif text-lg font-medium text-white">
                   {t("medellinServiceNames", service.name)}
                 </h3>
@@ -99,7 +99,7 @@ const MedellinServices = () => {
         <div className="mx-auto mb-12 h-px w-32 bg-white/15" />
 
         {/* Amenities/Facilities - unique layout for Medellín */}
-        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-[#8FBF6B]/70">
+        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
           {t("medellinServices", "facilitiesLabel")}
         </p>
 
@@ -117,7 +117,7 @@ const MedellinServices = () => {
                   transitionDelay: isVisible ? `${i * 100 + 400}ms` : "0ms",
                 }}
               >
-                {Icon && <Icon className="h-7 w-7 text-[#8FBF6B]" />}
+                {Icon && <Icon className="h-7 w-7 text-highlight" />}
                 <div>
                   <p className="font-sans text-sm font-medium text-white">
                     {t("medellinAmenityNames", amenity.name)}
@@ -135,7 +135,7 @@ const MedellinServices = () => {
         <div className="mx-auto mb-12 h-px w-32 bg-white/15" />
 
         {/* Additional services */}
-        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-[#8FBF6B]/70">
+        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
           {t("medellinServices", "additionalLabel")}
         </p>
 
@@ -153,7 +153,7 @@ const MedellinServices = () => {
                   transitionDelay: isVisible ? `${i * 100 + 600}ms` : "0ms",
                 }}
               >
-                {Icon && <Icon className="h-5 w-5 text-[#8FBF6B] shrink-0" />}
+                {Icon && <Icon className="h-5 w-5 text-highlight shrink-0" />}
                 <div>
                   <p className="font-sans text-sm font-medium text-white">
                     {t("medellinServiceNames", service.name)}

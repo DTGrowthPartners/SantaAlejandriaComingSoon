@@ -1,6 +1,8 @@
-import { MessageCircle, Snowflake, Fan, Tv, Wifi, Lock, Bath, Bed, ImageIcon } from "lucide-react";
+import { MessageCircle, Snowflake, Fan, Tv, Wifi, Lock, Bath, Bed, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { MedellinRoomCategory } from "@/data/medellin-rooms";
+import { medellinRoomImages } from "@/data/medellin-room-images";
 import { useTranslation } from "@/i18n/LanguageContext";
 
 const WHATSAPP_BASE = "https://wa.me/573053093723?text=";
@@ -22,23 +24,74 @@ interface MedellinRoomCardProps {
 const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
   const { t } = useTranslation();
   const totalRooms = category.variants.reduce((sum, v) => sum + v.quantity, 0);
+  const images = medellinRoomImages[category.id] ?? [];
+  const [currentIdx, setCurrentIdx] = useState(0);
 
   const whatsappMessage = encodeURIComponent(
     `Hola, me gustaría reservar una ${category.name} en Santa Alejandría Hotel – Medellín`
   );
 
+  const goPrev = () =>
+    setCurrentIdx((i) => (i === 0 ? images.length - 1 : i - 1));
+  const goNext = () =>
+    setCurrentIdx((i) => (i === images.length - 1 ? 0 : i + 1));
+
   return (
     <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
-      {/* Image placeholder - 3/5 width */}
+      {/* Image carousel - 3/5 width */}
       <div className="lg:col-span-3">
-        <div className="overflow-hidden rounded-xl bg-gradient-to-br from-[#2d7a4a]/10 to-[#2d7a4a]/5 border-2 border-dashed border-[#2d7a4a]/20 aspect-[16/10] flex items-center justify-center">
-          <div className="text-center p-8">
-            <ImageIcon className="mx-auto mb-4 h-16 w-16 text-[#2d7a4a]/25" />
-            <p className="font-sans text-sm text-[#2d7a4a]/40 max-w-xs">
-              {t("medellinRooms", "imagePlaceholder")}
-            </p>
+        {images.length > 0 ? (
+          <div className="group relative overflow-hidden rounded-xl aspect-[16/10] bg-muted">
+            <img
+              src={images[currentIdx]}
+              alt={`${category.name} ${currentIdx + 1}`}
+              className="h-full w-full object-cover transition-opacity duration-500"
+              loading="lazy"
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={goPrev}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={goNext}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                  aria-label="Siguiente"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentIdx(i)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === currentIdx ? "w-6 bg-white" : "w-1.5 bg-white/60"
+                      }`}
+                      aria-label={`Imagen ${i + 1}`}
+                    />
+                  ))}
+                </div>
+                <div className="absolute top-3 right-3 rounded-full bg-black/50 backdrop-blur px-3 py-1 text-xs font-medium text-white">
+                  {currentIdx + 1} / {images.length}
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-dashed border-primary/20 aspect-[16/10] flex items-center justify-center">
+            <div className="text-center p-8">
+              <ImageIcon className="mx-auto mb-4 h-16 w-16 text-primary/25" />
+              <p className="font-sans text-sm text-primary/40 max-w-xs">
+                {t("medellinRooms", "imagePlaceholder")}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Room info - 2/5 width */}
@@ -49,7 +102,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
         </h3>
 
         {/* Total rooms */}
-        <p className="mt-1 font-sans text-sm text-[#2d7a4a] font-medium">
+        <p className="mt-1 font-sans text-sm text-primary font-medium">
           {totalRooms} {t("medellinRooms", "habitacionesDisponibles")}
         </p>
 
@@ -64,7 +117,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
             <Badge
               key={h}
               variant="secondary"
-              className="bg-[#2d7a4a]/10 text-[#2d7a4a] border-none font-sans text-xs"
+              className="bg-primary/10 text-primary border-none font-sans text-xs"
             >
               {h}
             </Badge>
@@ -85,7 +138,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
                 <p className="font-medium text-foreground text-sm">{variant.bedConfig}</p>
                 <div className="flex items-center gap-2 mt-0.5">
                   {variant.cooling === "aa" ? (
-                    <span className="flex items-center gap-1 text-xs text-[#2d7a4a]">
+                    <span className="flex items-center gap-1 text-xs text-primary">
                       <Snowflake className="h-3 w-3" /> A/C
                     </span>
                   ) : (
@@ -114,7 +167,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
                 key={amenity}
                 className="flex items-center gap-2 text-xs text-muted-foreground"
               >
-                {Icon && <Icon className="h-3.5 w-3.5 text-[#2d7a4a]" />}
+                {Icon && <Icon className="h-3.5 w-3.5 text-primary" />}
                 <span>{amenity}</span>
               </div>
             );
@@ -126,7 +179,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
           href={`${WHATSAPP_BASE}${whatsappMessage}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 font-sans text-sm font-medium text-white tracking-wide transition-all duration-300 hover:bg-[#20BD5A] hover:scale-[1.02] hover:shadow-lg"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02] hover:shadow-lg"
         >
           <MessageCircle className="h-4 w-4" />
           {t("medellinRooms", "reservarHabitacion")}

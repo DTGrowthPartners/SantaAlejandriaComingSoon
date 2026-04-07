@@ -422,6 +422,22 @@ const translations = {
     consultar: { es: "Consultar Disponibilidad", en: "Check Availability" },
   },
 
+  // ===== MEDELLÍN EXTERIORES / FACILITIES GALLERY =====
+  medellinExteriores: {
+    label: { es: "Nuestras Instalaciones", en: "Our Facilities" },
+    heading: { es: "Conoce nuestros espacios", en: "Discover our spaces" },
+    description: {
+      es: "Recorre las áreas comunes, terrazas, gimnasio y zonas exteriores que hacen de Santa Alejandría un verdadero oasis en el corazón de Medellín.",
+      en: "Take a tour of the common areas, terraces, gym, and outdoor spaces that make Santa Alejandría a true oasis in the heart of Medellín.",
+    },
+    fachadas: { es: "Fachada & Entrada", en: "Facade & Entrance" },
+    recepcion: { es: "Recepción", en: "Reception" },
+    gimnasio: { es: "Gimnasio", en: "Gym" },
+    terrazas: { es: "Terrazas", en: "Terraces" },
+    comedor: { es: "Comedor", en: "Dining Area" },
+    sinFotos: { es: "Sin fotos disponibles en esta categoría.", en: "No photos available in this category." },
+  },
+
   // ===== MEDELLÍN SERVICES =====
   medellinServices: {
     label: { es: "Comodidades", en: "Amenities" },

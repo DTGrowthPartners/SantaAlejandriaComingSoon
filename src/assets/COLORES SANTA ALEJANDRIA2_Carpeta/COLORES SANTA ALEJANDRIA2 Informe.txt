@@ -1,0 +1,86 @@
+Informe del paquete
+
+-----------------------------------------------------------------------------
+Documento:
+Nombre: COLORES SANTA ALEJANDRIA2.ai
+Modo de color: Color RGB
+Perfil de color: sRGB IEC61966-2.1
+Unidades de regla: píxeles
+Dimensiones de la mesa de trabajo: 1238,8345 px x 1920 px
+Mostrar imágenes en modo contorno: Desactivado
+Resaltar fuentes sustituidas: Desactivado
+Resaltar glifos sustituidos: Desactivado
+Conservar capacidad de edición de texto
+Simular papel de color: Desactivado
+
+-----------------------------------------------------------------------------
+Objetos de tintas planas:
+
+-----------------------------------------------------------------------------
+Fuentes no disponibles:Ninguno
+
+-----------------------------------------------------------------------------
+Fuentes protegidas no empaquetadas:Ninguno
+
+-----------------------------------------------------------------------------
+Fuentes:
+Raleway Regular (TrueType)
+Raleway Medium (TrueType)
+Raleway SemiBold (TrueType)
+Raleway Bold (TrueType)
+Raleway ExtraBold (TrueType)
+
+-----------------------------------------------------------------------------
+Fuentes incrustadas:
+Ninguno
+
+-----------------------------------------------------------------------------
+Enlaces no disponibles:
+Ninguno
+
+-----------------------------------------------------------------------------
+Imágenes enlazadas:
+
+X:\DISCO D COPIA INFO\Desktop\REDES\REDES\SANTA ALEJAN\santaalejandria aya-20260407T181720Z-3-001\santaalejandria aya\pexels-kelly-11815910.jpg
+Tipo: RGB
+Bits por píxel: 24
+Canales: 3
+Tamaño: 45749K, 5272 por 2962 píxeles
+Dimensiones: 1922,269 por 1080 puntos 
+Resolución: 197,467 por 197,467 píxeles por pulgada
+
+
+X:\DISCO D COPIA INFO\Desktop\REDES\REDES\SANTA ALEJAN\santaalejandria aya-20260407T181720Z-3-001\santaalejandria aya\pexels-kelly-11815897.jpg
+Tipo: RGB
+Bits por píxel: 24
+Canales: 3
+Tamaño: 45749K, 5272 por 2962 píxeles
+Dimensiones: 1922,269 por 1080 puntos 
+Resolución: 197,467 por 197,467 píxeles por pulgada
+
+
+X:\DISCO D COPIA INFO\Desktop\REDES\REDES\SANTA ALEJAN\ba8ed32c-8c75-4ad9-8a97-1f3a073b40ff.jpg
+Tipo: RGB
+Bits por píxel: 24
+Canales: 3
+Tamaño: 35721K, 3024 por 4032 píxeles
+Dimensiones: 2002,667 por 2670,222 puntos 
+Resolución: 108,719 por 108,719 píxeles por pulgada
+
+
+X:\DISCO D COPIA INFO\Desktop\REDES\REDES\SANTA ALEJAN\ba8ed32c-8c75-4ad9-8a97-1f3a073b40ff.jpg
+Tipo: RGB
+Bits por píxel: 24
+Canales: 3
+Tamaño: 35721K, 3024 por 4032 píxeles
+Dimensiones: 1440 por 1920 puntos 
+Resolución: 151,2 por 151,2 píxeles por pulgada
+
+
+X:\DISCO D COPIA INFO\Desktop\REDES\REDES\SANTA ALEJAN\ba8ed32c-8c75-4ad9-8a97-1f3a073b40ff.jpg
+Tipo: RGB
+Bits por píxel: 24
+Canales: 3
+Tamaño: 35721K, 3024 por 4032 píxeles
+Dimensiones: 1440 por 1920 puntos 
+Resolución: 151,2 por 151,2 píxeles por pulgada

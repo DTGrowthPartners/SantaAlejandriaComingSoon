@@ -17,14 +17,14 @@ const MedellinWhatsAppButton = () => {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-500 hover:bg-[#20BD5A] hover:scale-110 hover:shadow-xl",
+        "fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#D9D9D9] text-foreground shadow-lg transition-all duration-500 hover:bg-[#C4C4C4] hover:scale-110 hover:shadow-xl",
         isVisible
           ? "translate-y-0 opacity-100"
           : "translate-y-4 opacity-0 pointer-events-none"
       )}
       aria-label={t("whatsapp", "reservarPorWhatsApp")}
     >
-      <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-20" />
+      <span className="absolute inset-0 rounded-full bg-[#D9D9D9] animate-ping opacity-20" />
       <MessageCircle className="h-6 w-6 relative z-10" />
     </a>
   );

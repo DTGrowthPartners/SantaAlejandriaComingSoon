@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import CityLoadingScreen from "@/components/CityLoadingScreen";
 import CartagenaNavbar from "@/components/cartagena/CartagenaNavbar";
 import CartagenaHero from "@/components/cartagena/CartagenaHero";
 import CartagenaAbout from "@/components/cartagena/CartagenaAbout";
@@ -62,12 +63,17 @@ const cartagenaStructuredData = {
 };
 
 const Cartagena = () => {
+  const [showLoader, setShowLoader] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="overflow-x-hidden">
+      {showLoader && (
+        <CityLoadingScreen variant="cartagena" onFinish={() => setShowLoader(false)} />
+      )}
       <SEO
         title="Santa Alejandría Hotel Cartagena | Hotel Boutique Centro Histórico"
         description="Hotel boutique en el corazón del Centro Histórico de Cartagena de Indias. 14 habitaciones coloniales, desayuno incluido, a pasos de las murallas. Reserva ahora."

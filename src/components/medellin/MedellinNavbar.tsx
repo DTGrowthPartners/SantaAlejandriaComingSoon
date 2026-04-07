@@ -57,7 +57,7 @@ const MedellinNavbar = () => {
       className={cn(
         "fixed top-0 left-0 right-0 z-40 transition-all duration-500",
         isScrolled
-          ? "bg-[#1a3c2a]/95 backdrop-blur-md shadow-lg"
+          ? "bg-primary/95 backdrop-blur-md shadow-lg"
           : "bg-transparent"
       )}
     >
@@ -87,7 +87,7 @@ const MedellinNavbar = () => {
                 "px-3 py-1.5 font-sans text-xs tracking-wide uppercase transition-all duration-300 rounded-full",
                 activeSection === link.href.replace("#", "")
                   ? "text-highlight bg-highlight/10"
-                  : "text-[#FDFCF6]/70 hover:text-[#FDFCF6]"
+                  : "text-background/70 hover:text-background"
               )}
             >
               {t("nav", link.key)}
@@ -101,7 +101,7 @@ const MedellinNavbar = () => {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-4 py-2 font-sans text-xs font-medium text-white tracking-wide transition-all duration-300 hover:bg-[#20BD5A] hover:scale-105"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#D9D9D9] px-4 py-2 font-sans text-xs font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105"
           >
             <MessageCircle className="h-3.5 w-3.5" />
             {t("nav", "reservar")}
@@ -111,10 +111,10 @@ const MedellinNavbar = () => {
         <div className="flex md:hidden items-center gap-2">
           <LanguageToggle />
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger className="p-2 text-[#FDFCF6]">
+            <SheetTrigger className="p-2 text-background">
               <Menu className="h-6 w-6" />
             </SheetTrigger>
-            <SheetContent side="right" className="bg-[#1a3c2a] border-[#1a3c2a] w-72">
+            <SheetContent side="right" className="bg-primary border-primary w-72">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="mt-8 flex flex-col gap-2">
                 {navKeys.map((link) => (
@@ -138,7 +138,7 @@ const MedellinNavbar = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setSheetOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 font-sans text-sm font-medium text-white"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground"
                   >
                     <MessageCircle className="h-4 w-4" />
                     {t("nav", "reservarAhora")}

@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import CityLoadingScreen from "@/components/CityLoadingScreen";
 import MedellinNavbar from "@/components/medellin/MedellinNavbar";
 import MedellinHero from "@/components/medellin/MedellinHero";
 import MedellinAbout from "@/components/medellin/MedellinAbout";
 import MedellinRooms from "@/components/medellin/MedellinRooms";
+import MedellinExteriores from "@/components/medellin/MedellinExteriores";
 import MedellinServices from "@/components/medellin/MedellinServices";
 import MedellinLocation from "@/components/medellin/MedellinLocation";
 import MedellinBookingCTA from "@/components/medellin/MedellinBookingCTA";
@@ -78,12 +80,17 @@ const medellinStructuredData = {
 };
 
 const Medellin = () => {
+  const [showLoader, setShowLoader] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="overflow-x-hidden">
+      {showLoader && (
+        <CityLoadingScreen variant="medellin" onFinish={() => setShowLoader(false)} />
+      )}
       <SEO
         title="Santa Alejandría Hotel Medellín | Hotel Sector Estadio"
         description="Hotel en el sector Estadio de Medellín. 176 personas de capacidad, habitaciones con A/C o ventilador, apartaestudios, gimnasio, desayuno incluido. A 3 min del Metro Floresta."
@@ -91,17 +98,20 @@ const Medellin = () => {
         keywords="hotel Medellín, hotel sector Estadio Medellín, hotel cerca metro Medellín, hotel con desayuno Medellín, apartaestudio Medellín, hospedaje Medellín Colombia, hotel cerca Atanasio Girardot"
         structuredData={medellinStructuredData}
       />
-      <MedellinNavbar />
-      <main>
-        <MedellinHero />
-        <MedellinAbout />
-        <MedellinRooms />
-        <MedellinServices />
-        <MedellinLocation />
-        <MedellinBookingCTA />
-        <Footer />
-      </main>
-      <MedellinWhatsAppButton />
+      <div className="medellin-theme bg-background text-foreground">
+        <MedellinNavbar />
+        <main>
+          <MedellinHero />
+          <MedellinAbout />
+          <MedellinRooms />
+          <MedellinExteriores />
+          <MedellinServices />
+          <MedellinLocation />
+          <MedellinBookingCTA />
+        </main>
+        <MedellinWhatsAppButton />
+      </div>
+      <Footer />
     </div>
   );
 };
