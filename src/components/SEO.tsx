@@ -11,7 +11,7 @@ interface SEOProps {
 }
 
 const BASE_URL = "https://www.santalejandriahotels.com";
-const DEFAULT_IMAGE = `${BASE_URL}/assets/hero-santa-alejandria.jpg`;
+const DEFAULT_IMAGE = `${BASE_URL}/assets/hero-santa-alejandria.webp`;
 
 const SEO = ({
   title,

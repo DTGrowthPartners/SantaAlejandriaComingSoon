@@ -19,7 +19,7 @@ const cartagenaStructuredData = {
     "Hotel boutique en el Centro Histórico de Cartagena de Indias. Arquitectura colonial restaurada, habitaciones premium con aire acondicionado, piscina y servicio personalizado.",
   "url": "https://www.santalejandriahotels.com/cartagena",
   "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
+  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.webp",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Calle de la Cruz N° 9-42, Barrio San Diego",

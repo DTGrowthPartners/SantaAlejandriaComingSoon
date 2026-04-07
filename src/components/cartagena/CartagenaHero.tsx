@@ -1,7 +1,7 @@
 import { MessageCircle, ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
-import entradaImg from "@/assets/cartagena/entrada-1.jpg";
+import entradaImg from "@/assets/cartagena/entrada-1.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
 
 const WHATSAPP_URL =

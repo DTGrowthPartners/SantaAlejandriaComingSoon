@@ -1,7 +1,7 @@
 import { MessageCircle, ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
-import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg";
+import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
 
 const WHATSAPP_URL =

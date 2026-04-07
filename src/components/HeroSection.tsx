@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
-import heroImage from "@/assets/pillow-bed.jpg";
+import heroImage from "@/assets/pillow-bed.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
 import cartagenaImage from "@/assets/Que.png";
-import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg";
+import medellinImage from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 
 const HeroSection = () => {
   const navigate = useNavigate();

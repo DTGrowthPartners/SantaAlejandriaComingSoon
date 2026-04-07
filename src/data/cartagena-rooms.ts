@@ -1,38 +1,38 @@
-import doble1erPiso1 from "@/assets/cartagena/doble-1er-piso-1.jpg";
-import doble1erPiso2 from "@/assets/cartagena/doble-1er-piso-2.jpg";
-import doble1erPiso3 from "@/assets/cartagena/doble-1er-piso-3.jpg";
-import doble1erPiso4 from "@/assets/cartagena/doble-1er-piso-4.jpg";
+import doble1erPiso1 from "@/assets/cartagena/doble-1er-piso-1.webp";
+import doble1erPiso2 from "@/assets/cartagena/doble-1er-piso-2.webp";
+import doble1erPiso3 from "@/assets/cartagena/doble-1er-piso-3.webp";
+import doble1erPiso4 from "@/assets/cartagena/doble-1er-piso-4.webp";
 
-import familiar1 from "@/assets/cartagena/familiar-1er-piso-1.jpg";
-import familiar2 from "@/assets/cartagena/familiar-1er-piso-2.jpg";
-import familiar3 from "@/assets/cartagena/familiar-1er-piso-3.jpg";
-import familiar4 from "@/assets/cartagena/familiar-1er-piso-4.jpg";
-import familiar5 from "@/assets/cartagena/familiar-1er-piso-5.jpg";
+import familiar1 from "@/assets/cartagena/familiar-1er-piso-1.webp";
+import familiar2 from "@/assets/cartagena/familiar-1er-piso-2.webp";
+import familiar3 from "@/assets/cartagena/familiar-1er-piso-3.webp";
+import familiar4 from "@/assets/cartagena/familiar-1er-piso-4.webp";
+import familiar5 from "@/assets/cartagena/familiar-1er-piso-5.webp";
 
-import dobleEstandar1 from "@/assets/cartagena/doble-estandar-1.jpg";
-import dobleEstandar2 from "@/assets/cartagena/doble-estandar-2.jpg";
-import dobleStandar3 from "@/assets/cartagena/doble-standar-3.jpg";
-import dobleStandar4 from "@/assets/cartagena/doble-standar-4.jpg";
+import dobleEstandar1 from "@/assets/cartagena/doble-estandar-1.webp";
+import dobleEstandar2 from "@/assets/cartagena/doble-estandar-2.webp";
+import dobleStandar3 from "@/assets/cartagena/doble-standar-3.webp";
+import dobleStandar4 from "@/assets/cartagena/doble-standar-4.webp";
 
-import twinsRoom1 from "@/assets/cartagena/twins-room-1.jpg";
-import twinsRoom2 from "@/assets/cartagena/twins-room-2.jpg";
-import twins1 from "@/assets/cartagena/twins-1.jpg";
-import twins2 from "@/assets/cartagena/twins-2.jpg";
-import twins3 from "@/assets/cartagena/twins-3.jpg";
+import twinsRoom1 from "@/assets/cartagena/twins-room-1.webp";
+import twinsRoom2 from "@/assets/cartagena/twins-room-2.webp";
+import twins1 from "@/assets/cartagena/twins-1.webp";
+import twins2 from "@/assets/cartagena/twins-2.webp";
+import twins3 from "@/assets/cartagena/twins-3.webp";
 
-import kingRoom1 from "@/assets/cartagena/king-room-1.jpg";
-import kingRoom2 from "@/assets/cartagena/king-room-2.jpg";
-import kingRoom3 from "@/assets/cartagena/king-room-3.jpg";
-import kingRoom4 from "@/assets/cartagena/king-room-4.jpg";
-import kingRoom5 from "@/assets/cartagena/king-room-5.jpg";
-import kingRoom6 from "@/assets/cartagena/king-room-6.jpg";
+import kingRoom1 from "@/assets/cartagena/king-room-1.webp";
+import kingRoom2 from "@/assets/cartagena/king-room-2.webp";
+import kingRoom3 from "@/assets/cartagena/king-room-3.webp";
+import kingRoom4 from "@/assets/cartagena/king-room-4.webp";
+import kingRoom5 from "@/assets/cartagena/king-room-5.webp";
+import kingRoom6 from "@/assets/cartagena/king-room-6.webp";
 
-import kingSuperior1 from "@/assets/cartagena/king-superior-1.jpg";
-import kingSuperior2 from "@/assets/cartagena/king-superior-2.jpg";
-import kingSuperior3 from "@/assets/cartagena/king-superior-3.jpg";
-import kingSuperior4 from "@/assets/cartagena/king-superior-4.jpg";
-import kingSuperior5 from "@/assets/cartagena/king-superior-5.jpg";
-import kingSuperior6 from "@/assets/cartagena/king-superior-6.jpg";
+import kingSuperior1 from "@/assets/cartagena/king-superior-1.webp";
+import kingSuperior2 from "@/assets/cartagena/king-superior-2.webp";
+import kingSuperior3 from "@/assets/cartagena/king-superior-3.webp";
+import kingSuperior4 from "@/assets/cartagena/king-superior-4.webp";
+import kingSuperior5 from "@/assets/cartagena/king-superior-5.webp";
+import kingSuperior6 from "@/assets/cartagena/king-superior-6.webp";
 
 export interface RoomType {
   id: string;

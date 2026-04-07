@@ -2,7 +2,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { MessageCircle, Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
-import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg";
+import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 
 const WHATSAPP_URL =
   "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";

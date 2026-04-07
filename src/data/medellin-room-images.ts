@@ -2,17 +2,17 @@
 // Vite resolves these at build time and returns hashed URLs.
 
 const habitacionesGlob = import.meta.glob(
-  "/src/assets/medellin-photos/habitaciones/*.jpeg",
+  "/src/assets/medellin-photos/habitaciones/*.webp",
   { eager: true, query: "?url", import: "default" }
 ) as Record<string, string>;
 
 const apartaestudiosGlob = import.meta.glob(
-  "/src/assets/medellin-photos/apartaestudios/*.jpeg",
+  "/src/assets/medellin-photos/apartaestudios/*.webp",
   { eager: true, query: "?url", import: "default" }
 ) as Record<string, string>;
 
 const exterioresGlob = import.meta.glob(
-  "/src/assets/medellin-photos/exteriores/*.jpeg",
+  "/src/assets/medellin-photos/exteriores/*.webp",
   { eager: true, query: "?url", import: "default" }
 ) as Record<string, string>;
 
@@ -35,67 +35,67 @@ const filterByPatterns = (
 // Room category → image filename patterns
 export const medellinRoomImages: Record<string, string[]> = {
   "doble-sencilla": filterByPatterns(habitacionesGlob, [
-    /^hab doble sencilla.*aa.*\.jpeg$/i,
-    /^hab sdoble sencilla.*\.jpeg$/i,
+    /^hab doble sencilla.*aa.*\.webp$/i,
+    /^hab sdoble sencilla.*\.webp$/i,
   ]),
-  twins: filterByPatterns(habitacionesGlob, [/^hab twins.*\.jpeg$/i]),
+  twins: filterByPatterns(habitacionesGlob, [/^hab twins.*\.webp$/i]),
   triple: filterByPatterns(habitacionesGlob, [
-    /^hab triple camas sencillas.*\.jpeg$/i,
-    /^hab triple cama sencilla.*\.jpeg$/i,
-    /^hab triple 1 cama sencilla 1 doble.*\.jpeg$/i,
-    /^triple 1 doble 1 sencilla abanico.*\.jpeg$/i,
-    /^hab tirple camas sencillas.*\.jpeg$/i,
+    /^hab triple camas sencillas.*\.webp$/i,
+    /^hab triple cama sencilla.*\.webp$/i,
+    /^hab triple 1 cama sencilla 1 doble.*\.webp$/i,
+    /^triple 1 doble 1 sencilla abanico.*\.webp$/i,
+    /^hab tirple camas sencillas.*\.webp$/i,
   ]),
   cuadruple: filterByPatterns(habitacionesGlob, [
-    /^4 sencillas abanico.*\.jpeg$/i,
-    /^hab cuádrup.*camas sencillas.*\.jpeg$/i,
-    /^hab cuádruple 1 doble 2 sencillas.*\.jpeg$/i,
-    /^cuadruple aa 1 doble 2 sencillas.*\.jpeg$/i,
-    /^caudruple 1 doble 2 sencillas abanico.*\.jpeg$/i,
-    /^cuadruple 2 sencillas 1 doble abanicp.*\.jpeg$/i,
+    /^4 sencillas abanico.*\.webp$/i,
+    /^hab cuádrup.*camas sencillas.*\.webp$/i,
+    /^hab cuádruple 1 doble 2 sencillas.*\.webp$/i,
+    /^cuadruple aa 1 doble 2 sencillas.*\.webp$/i,
+    /^caudruple 1 doble 2 sencillas abanico.*\.webp$/i,
+    /^cuadruple 2 sencillas 1 doble abanicp.*\.webp$/i,
   ]),
   camarote: filterByPatterns(habitacionesGlob, [
-    /^camarote 6 personas.*\.jpeg$/i,
+    /^camarote 6 personas.*\.webp$/i,
   ]),
   "suite-junior": filterByPatterns(habitacionesGlob, [
-    /^suite junior.*\.jpeg$/i,
+    /^suite junior.*\.webp$/i,
   ]),
 };
 
 // Apartaestudios → images by ambiente count
 export const apartaestudioImages: Record<string, string[]> = {
   "apto-1-ambiente": filterByPatterns(apartaestudiosGlob, [
-    /^apartaestudio.? ?1 ambiente.*\.jpeg$/i,
-    /^apartaestudios 1 ambie.e.*\.jpeg$/i,
+    /^apartaestudio.? ?1 ambiente.*\.webp$/i,
+    /^apartaestudios 1 ambie.e.*\.webp$/i,
   ]),
   "apto-2-ambientes": filterByPatterns(apartaestudiosGlob, [
-    /^apartaestudio.? ?2 ambientes.*\.jpeg$/i,
-    /^apartaestudios dos ambientes.*\.jpeg$/i,
+    /^apartaestudio.? ?2 ambientes.*\.webp$/i,
+    /^apartaestudios dos ambientes.*\.webp$/i,
   ]),
   "apto-3-ambientes": filterByPatterns(apartaestudiosGlob, [
-    /^apartaestudio 3 ambientes.*\.jpeg$/i,
+    /^apartaestudio 3 ambientes.*\.webp$/i,
   ]),
 };
 
 // Exteriors / common areas — for hero, about, services sections
 export const exteriorImages = {
   fachadas: filterByPatterns(exterioresGlob, [
-    /^fachada del hotel.*\.jpeg$/i,
-    /^facha del hotel.*\.jpeg$/i,
-    /^entrada del hotel.*\.jpeg$/i,
+    /^fachada del hotel.*\.webp$/i,
+    /^facha del hotel.*\.webp$/i,
+    /^entrada del hotel.*\.webp$/i,
   ]),
   recepcion: filterByPatterns(exterioresGlob, [
-    /^recepcion.*\.jpeg$/i,
-    /^recepción.*\.jpeg$/i,
+    /^recepcion.*\.webp$/i,
+    /^recepción.*\.webp$/i,
   ]),
   gimnasio: filterByPatterns(exterioresGlob, [
-    /^gim.*\.jpeg$/i,
-    /^gimnasio.*\.jpeg$/i,
+    /^gim.*\.webp$/i,
+    /^gimnasio.*\.webp$/i,
   ]),
   terrazas: filterByPatterns(exterioresGlob, [
-    /^terraza.*\.jpeg$/i,
-    /^terrazas.*\.jpeg$/i,
-    /^balcones.*\.jpeg$/i,
+    /^terraza.*\.webp$/i,
+    /^terrazas.*\.webp$/i,
+    /^balcones.*\.webp$/i,
   ]),
-  comedor: filterByPatterns(exterioresGlob, [/^comedor.*\.jpeg$/i]),
+  comedor: filterByPatterns(exterioresGlob, [/^comedor.*\.webp$/i]),
 };

@@ -2,7 +2,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { MessageCircle, Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
-import kingRoomImg from "@/assets/cartagena/king-room-1.jpg";
+import kingRoomImg from "@/assets/cartagena/king-room-1.webp";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";

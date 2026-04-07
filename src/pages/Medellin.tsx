@@ -21,7 +21,7 @@ const medellinStructuredData = {
   url: "https://www.santalejandriahotels.com/medellin",
   logo: "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
   image:
-    "https://www.santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.jpeg",
+    "https://www.santalejandriahotels.com/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp",
   address: {
     "@type": "PostalAddress",
     streetAddress: "CRA 77C No 48 – 91, Sector Estadio",

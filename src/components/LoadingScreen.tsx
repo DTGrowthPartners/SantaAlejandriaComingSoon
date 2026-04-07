@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/logo-santa-alejandria.png";
-import cartagenaImg from "@/assets/centro-historico-cartagena.jpg";
-import medellinImg from "@/assets/Medellin2.jpg";
+import cartagenaImg from "@/assets/centro-historico-cartagena.webp";
+import medellinImg from "@/assets/Medellin2.webp";
 
 interface LoadingScreenProps {
   /** Total time the loader stays visible (ms) */

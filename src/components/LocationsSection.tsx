@@ -1,8 +1,8 @@
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import LocationCard from "./LocationCard";
-import cartagenaImage from "@/assets/centro-historico-cartagena.jpg";
-import medellinImage from "@/assets/Medellin2.jpg";
+import cartagenaImage from "@/assets/centro-historico-cartagena.webp";
+import medellinImage from "@/assets/Medellin2.webp";
 
 const LocationsSection = () => {
   const { t } = useTranslation();

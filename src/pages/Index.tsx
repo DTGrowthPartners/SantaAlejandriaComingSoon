@@ -12,7 +12,7 @@ const homeStructuredData = {
     "Hotel boutique premium con sedes en Cartagena y Medellín, Colombia. Experiencias únicas de hospedaje con arquitectura colonial y servicio personalizado.",
   "url": "https://www.santalejandriahotels.com",
   "logo": "https://www.santalejandriahotels.com/assets/logo-santa-alejandria.png",
-  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.jpg",
+  "image": "https://www.santalejandriahotels.com/assets/hero-santa-alejandria.webp",
   "address": [
     {
       "@type": "PostalAddress",

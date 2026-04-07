@@ -2,8 +2,8 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
-import entradaImg from "@/assets/cartagena/entrada-2.jpg";
-import imgGeneral from "@/assets/cartagena/img_6215.jpg";
+import entradaImg from "@/assets/cartagena/entrada-2.webp";
+import imgGeneral from "@/assets/cartagena/img_6215.webp";
 
 const badgeKeys = ["badge14", "badgeColonial", "badgeCentro", "badge24h"] as const;
 
