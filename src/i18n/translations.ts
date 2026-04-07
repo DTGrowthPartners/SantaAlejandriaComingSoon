@@ -228,7 +228,7 @@ const translations = {
   // ===== HERO (Main page) =====
   mainHero: {
     h1Title: { es: "Hotel Boutique en Cartagena y Medellín", en: "Boutique Hotel in Cartagena & Medellín" },
-    seleccionaSede: { es: "Selecciona una sede", en: "Select a location" },
+    seleccionaSede: { es: "Elige tu destino", en: "Choose your destination" },
     reservaAhoraEn: { es: "RESERVA AHORA EN", en: "BOOK NOW IN" },
   },
 
