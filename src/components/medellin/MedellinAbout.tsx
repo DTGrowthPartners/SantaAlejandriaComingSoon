@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { Leaf, Users, Clock, TreePine } from "lucide-react";
+import hotelEntradaImg from "@/assets/medellin-photos/exteriores/entrada del hotel (1).webp";
 
 const stats = [
   { icon: Users, value: "176", labelKey: "capacidad" },
@@ -109,14 +110,15 @@ const MedellinAbout = () => {
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
             )}
           >
-            {/* Image placeholder */}
-            <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-dashed border-primary/20 aspect-[4/3] flex items-center justify-center">
-              <div className="text-center p-6">
-                <TreePine className="mx-auto mb-3 h-12 w-12 text-primary/30" />
-                <p className="font-sans text-sm text-primary/40">
-                  {t("medellinAbout", "imagePlaceholder")}
-                </p>
-              </div>
+            {/* Hotel entrance image - portrait aspect to show the full facade */}
+            <div className="relative mb-8 overflow-hidden rounded-xl aspect-[3/4] group shadow-xl">
+              <img
+                src={hotelEntradaImg}
+                alt="Entrada Hotel Santa Alejandría Medellín"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </div>
 
             {/* Check-in/out info */}
