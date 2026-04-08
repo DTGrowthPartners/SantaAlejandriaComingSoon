@@ -68,7 +68,7 @@ const HeroSection = () => {
             />
             <div className="absolute inset-0 bg-[#eed582]/75 transition-all duration-500 group-hover:bg-[#eed582]/60" />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[#7A3812] text-xs md:text-sm font-sans font-medium uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]"><span className="text-left ml-[-1.5rem] md:ml-[-5rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
+              <p className="text-[#7A3812] text-xs md:text-sm font-sans font-medium uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]">{t("mainHero", "reservaAhoraEn")}</p>
               <p className="text-[#7A3812] text-2xl md:text-4xl font-sans font-bold uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.15em]">CARTAGENA</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ const HeroSection = () => {
             />
             <div className="absolute inset-0 bg-[#D3D3D3]/80 transition-all duration-700 group-hover:bg-[#D3D3D3]/60" />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-primary text-xs md:text-sm font-sans font-thin uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]"><span className="text-left ml-[0rem] md:ml-[-2.8rem]">{t("mainHero", "reservaAhoraEn")}</span></p>
+              <p className="text-primary text-xs md:text-sm font-sans font-thin uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.3em]">{t("mainHero", "reservaAhoraEn")}</p>
               <p className="text-primary text-2xl md:text-4xl font-sans font-bold uppercase tracking-wide text-center transition-all duration-300 group-hover:tracking-[0.15em]">MEDELLÍN</p>
             </div>
           </div>
