@@ -31,7 +31,7 @@ const HeroSection = () => {
           alt="Santa Alejandría Hotel - Interior colonial elegante"
           className="h-full w-full object-cover grayscale"
         />
-        <div className="absolute inset-0 bg-primary/80" />
+        <div className="absolute inset-0 bg-[#406905]/80" />
       </div>
 
       {/* Content */}
