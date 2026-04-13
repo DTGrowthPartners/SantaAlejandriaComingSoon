@@ -89,7 +89,7 @@ const Cartagena = () => {
         <CartagenaServices />
         <CartagenaLocation />
         <CartagenaBookingCTA />
-        <Footer />
+        <Footer variant="cartagena" />
       </main>
       <WhatsAppFloatingButton />
     </div>

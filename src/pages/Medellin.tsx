@@ -111,7 +111,7 @@ const Medellin = () => {
         </main>
         <MedellinWhatsAppButton />
       </div>
-      <Footer />
+      <Footer variant="medellin" />
     </div>
   );
 };

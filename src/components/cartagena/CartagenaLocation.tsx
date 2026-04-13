@@ -136,7 +136,7 @@ const CartagenaLocation = () => {
                 WhatsApp
               </a>
               <a
-                href="https://www.instagram.com/santaalejandriahotel/"
+                href="https://www.instagram.com/santaalejandriahotelctg/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-foreground/5"
