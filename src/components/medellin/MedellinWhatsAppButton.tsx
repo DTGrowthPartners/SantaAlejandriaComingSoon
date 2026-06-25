@@ -1,7 +1,8 @@
-import { MessageCircle } from "lucide-react";
+
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/LanguageContext";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
@@ -25,7 +26,7 @@ const MedellinWhatsAppButton = () => {
       aria-label={t("whatsapp", "reservarPorWhatsApp")}
     >
       <span className="absolute inset-0 rounded-full bg-[#D9D9D9] animate-ping opacity-20" />
-      <MessageCircle className="h-6 w-6 relative z-10" />
+      <WhatsAppIcon className="h-6 w-6 relative z-10" />
     </a>
   );
 };

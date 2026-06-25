@@ -1,8 +1,10 @@
-import { MessageCircle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 import entradaImg from "@/assets/cartagena/entrada-1.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
@@ -10,6 +12,8 @@ const WHATSAPP_URL =
 const CartagenaHero = () => {
   const { scrollY } = useScrollProgress();
   const { t } = useTranslation();
+  const { images } = useDirectusHotel("cartagena");
+  const heroSrc = images.heroImage ?? entradaImg;
 
   return (
     <section id="inicio" className="relative min-h-screen w-full overflow-hidden">
@@ -19,7 +23,7 @@ const CartagenaHero = () => {
         style={{ transform: `translateY(${scrollY * 0.3}px)` }}
       >
         <img
-          src={entradaImg}
+          src={heroSrc}
           alt="Hotel Santa Alejandría - Entrada colonial"
           className="h-[130%] w-full object-cover"
         />
@@ -77,7 +81,7 @@ const CartagenaHero = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 font-sans text-sm font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-lg"
           >
-            <MessageCircle className="h-4 w-4" />
+            <WhatsAppIcon className="h-4 w-4" />
             {t("cartagenaHero", "reservar")}
           </a>
           <a

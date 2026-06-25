@@ -108,3 +108,7 @@ temp/
 *.backup
 *.bak
 *.old
+
+# Documentos corporativos sensibles (no pertenecen al repo de la web)
+CAMARA DE COMERCIO PANDORA.pdf
+Escaneo 24-03-2026, 11.57 a.m..pdf

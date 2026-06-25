@@ -8,6 +8,7 @@ interface SEOProps {
   ogType?: string;
   keywords?: string;
   structuredData?: object;
+  noindex?: boolean;
 }
 
 const BASE_URL = "https://www.santalejandriahotels.com";
@@ -21,6 +22,7 @@ const SEO = ({
   ogType = "website",
   keywords,
   structuredData,
+  noindex = false,
 }: SEOProps) => {
   const fullTitle = title.includes("Santa Alejandría")
     ? title
@@ -31,6 +33,7 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
       <link rel="canonical" href={canonical} />
 
       {/* Open Graph */}

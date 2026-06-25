@@ -2,6 +2,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 import { Leaf, Users, Clock, TreePine } from "lucide-react";
 import hotelEntradaImg from "@/assets/medellin-photos/exteriores/entrada del hotel (1).webp";
 
@@ -17,6 +18,8 @@ const badgeKeys = ["badgeCapacidad", "badgePrimavera", "badgeEstadio", "badge24h
 const MedellinAbout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { t } = useTranslation();
+  const { images } = useDirectusHotel("medellin");
+  const entranceSrc = images.gallery[0] ?? hotelEntradaImg;
 
   return (
     <section
@@ -113,7 +116,7 @@ const MedellinAbout = () => {
             {/* Hotel entrance image - portrait aspect to show the full facade */}
             <div className="relative mb-8 overflow-hidden rounded-xl aspect-[3/4] group shadow-xl">
               <img
-                src={hotelEntradaImg}
+                src={entranceSrc}
                 alt="Entrada Hotel Santa Alejandría Medellín"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"

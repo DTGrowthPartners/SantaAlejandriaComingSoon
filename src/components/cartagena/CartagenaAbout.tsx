@@ -2,6 +2,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 import entradaImg from "@/assets/cartagena/entrada-2.webp";
 import imgGeneral from "@/assets/cartagena/img_6215.webp";
 
@@ -10,6 +11,9 @@ const badgeKeys = ["badge14", "badgeColonial", "badgeCentro", "badge24h"] as con
 const CartagenaAbout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { t } = useTranslation();
+  const { images } = useDirectusHotel("cartagena");
+  const mainSrc = images.gallery[0] ?? entradaImg;
+  const secondarySrc = images.gallery[1] ?? imgGeneral;
 
   return (
     <section
@@ -33,7 +37,7 @@ const CartagenaAbout = () => {
               <div className="absolute -inset-3 border-2 border-accent/30 rounded-lg" />
               <div className="relative overflow-hidden rounded-lg">
                 <img
-                  src={entradaImg}
+                  src={mainSrc}
                   alt="Hotel Santa Alejandría - Fachada colonial"
                   className="w-full h-[400px] md:h-[500px] object-cover transition-transform duration-700 hover:scale-105"
                   loading="lazy"
@@ -44,7 +48,7 @@ const CartagenaAbout = () => {
             {/* Overlapping secondary image */}
             <div className="absolute -bottom-6 -right-4 md:-right-8 w-36 md:w-48 h-28 md:h-36 overflow-hidden rounded-lg border-4 border-card shadow-xl">
               <img
-                src={imgGeneral}
+                src={secondarySrc}
                 alt="Interior del hotel"
                 className="w-full h-full object-cover"
                 loading="lazy"

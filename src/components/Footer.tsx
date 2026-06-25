@@ -1,4 +1,4 @@
-import { MessageCircle, Instagram, Facebook, ArrowUpRight, MapPin, ScrollText } from "lucide-react";
+import { Instagram, Facebook, ArrowUpRight, MapPin, ScrollText, ShieldCheck, FileText, Cookie } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo-santa-alejandria.png";
 import fondoImage from "@/assets/Fondo LV.png";
@@ -119,8 +119,8 @@ const Footer = ({ variant }: FooterProps) => {
             </div>
           )}
 
-          {/* Reglamento link */}
-          <div className={`mb-8 transition-all duration-700 delay-[350ms] ${
+          {/* Legal links */}
+          <div className={`mb-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 transition-all duration-700 delay-[350ms] ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}>
             <Link
@@ -129,7 +129,34 @@ const Footer = ({ variant }: FooterProps) => {
               aria-label="Reglamento y Normas"
             >
               <ScrollText className="h-4 w-4 transition-transform group-hover:scale-110" />
-              <span>Reglamento y Normas</span>
+              <span>Reglamento</span>
+            </Link>
+            <div className="h-4 w-px bg-secondary-foreground/30" />
+            <Link
+              to="/politica-datos"
+              className="group inline-flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Política de Tratamiento de Datos Personales"
+            >
+              <ShieldCheck className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Tratamiento de Datos</span>
+            </Link>
+            <div className="h-4 w-px bg-secondary-foreground/30" />
+            <Link
+              to="/terminos"
+              className="group inline-flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Términos y Condiciones"
+            >
+              <FileText className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Términos y Condiciones</span>
+            </Link>
+            <div className="h-4 w-px bg-secondary-foreground/30" />
+            <Link
+              to="/cookies"
+              className="group inline-flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"
+              aria-label="Política de Cookies"
+            >
+              <Cookie className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>Cookies</span>
             </Link>
           </div>
 

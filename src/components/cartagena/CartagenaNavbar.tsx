@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
-import { Menu, MessageCircle } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import LanguageToggle from "@/components/LanguageToggle";
 import logo from "@/assets/logo-santa-alejandria.png";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
@@ -101,7 +102,7 @@ const CartagenaNavbar = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-sans text-xs font-medium text-white tracking-wide transition-all duration-300 hover:bg-accent/90 hover:scale-105"
           >
-            <MessageCircle className="h-3.5 w-3.5" />
+            <WhatsAppIcon className="h-3.5 w-3.5" />
             {t("nav", "reservar")}
           </a>
         </div>
@@ -138,7 +139,7 @@ const CartagenaNavbar = () => {
                     onClick={() => setSheetOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-sans text-sm font-medium text-white"
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <WhatsAppIcon className="h-4 w-4" />
                     {t("nav", "reservarAhora")}
                   </a>
                 </div>

@@ -1,17 +1,8 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
-import {
-  MapPin,
-  Phone,
-  Clock,
-  Mail,
-  Instagram,
-  MessageCircle,
-  Train,
-  Trophy,
-  Bike,
-} from "lucide-react";
+import { MapPin, Phone, Clock, Mail, Instagram, Train, Trophy, Bike } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
@@ -134,7 +125,7 @@ const MedellinLocation = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02]"
               >
-                <MessageCircle className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
                 WhatsApp
               </a>
               <a

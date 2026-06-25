@@ -9,8 +9,13 @@ import MedellinServices from "@/components/medellin/MedellinServices";
 import MedellinLocation from "@/components/medellin/MedellinLocation";
 import MedellinBookingCTA from "@/components/medellin/MedellinBookingCTA";
 import MedellinWhatsAppButton from "@/components/medellin/MedellinWhatsAppButton";
+import ClosedBanner from "@/components/ClosedBanner";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+
+const MEDELLIN_WHATSAPP =
+  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20que%20me%20avisen%20cuando%20reabra%20Santa%20Alejandr%C3%ADa%20Hotel%20Medell%C3%ADn";
 
 const medellinStructuredData = {
   "@context": "https://schema.org",
@@ -81,6 +86,8 @@ const medellinStructuredData = {
 
 const Medellin = () => {
   const [showLoader, setShowLoader] = useState(true);
+  const { hotel } = useDirectusHotel("medellin");
+  const isClosed = hotel?.is_closed === true;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -97,19 +104,27 @@ const Medellin = () => {
         canonical="https://www.santalejandriahotels.com/medellin"
         keywords="hotel Medellín, hotel sector Estadio Medellín, hotel cerca metro Medellín, hotel con desayuno Medellín, apartaestudio Medellín, hospedaje Medellín Colombia, hotel cerca Atanasio Girardot"
         structuredData={medellinStructuredData}
+        noindex={isClosed}
       />
+      {isClosed && (
+        <ClosedBanner
+          message={hotel?.closed_message ?? null}
+          reopenDate={hotel?.reopen_date ?? null}
+          whatsappUrl={MEDELLIN_WHATSAPP}
+        />
+      )}
       <div className="medellin-theme bg-background text-foreground">
         <MedellinNavbar />
         <main>
           <MedellinHero />
           <MedellinAbout />
-          <MedellinRooms />
+          {!isClosed && <MedellinRooms />}
           <MedellinExteriores />
           <MedellinServices />
           <MedellinLocation />
-          <MedellinBookingCTA />
+          {!isClosed && <MedellinBookingCTA />}
         </main>
-        <MedellinWhatsAppButton />
+        {!isClosed && <MedellinWhatsAppButton />}
       </div>
       <Footer variant="medellin" />
     </div>

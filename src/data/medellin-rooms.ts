@@ -1,11 +1,14 @@
+import type { Amenity } from "@/lib/directus";
+
 export interface MedellinRoomCategory {
   id: string;
   name: string;
   shortName: string;
   description: string;
   variants: MedellinRoomVariant[];
-  amenities: string[];
+  amenities: Amenity[];
   highlights: string[];
+  beds24RoomId?: string | null;
   images: string[]; // placeholder for now
 }
 
@@ -17,22 +20,22 @@ export interface MedellinRoomVariant {
   maxGuests: number;
 }
 
-export const MEDELLIN_ROOM_AMENITIES_AA = [
-  "Aire acondicionado",
-  "TV",
-  "Wi-Fi",
-  "Caja de seguridad",
-  "Baño privado",
-  "Ropa de cama premium",
+export const MEDELLIN_ROOM_AMENITIES_AA: Amenity[] = [
+  { label: "Aire acondicionado", icon: "ac_unit" },
+  { label: "TV", icon: "tv" },
+  { label: "Wi-Fi", icon: "wifi" },
+  { label: "Caja de seguridad", icon: "lock" },
+  { label: "Baño privado", icon: "bathtub" },
+  { label: "Ropa de cama premium", icon: "bed" },
 ];
 
-export const MEDELLIN_ROOM_AMENITIES_FAN = [
-  "Ventilador",
-  "TV",
-  "Wi-Fi",
-  "Caja de seguridad",
-  "Baño privado",
-  "Ropa de cama premium",
+export const MEDELLIN_ROOM_AMENITIES_FAN: Amenity[] = [
+  { label: "Ventilador", icon: "mode_fan" },
+  { label: "TV", icon: "tv" },
+  { label: "Wi-Fi", icon: "wifi" },
+  { label: "Caja de seguridad", icon: "lock" },
+  { label: "Baño privado", icon: "bathtub" },
+  { label: "Ropa de cama premium", icon: "bed" },
 ];
 
 export const medellinRoomCategories: MedellinRoomCategory[] = [

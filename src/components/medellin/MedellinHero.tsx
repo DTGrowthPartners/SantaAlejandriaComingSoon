@@ -1,8 +1,10 @@
-import { MessageCircle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
@@ -10,6 +12,8 @@ const WHATSAPP_URL =
 const MedellinHero = () => {
   const { scrollY } = useScrollProgress();
   const { t } = useTranslation();
+  const { images } = useDirectusHotel("medellin");
+  const heroSrc = images.heroImage ?? medellinImg;
 
   return (
     <section id="inicio" className="relative min-h-screen w-full overflow-hidden">
@@ -19,7 +23,7 @@ const MedellinHero = () => {
         style={{ transform: `translateY(${scrollY * 0.3}px)` }}
       >
         <img
-          src={medellinImg}
+          src={heroSrc}
           alt="Medellín - Ciudad de la Eterna Primavera"
           className="h-[130%] w-full object-cover"
         />
@@ -81,7 +85,7 @@ const MedellinHero = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-8 py-3.5 font-sans text-sm font-medium text-foreground tracking-wide uppercase transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-lg"
           >
-            <MessageCircle className="h-4 w-4" />
+            <WhatsAppIcon className="h-4 w-4" />
             {t("medellinHero", "reservar")}
           </a>
           <a

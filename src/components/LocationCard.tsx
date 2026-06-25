@@ -1,7 +1,8 @@
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 interface LocationCardProps {
   city: string;
@@ -89,7 +90,7 @@ const LocationCard = ({
           {link ? (
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
           ) : (
-            <MessageCircle className="h-5 w-5 transition-transform duration-300 group-hover/btn:scale-110" />
+            <WhatsAppIcon className="h-5 w-5 transition-transform duration-300 group-hover/btn:scale-110" />
           )}
           <span>{link ? t("locations", "verSede") : t("locations", "reservarWhatsApp")}</span>
         </button>

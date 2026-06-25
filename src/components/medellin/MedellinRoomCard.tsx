@@ -1,21 +1,12 @@
-import { MessageCircle, Snowflake, Fan, Tv, Wifi, Lock, Bath, Bed, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { ImageIcon, ChevronLeft, ChevronRight, Snowflake, Fan } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { MedellinRoomCategory } from "@/data/medellin-rooms";
-import { medellinRoomImages } from "@/data/medellin-room-images";
 import { useTranslation } from "@/i18n/LanguageContext";
+import MaterialIcon from "@/components/MaterialIcon";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_BASE = "https://wa.me/573053093723?text=";
-
-const iconMap: Record<string, React.ElementType> = {
-  "Aire acondicionado": Snowflake,
-  "Ventilador": Fan,
-  "TV": Tv,
-  "Wi-Fi": Wifi,
-  "Caja de seguridad": Lock,
-  "Baño privado": Bath,
-  "Ropa de cama premium": Bed,
-};
 
 interface MedellinRoomCardProps {
   category: MedellinRoomCategory;
@@ -24,11 +15,15 @@ interface MedellinRoomCardProps {
 const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
   const { t } = useTranslation();
   const totalRooms = category.variants.reduce((sum, v) => sum + v.quantity, 0);
-  const images = medellinRoomImages[category.id] ?? [];
+  const images = category.images ?? [];
   const [currentIdx, setCurrentIdx] = useState(0);
 
+  const categoryName = category.name || t("medellinRoomNames", category.id);
+  const categoryDescription =
+    category.description || t("medellinRoomDescriptions", category.id);
+
   const whatsappMessage = encodeURIComponent(
-    `Hola, me gustaría reservar una ${category.name} en Santa Alejandría Hotel – Medellín`
+    `Hola, me gustaría reservar una ${categoryName} en Santa Alejandría Hotel – Medellín`
   );
 
   const goPrev = () =>
@@ -98,7 +93,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
       <div className="lg:col-span-2 flex flex-col">
         {/* Name */}
         <h3 className="font-serif text-2xl font-medium text-foreground">
-          {t("medellinRoomNames", category.id)}
+          {categoryName}
         </h3>
 
         {/* Total rooms */}
@@ -108,7 +103,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
 
         {/* Description */}
         <p className="mt-4 font-sans text-sm text-muted-foreground leading-relaxed">
-          {t("medellinRoomDescriptions", category.id)}
+          {categoryDescription}
         </p>
 
         {/* Highlights */}
@@ -160,18 +155,17 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
 
         {/* Amenities grid */}
         <div className="mt-5 grid grid-cols-2 gap-2">
-          {category.amenities.map((amenity) => {
-            const Icon = iconMap[amenity];
-            return (
-              <div
-                key={amenity}
-                className="flex items-center gap-2 text-xs text-muted-foreground"
-              >
-                {Icon && <Icon className="h-3.5 w-3.5 text-primary" />}
-                <span>{amenity}</span>
-              </div>
-            );
-          })}
+          {category.amenities.map((amenity) => (
+            <div
+              key={amenity.label}
+              className="flex items-center gap-2 text-xs text-muted-foreground"
+            >
+              {amenity.icon && (
+                <MaterialIcon name={amenity.icon} className="text-primary text-[16px]" />
+              )}
+              <span>{amenity.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* CTA */}
@@ -181,7 +175,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
           rel="noopener noreferrer"
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02] hover:shadow-lg"
         >
-          <MessageCircle className="h-4 w-4" />
+          <WhatsAppIcon className="h-4 w-4" />
           {t("medellinRooms", "reservarHabitacion")}
         </a>
       </div>

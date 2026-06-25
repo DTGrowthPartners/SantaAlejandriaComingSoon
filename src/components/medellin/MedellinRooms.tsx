@@ -3,13 +3,20 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
-import { medellinRoomCategories } from "@/data/medellin-rooms";
+import { medellinRoomCategories as baseRoomCategories } from "@/data/medellin-rooms";
+import { roomImages } from "@/data/medellin-room-images";
 import MedellinRoomCard from "./MedellinRoomCard";
 import MedellinApartaestudios from "./MedellinApartaestudios";
 
 const MedellinRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
   const { t } = useTranslation();
+  // Photos served locally from the repo, not Directus.
+  const medellinRoomCategories = baseRoomCategories.map((cat) => ({
+    ...cat,
+    images: roomImages[cat.id] ?? [],
+  }));
+  const loading = false;
 
   return (
     <section
@@ -44,6 +51,11 @@ const MedellinRooms = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
+          {loading || medellinRoomCategories.length === 0 ? (
+            <div className="py-16 text-center font-sans text-sm text-muted-foreground">
+              {loading ? "Cargando habitaciones..." : "No hay habitaciones disponibles"}
+            </div>
+          ) : (
           <Tabs defaultValue={medellinRoomCategories[0].id} className="w-full">
             <TabsList className="mb-8 flex h-auto flex-wrap justify-center gap-2 bg-transparent p-0">
               {medellinRoomCategories.map((cat) => (
@@ -73,6 +85,7 @@ const MedellinRooms = () => {
               <MedellinApartaestudios />
             </TabsContent>
           </Tabs>
+          )}
         </div>
       </div>
     </section>

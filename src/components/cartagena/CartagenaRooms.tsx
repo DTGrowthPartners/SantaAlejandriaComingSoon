@@ -1,7 +1,8 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { rooms, ADDITIONAL_PRICING } from "@/data/cartagena-rooms";
+import { ADDITIONAL_PRICING } from "@/data/cartagena-rooms";
+import { useCartagenaRooms } from "@/hooks/useDirectusRooms";
 import { Users, Baby } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import translations from "@/i18n/translations";
@@ -20,6 +21,7 @@ function formatPrice(price: number) {
 const CartagenaRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
   const { t, lang } = useTranslation();
+  const { rooms, loading, beds24PropertyId } = useCartagenaRooms();
 
   return (
     <section
@@ -54,6 +56,15 @@ const CartagenaRooms = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
+          {loading || rooms.length === 0 ? (
+            <div className="py-16 text-center font-sans text-sm text-muted-foreground">
+              {loading
+                ? t("cartagenaRooms", "cargandoHabitaciones") ||
+                  "Cargando habitaciones..."
+                : t("cartagenaRooms", "sinHabitaciones") ||
+                  "No hay habitaciones disponibles"}
+            </div>
+          ) : (
           <Tabs defaultValue={rooms[0].id} className="w-full">
             <TabsList className="mb-8 flex h-auto flex-wrap justify-center gap-2 bg-transparent p-0">
               {rooms.map((room) => (
@@ -69,10 +80,11 @@ const CartagenaRooms = () => {
 
             {rooms.map((room) => (
               <TabsContent key={room.id} value={room.id}>
-                <RoomCard room={room} />
+                <RoomCard room={room} beds24PropertyId={beds24PropertyId} />
               </TabsContent>
             ))}
           </Tabs>
+          )}
         </div>
 
         {/* Additional pricing note */}

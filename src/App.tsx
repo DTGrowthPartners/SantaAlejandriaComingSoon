@@ -11,6 +11,9 @@ import Index from "./pages/Index";
 import Cartagena from "./pages/Cartagena";
 import Medellin from "./pages/Medellin";
 import Reglamento from "./pages/Reglamento";
+import PoliticaDatos from "./pages/PoliticaDatos";
+import TerminosCondiciones from "./pages/TerminosCondiciones";
+import PoliticaCookies from "./pages/PoliticaCookies";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +53,9 @@ const App = () => {
                 <Route path="/cartagena" element={<Cartagena />} />
                 <Route path="/medellin" element={<Medellin />} />
                 <Route path="/reglamento" element={<Reglamento />} />
+                <Route path="/politica-datos" element={<PoliticaDatos />} />
+                <Route path="/terminos" element={<TerminosCondiciones />} />
+                <Route path="/cookies" element={<PoliticaCookies />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

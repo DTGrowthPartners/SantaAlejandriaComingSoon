@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircle, Snowflake, Tv, Wifi, Lock, Wine, Bath, Phone, Droplets, Bed } from "lucide-react";
+
 import {
   Carousel,
   CarouselContent,
@@ -11,18 +11,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { RoomType } from "@/data/cartagena-rooms";
 import { useTranslation } from "@/i18n/LanguageContext";
+import MaterialIcon from "@/components/MaterialIcon";
 import RoomGalleryDialog from "./RoomGalleryDialog";
-
-const iconMap: Record<string, React.ElementType> = {
-  "Aire acondicionado": Snowflake,
-  'TV LED 32"': Tv,
-  "Wi-Fi alta velocidad": Wifi,
-  "Caja de seguridad": Lock,
-  Minibar: Wine,
-  "Baño privado": Bath,
-  Teléfono: Phone,
-  "Ropa de cama premium": Bed,
-};
+// import BookingWidget from "@/components/booking/BookingWidget"; // Beds24 deshabilitado jun-2026 (solo WhatsApp)
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -35,9 +27,10 @@ function formatPrice(price: number) {
 
 interface RoomCardProps {
   room: RoomType;
+  beds24PropertyId: string | null;
 }
 
-const RoomCard = ({ room }: RoomCardProps) => {
+const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
@@ -58,7 +51,8 @@ const RoomCard = ({ room }: RoomCardProps) => {
     setGalleryOpen(true);
   };
 
-  const roomName = t("roomNames", room.id);
+  const roomName = room.name || t("roomNames", room.id);
+  const roomDescription = room.description || t("roomDescriptions", room.id);
   const whatsappMessage = encodeURIComponent(
     `Hola, me gustaría reservar la ${roomName} en Santa Alejandría Hotel – Cartagena`
   );
@@ -127,31 +121,44 @@ const RoomCard = ({ room }: RoomCardProps) => {
 
           {/* Description */}
           <p className="mt-4 font-sans text-sm text-muted-foreground leading-relaxed">
-            {t("roomDescriptions", room.id)}
+            {roomDescription}
           </p>
 
           {/* Highlights */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {room.highlights.map((h) => (
-              <Badge
-                key={h}
-                variant="secondary"
-                className="bg-primary/10 text-primary border-none font-sans text-xs"
-              >
-                {t("roomHighlights", h)}
-              </Badge>
-            ))}
+            {room.highlights.map((h) => {
+              const translated = t("roomHighlights", h);
+              return (
+                <Badge
+                  key={h}
+                  variant="secondary"
+                  className="bg-primary/10 text-primary border-none font-sans text-xs"
+                >
+                  {translated === h ? h : translated}
+                </Badge>
+              );
+            })}
           </div>
 
           {/* Room details */}
           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-md bg-background p-3">
               <span className="text-muted-foreground">{t("cartagenaRooms", "piso")}</span>
-              <p className="font-medium text-foreground">{t("roomFloors", room.floor)}</p>
+              <p className="font-medium text-foreground">
+                {(() => {
+                  const tr = t("roomFloors", room.floor);
+                  return tr === room.floor ? room.floor : tr;
+                })()}
+              </p>
             </div>
             <div className="rounded-md bg-background p-3">
               <span className="text-muted-foreground">{t("cartagenaRooms", "cama")}</span>
-              <p className="font-medium text-foreground">{t("roomBedTypes", room.bedType)}</p>
+              <p className="font-medium text-foreground">
+                {(() => {
+                  const tr = t("roomBedTypes", room.bedType);
+                  return tr === room.bedType ? room.bedType : tr;
+                })()}
+              </p>
             </div>
             <div className="rounded-md bg-background p-3">
               <span className="text-muted-foreground">{t("cartagenaRooms", "capacidad")}</span>
@@ -166,14 +173,16 @@ const RoomCard = ({ room }: RoomCardProps) => {
           {/* Amenities grid */}
           <div className="mt-4 grid grid-cols-2 gap-2">
             {room.amenities.map((amenity) => {
-              const Icon = iconMap[amenity];
+              const translated = t("roomAmenities", amenity.label);
               return (
                 <div
-                  key={amenity}
+                  key={amenity.label}
                   className="flex items-center gap-2 text-xs text-muted-foreground"
                 >
-                  {Icon && <Icon className="h-3.5 w-3.5 text-accent" />}
-                  <span>{t("roomAmenities", amenity)}</span>
+                  {amenity.icon && (
+                    <MaterialIcon name={amenity.icon} className="text-accent text-[16px]" />
+                  )}
+                  <span>{translated === amenity.label ? amenity.label : translated}</span>
                 </div>
               );
             })}
@@ -186,9 +195,19 @@ const RoomCard = ({ room }: RoomCardProps) => {
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-sans text-sm font-medium text-white tracking-wide transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02] hover:shadow-lg"
           >
-            <MessageCircle className="h-4 w-4" />
+            <WhatsAppIcon className="h-4 w-4" />
             {t("cartagenaRooms", "reservarHabitacion")}
           </a>
+
+          {/* Reservas directas por Beds24 DESHABILITADAS (jun-2026): solo WhatsApp.
+              Para reactivar el motor standalone, descomentar este bloque.
+              Requiere tarifas cargadas en Beds24 (ver guía MANUAL_BEDS24_STANDALONE).
+          <BookingWidget
+            propertyId={beds24PropertyId}
+            roomId={room.beds24RoomId ?? null}
+            pricePerNight={room.pricePerNight}
+            maxGuests={room.maxGuests}
+          /> */}
         </div>
       </div>
 

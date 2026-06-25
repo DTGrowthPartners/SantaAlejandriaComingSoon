@@ -8,8 +8,13 @@ import CartagenaServices from "@/components/cartagena/CartagenaServices";
 import CartagenaLocation from "@/components/cartagena/CartagenaLocation";
 import CartagenaBookingCTA from "@/components/cartagena/CartagenaBookingCTA";
 import WhatsAppFloatingButton from "@/components/cartagena/WhatsAppFloatingButton";
+import ClosedBanner from "@/components/ClosedBanner";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+
+const CARTAGENA_WHATSAPP =
+  "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20que%20me%20avisen%20cuando%20reabra%20Santa%20Alejandr%C3%ADa%20Hotel%20Cartagena";
 
 const cartagenaStructuredData = {
   "@context": "https://schema.org",
@@ -64,6 +69,8 @@ const cartagenaStructuredData = {
 
 const Cartagena = () => {
   const [showLoader, setShowLoader] = useState(true);
+  const { hotel } = useDirectusHotel("cartagena");
+  const isClosed = hotel?.is_closed === true;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -80,18 +87,26 @@ const Cartagena = () => {
         canonical="https://www.santalejandriahotels.com/cartagena"
         keywords="hotel boutique Cartagena, hotel centro histórico Cartagena, hotel colonial Cartagena de Indias, alojamiento premium Cartagena, hotel con piscina Cartagena, hospedaje Cartagena Colombia"
         structuredData={cartagenaStructuredData}
+        noindex={isClosed}
       />
+      {isClosed && (
+        <ClosedBanner
+          message={hotel?.closed_message ?? null}
+          reopenDate={hotel?.reopen_date ?? null}
+          whatsappUrl={CARTAGENA_WHATSAPP}
+        />
+      )}
       <CartagenaNavbar />
       <main>
         <CartagenaHero />
         <CartagenaAbout />
-        <CartagenaRooms />
+        {!isClosed && <CartagenaRooms />}
         <CartagenaServices />
         <CartagenaLocation />
-        <CartagenaBookingCTA />
+        {!isClosed && <CartagenaBookingCTA />}
         <Footer variant="cartagena" />
       </main>
-      <WhatsAppFloatingButton />
+      {!isClosed && <WhatsAppFloatingButton />}
     </div>
   );
 };

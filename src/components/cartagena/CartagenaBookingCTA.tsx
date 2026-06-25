@@ -1,8 +1,9 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
-import { MessageCircle, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import kingRoomImg from "@/assets/cartagena/king-room-1.webp";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_URL =
   "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
@@ -56,7 +57,7 @@ const CartagenaBookingCTA = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-accent px-10 py-4 font-sans text-base font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-xl"
           >
-            <MessageCircle className="h-5 w-5" />
+            <WhatsAppIcon className="h-5 w-5" />
             {t("cartagenaBookingCTA", "reservar")}
           </a>
 

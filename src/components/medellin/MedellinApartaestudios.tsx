@@ -1,8 +1,9 @@
-import { MessageCircle, Home, ChefHat, Tv, Sofa, Utensils, Wind, DoorOpen } from "lucide-react";
+import { Home, ChefHat, Tv, Sofa, Utensils, Wind, DoorOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { apartaestudios } from "@/data/medellin-rooms";
 import { apartaestudioImages } from "@/data/medellin-room-images";
 import { useTranslation } from "@/i18n/LanguageContext";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_BASE = "https://wa.me/573053093723?text=";
 
@@ -26,6 +27,8 @@ const includeIcons: Record<string, React.ElementType> = {
 
 const MedellinApartaestudios = () => {
   const { t } = useTranslation();
+  // Photos served locally from the repo, not Directus.
+  const aptoImagesById = apartaestudioImages;
 
   const whatsappMessage = encodeURIComponent(
     "Hola, me gustaría información sobre los Apartaestudios en Santa Alejandría Hotel – Medellín"
@@ -46,7 +49,7 @@ const MedellinApartaestudios = () => {
       {/* Cards grid */}
       <div className="grid gap-6 md:grid-cols-3">
         {apartaestudios.map((apto) => {
-          const aptoImages = apartaestudioImages[apto.id] ?? [];
+          const aptoImages = aptoImagesById[apto.id] ?? [];
           const previewImage = aptoImages[0];
           return (
           <div
@@ -152,7 +155,7 @@ const MedellinApartaestudios = () => {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-8 py-3.5 font-sans text-sm font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-lg"
         >
-          <MessageCircle className="h-4 w-4" />
+          <WhatsAppIcon className="h-4 w-4" />
           {t("medellinApartaestudios", "consultar")}
         </a>
       </div>
