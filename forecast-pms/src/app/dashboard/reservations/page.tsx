@@ -1,10 +1,50 @@
-import { PagePlaceholder } from "@/components/layout/PagePlaceholder";
+import { requireUser, canEditReservations } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ReservationsTable, type ReservationRow } from "@/components/reservations/ReservationsTable";
 
-export default function ReservationsPage() {
+export default async function ReservationsPage() {
+  const user = await requireUser();
+
+  const [reservations, rooms] = await Promise.all([
+    prisma.reservation.findMany({
+      where: { hotelId: user.hotelId },
+      orderBy: { checkIn: "desc" },
+      include: { room: { select: { name: true } } },
+    }),
+    prisma.room.findMany({
+      where: { hotelId: user.hotelId, active: true },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, name: true, type: true },
+    }),
+  ]);
+
+  const rows: ReservationRow[] = reservations.map((r) => ({
+    id: r.id,
+    number: r.number,
+    roomId: r.roomId,
+    roomName: r.room.name,
+    guestName: r.guestName,
+    guestPhone: r.guestPhone,
+    guestEmail: r.guestEmail,
+    channel: r.channel,
+    reservationStatus: r.reservationStatus,
+    paymentStatus: r.paymentStatus,
+    checkIn: r.checkIn.toISOString(),
+    checkOut: r.checkOut.toISOString(),
+    nights: r.nights,
+    guestsCount: r.guestsCount,
+    totalAmount: r.totalAmount,
+    depositRequired: r.depositRequired,
+    paidAmount: r.paidAmount,
+    balanceAmount: r.balanceAmount,
+    notes: r.notes,
+  }));
+
   return (
-    <PagePlaceholder
-      title="Reservas"
-      description="Listado y creación/edición de reservas con validación de cruces e historial. En construcción."
+    <ReservationsTable
+      reservations={rows}
+      rooms={rooms}
+      canEdit={canEditReservations(user.role)}
     />
   );
 }

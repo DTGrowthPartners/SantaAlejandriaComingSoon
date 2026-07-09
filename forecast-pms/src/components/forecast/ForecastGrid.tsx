@@ -303,7 +303,19 @@ function DayCell({
     canEdit && "hover:bg-brand-light/60",
   );
   if (canEdit) {
-    return <button ref={setNodeRef} onClick={onCreate} title={`Crear reserva · día ${day}`} className={cls} style={{ gridColumn: column, gridRow: 1 }} />;
+    return (
+      <button
+        ref={setNodeRef}
+        onClick={onCreate}
+        aria-label={`Crear reserva día ${day}`}
+        className={cn(cls, "group/cell relative")}
+        style={{ gridColumn: column, gridRow: 1 }}
+      >
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm font-bold text-brand opacity-0 transition group-hover/cell:opacity-50">
+          +
+        </span>
+      </button>
+    );
   }
   return <div ref={setNodeRef} className={cls} style={{ gridColumn: column, gridRow: 1 }} />;
 }
@@ -333,7 +345,7 @@ function ReservationBlock({
       {...listeners}
       {...attributes}
       onClick={onOpen}
-      title={`${r.guestName} · ${meta.label} · ${formatDate(r.checkIn)} → ${formatDate(r.checkOut)} · ${formatCOP(r.totalAmount)}`}
+      title={`#${r.number} ${r.guestName} · ${meta.label} · ${formatDate(r.checkIn)} → ${formatDate(r.checkOut)} · ${formatCOP(r.totalAmount)}`}
       className="z-20 m-[3px] flex items-center overflow-hidden px-2 text-left text-xs font-semibold shadow-sm transition hover:brightness-95"
       style={{
         gridColumn: `${r.startCol} / ${r.endCol}`,
@@ -349,7 +361,7 @@ function ReservationBlock({
       <span className="truncate">
         {r.continuesLeft && "‹ "}
         {isNoShow ? "🚫 " : ""}
-        {r.guestName}
+        {r.number}- {r.guestName}
       </span>
     </button>
   );
@@ -408,7 +420,7 @@ function ReservationDrawer({
       <div className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between px-5 py-4 text-white" style={{ backgroundColor: channel.color }}>
           <div>
-            <p className="font-serif text-lg font-bold">{r.guestName}</p>
+            <p className="font-serif text-lg font-bold">#{r.number} · {r.guestName}</p>
             <p className="text-sm opacity-90">{channel.label} · Habitación {roomName}</p>
           </div>
           <button onClick={onClose} className="rounded-md px-2 py-1 text-sm hover:bg-white/20">

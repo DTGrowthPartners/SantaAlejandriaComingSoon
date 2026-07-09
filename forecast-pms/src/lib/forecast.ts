@@ -10,6 +10,7 @@ export type ForecastRoom = { id: string; name: string; type: string | null };
 
 export type ForecastReservation = {
   id: string;
+  number: number;
   roomId: string;
   guestName: string;
   guestPhone: string | null;
@@ -163,6 +164,7 @@ export async function getForecastData(
     if (!pos.visible) continue;
     (reservationsByRoom[r.roomId] ??= []).push({
       id: r.id,
+      number: r.number,
       roomId: r.roomId,
       guestName: r.guestName,
       guestPhone: r.guestPhone,

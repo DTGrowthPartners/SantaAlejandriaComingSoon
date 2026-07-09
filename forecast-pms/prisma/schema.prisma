@@ -101,6 +101,7 @@ model Room {
 
 model Reservation {
   id                   String               @id @default(cuid())
+  number               Int                  @unique @default(autoincrement())
   hotelId              String
   hotel                Hotel                @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   roomId               String
