@@ -1,10 +1,11 @@
-import { PagePlaceholder } from "@/components/layout/PagePlaceholder";
+import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/auth";
+import { ImportPanel } from "@/components/import/ImportPanel";
 
-export default function ImportPage() {
-  return (
-    <PagePlaceholder
-      title="Importar forecast del hotel"
-      description="Sube el Excel del forecast (FORECAST ACTUALIZADO 2026.xlsx). El formato ya está analizado: color = canal/estado y comentario = huésped/fechas/monto. El importador se conecta en el siguiente paso."
-    />
-  );
+export default async function ImportPage() {
+  const user = await requireUser();
+  if (user.role !== "ADMIN" && user.role !== "MANAGER") {
+    redirect("/dashboard/forecast");
+  }
+  return <ImportPanel />;
 }
