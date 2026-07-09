@@ -3,26 +3,43 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { MedellinRoomCategory } from "@/data/medellin-rooms";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { pickLang } from "@/lib/directus";
 import MaterialIcon from "@/components/MaterialIcon";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_BASE = "https://wa.me/573053093723?text=";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 interface MedellinRoomCardProps {
   category: MedellinRoomCategory;
 }
 
+function formatPrice(price: number) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
 const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { waUrl } = useWhatsapp("medellin");
   const totalRooms = category.variants.reduce((sum, v) => sum + v.quantity, 0);
   const images = category.images ?? [];
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  const categoryName = category.name || t("medellinRoomNames", category.id);
-  const categoryDescription =
-    category.description || t("medellinRoomDescriptions", category.id);
+  const categoryName = pickLang(category.name, category.nameEn, lang);
+  const categoryDescription = pickLang(
+    category.description,
+    category.descriptionEn,
+    lang
+  );
+  const highlights =
+    lang === "en" && category.highlightsEn && category.highlightsEn.length > 0
+      ? category.highlightsEn
+      : category.highlights;
 
-  const whatsappMessage = encodeURIComponent(
+  const whatsappHref = waUrl(
     `Hola, me gustaría reservar una ${categoryName} en Santa Alejandría Hotel – Medellín`
   );
 
@@ -96,6 +113,17 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
           {categoryName}
         </h3>
 
+        {/* Price (only if set in the CMS) */}
+        {category.pricePerNight ? (
+          <p className="mt-1 font-serif text-xl font-medium text-primary">
+            {lang === "en" ? "From" : "Desde"} {formatPrice(category.pricePerNight)}
+            <span className="font-sans text-sm text-muted-foreground">
+              {" "}
+              {lang === "en" ? "/ night" : "/ noche"}
+            </span>
+          </p>
+        ) : null}
+
         {/* Total rooms */}
         <p className="mt-1 font-sans text-sm text-primary font-medium">
           {totalRooms} {t("medellinRooms", "habitacionesDisponibles")}
@@ -108,7 +136,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
 
         {/* Highlights */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {category.highlights.map((h) => (
+          {highlights.map((h) => (
             <Badge
               key={h}
               variant="secondary"
@@ -170,7 +198,7 @@ const MedellinRoomCard = ({ category }: MedellinRoomCardProps) => {
 
         {/* CTA */}
         <a
-          href={`${WHATSAPP_BASE}${whatsappMessage}`}
+          href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02] hover:shadow-lg"

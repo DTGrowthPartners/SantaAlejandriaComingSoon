@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 
 const InformativeSection = () => {
@@ -14,6 +15,7 @@ const InformativeSection = () => {
   const [howYouFoundUs, setHowYouFoundUs] = useState("");
   const { t } = useTranslation();
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { number: whatsappNumber } = useWhatsapp("cartagena");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -47,7 +49,7 @@ Saludos cordiales.`;
     const encodedMessage = encodeURIComponent(message);
 
     // WhatsApp URL with the message
-    const whatsappUrl = `https://wa.me/573126915453?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
     // Open WhatsApp
     window.open(whatsappUrl, '_blank');

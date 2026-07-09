@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 import { MapPin, Phone, Clock, Mail, Instagram, Train, Trophy, Bike } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 
 const MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2!2d-75.59!3d6.24!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sCRA+77C+No+48-91+Medellin!5e0!3m2!1ses!2sco";
@@ -18,26 +18,47 @@ const nearbyPlaces = [
 
 const MedellinLocation = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { waUrl } = useWhatsapp("medellin");
+  const { hotel } = useDirectusHotel("medellin");
+
+  const phoneDisplay = hotel?.phone || "305 309 3723";
+  const phoneTel = hotel?.phone_tel || "573053093723";
+  const phoneValue =
+    phoneDisplay + (hotel?.phone_landline ? ` – ${hotel.phone_landline}` : " – (604) 324 6004");
+  const email = hotel?.reservation_email || "reservationmed@santalejandriahotels.com";
+  const mapEmbed = hotel?.maps_embed_url || MAP_EMBED_URL;
+  const instagramUrl =
+    hotel?.instagram_url || "https://www.instagram.com/santaalejandriahotelmed/";
+
+  const nearbyIcons: Record<string, typeof Train> = { Train, Trophy, Bike };
+  const displayNearby =
+    hotel?.nearby_places && hotel.nearby_places.length > 0
+      ? hotel.nearby_places.map((p) => ({
+          Icon: nearbyIcons[p.icon] ?? MapPin,
+          name: pickLang(p.name, p.name_en, lang),
+          time: p.time,
+        }))
+      : nearbyPlaces.map((p) => ({ Icon: p.icon, name: p.name, time: p.time }));
 
   const contactInfo = [
     {
       icon: MapPin,
       label: t("medellinLocation", "direccion"),
-      value: "CRA 77C No 48 – 91, Sector Estadio",
-      sublabel: "Medellín, Antioquia, Colombia",
+      value: hotel?.address || "CRA 77C No 48 – 91, Sector Estadio",
+      sublabel: hotel?.address_line2 || "Medellín, Antioquia, Colombia",
     },
     {
       icon: Phone,
       label: t("medellinLocation", "telefono"),
-      value: "305 309 3723 – (604) 324 6004",
-      href: "tel:+573053093723",
+      value: phoneValue,
+      href: `tel:+${phoneTel}`,
     },
     {
       icon: Mail,
       label: t("medellinLocation", "email"),
-      value: "reservationmed@santalejandriahotels.com",
-      href: "mailto:reservationmed@santalejandriahotels.com",
+      value: email,
+      href: `mailto:${email}`,
     },
     {
       icon: Clock,
@@ -120,7 +141,7 @@ const MedellinLocation = () => {
             {/* Action buttons */}
             <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col">
               <a
-                href={WHATSAPP_URL}
+                href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-[#D9D9D9] px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-[1.02]"
@@ -129,7 +150,7 @@ const MedellinLocation = () => {
                 WhatsApp
               </a>
               <a
-                href="https://www.instagram.com/santaalejandriahotelmed/"
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-foreground/5"
@@ -151,11 +172,11 @@ const MedellinLocation = () => {
               {t("medellinLocation", "cercaDe")}
             </p>
             <div className="space-y-3">
-              {nearbyPlaces.map((place) => {
-                const Icon = place.icon;
+              {displayNearby.map((place, i) => {
+                const Icon = place.Icon;
                 return (
                   <div
-                    key={place.name}
+                    key={i}
                     className="flex items-center gap-3 rounded-lg bg-primary/5 border border-primary/10 p-4"
                   >
                     <Icon className="h-5 w-5 text-primary shrink-0" />
@@ -178,7 +199,7 @@ const MedellinLocation = () => {
           >
             <div className="overflow-hidden rounded-lg border-2 border-primary/20 shadow-lg">
               <iframe
-                src={MAP_EMBED_URL}
+                src={mapEmbed}
                 width="100%"
                 height="350"
                 style={{ border: 0 }}

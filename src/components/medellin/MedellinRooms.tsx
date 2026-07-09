@@ -1,22 +1,17 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
-import { medellinRoomCategories as baseRoomCategories } from "@/data/medellin-rooms";
-import { roomImages } from "@/data/medellin-room-images";
+import { useMedellinRooms } from "@/hooks/useDirectusRooms";
+import { pickLang } from "@/lib/directus";
 import MedellinRoomCard from "./MedellinRoomCard";
 import MedellinApartaestudios from "./MedellinApartaestudios";
 
 const MedellinRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
-  const { t } = useTranslation();
-  // Photos served locally from the repo, not Directus.
-  const medellinRoomCategories = baseRoomCategories.map((cat) => ({
-    ...cat,
-    images: roomImages[cat.id] ?? [],
-  }));
-  const loading = false;
+  const { t, lang } = useTranslation();
+  const { categories: medellinRoomCategories, apartaestudios, loading } =
+    useMedellinRooms();
 
   return (
     <section
@@ -64,7 +59,7 @@ const MedellinRooms = () => {
                   value={cat.id}
                   className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary transition-all duration-300 hover:border-primary/50"
                 >
-                  {t("medellinRoomNames", cat.id)}
+                  {pickLang(cat.shortName, cat.shortNameEn, lang)}
                 </TabsTrigger>
               ))}
               <TabsTrigger
@@ -82,7 +77,7 @@ const MedellinRooms = () => {
             ))}
 
             <TabsContent value="apartaestudios">
-              <MedellinApartaestudios />
+              <MedellinApartaestudios apartaestudios={apartaestudios} />
             </TabsContent>
           </Tabs>
           )}

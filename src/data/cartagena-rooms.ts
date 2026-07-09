@@ -1,5 +1,12 @@
 import type { Amenity } from "@/lib/directus";
 
+export interface PricePeriod {
+  label: string;
+  startDate: string; // ISO YYYY-MM-DD
+  endDate: string; // ISO YYYY-MM-DD
+  price: number;
+}
+
 export interface RoomType {
   id: string;
   name: string;
@@ -8,6 +15,8 @@ export interface RoomType {
   floor: string;
   bedType: string;
   pricePerNight: number;
+  /** Periodos de precio por temporada (vacío = usar solo pricePerNight). */
+  pricePeriods: PricePeriod[];
   maxGuests: number;
   quantity: number;
   images: string[];

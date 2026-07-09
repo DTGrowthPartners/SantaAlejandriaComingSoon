@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 import { Leaf, Users, Clock, TreePine } from "lucide-react";
 import hotelEntradaImg from "@/assets/medellin-photos/exteriores/entrada del hotel (1).webp";
 
@@ -17,8 +18,21 @@ const badgeKeys = ["badgeCapacidad", "badgePrimavera", "badgeEstadio", "badge24h
 
 const MedellinAbout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { t } = useTranslation();
-  const { images } = useDirectusHotel("medellin");
+  const { t, lang } = useTranslation();
+  const { hotel, images } = useDirectusHotel("medellin");
+  const statIcons: Record<string, typeof Users> = { Users, TreePine, Leaf, Clock };
+  const displayStats =
+    hotel?.stats && hotel.stats.length > 0
+      ? hotel.stats.map((s) => ({
+          Icon: statIcons[s.icon] ?? Users,
+          value: s.value,
+          label: pickLang(s.label_es, s.label_en, lang),
+        }))
+      : stats.map((s) => ({
+          Icon: s.icon,
+          value: s.value,
+          label: t("medellinAbout", s.labelKey),
+        }));
   const entranceSrc = images.gallery[0] ?? hotelEntradaImg;
 
   return (
@@ -39,11 +53,13 @@ const MedellinAbout = () => {
             {t("medellinAbout", "label")}
           </p>
           <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl leading-tight">
-            {t("medellinAbout", "heading")}
+            {pickLang(hotel?.about_heading_es, hotel?.about_heading_en, lang) ||
+              t("medellinAbout", "heading")}
           </h2>
           <div className="mx-auto mb-6 h-px w-16 bg-primary" />
           <p className="font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
-            {t("medellinAbout", "paragraph1")}
+            {pickLang(hotel?.about_p1_es, hotel?.about_p1_en, lang) ||
+              t("medellinAbout", "paragraph1")}
           </p>
         </div>
 
@@ -54,18 +70,18 @@ const MedellinAbout = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-          {stats.map((stat, i) => {
-            const Icon = stat.icon;
+          {displayStats.map((stat, i) => {
+            const Icon = stat.Icon;
             return (
               <div
-                key={stat.labelKey}
+                key={i}
                 className="text-center p-6 rounded-xl bg-primary/5 border border-primary/10"
                 style={{ transitionDelay: `${i * 100 + 300}ms` }}
               >
                 <Icon className="mx-auto mb-3 h-6 w-6 text-primary" />
                 <p className="font-serif text-2xl font-medium text-foreground">{stat.value}</p>
                 <p className="mt-1 font-sans text-xs text-muted-foreground uppercase tracking-wide">
-                  {t("medellinAbout", stat.labelKey)}
+                  {stat.label}
                 </p>
               </div>
             );
@@ -89,7 +105,8 @@ const MedellinAbout = () => {
             </h3>
             <div className="mb-6 h-px w-16 bg-primary" />
             <p className="font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
-              {t("medellinAbout", "paragraph2")}
+              {pickLang(hotel?.about_p2_es, hotel?.about_p2_en, lang) ||
+                t("medellinAbout", "paragraph2")}
             </p>
 
             {/* Badges */}
@@ -128,14 +145,14 @@ const MedellinAbout = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-in</p>
-                <p className="mt-1 font-serif text-lg font-medium text-foreground">3:00 PM</p>
+                <p className="mt-1 font-serif text-lg font-medium text-foreground">{hotel?.checkin_time || "3:00 PM"}</p>
                 <p className="mt-0.5 font-sans text-[10px] text-muted-foreground">
                   {t("medellinAbout", "earlyCheckIn")}
                 </p>
               </div>
               <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">Check-out</p>
-                <p className="mt-1 font-serif text-lg font-medium text-foreground">12:00 M</p>
+                <p className="mt-1 font-serif text-lg font-medium text-foreground">{hotel?.checkout_time || "12:00 M"}</p>
                 <p className="mt-0.5 font-sans text-[10px] text-muted-foreground">
                   {t("medellinAbout", "lateCheckOut")}
                 </p>

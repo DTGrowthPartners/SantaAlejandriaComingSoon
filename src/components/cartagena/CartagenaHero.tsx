@@ -2,17 +2,17 @@ import { ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 import entradaImg from "@/assets/cartagena/entrada-1.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 const CartagenaHero = () => {
   const { scrollY } = useScrollProgress();
-  const { t } = useTranslation();
-  const { images } = useDirectusHotel("cartagena");
+  const { t, lang } = useTranslation();
+  const { hotel, images } = useDirectusHotel("cartagena");
+  const { waUrl } = useWhatsapp("cartagena");
   const heroSrc = images.heroImage ?? entradaImg;
 
   return (
@@ -70,13 +70,14 @@ const CartagenaHero = () => {
 
         {/* Tagline */}
         <p className="mb-10 max-w-lg font-sans text-sm tracking-wide text-[#FDFCF6]/70 animate-fade-in-delay-2 leading-relaxed">
-          {t("cartagenaHero", "tagline")}
+          {pickLang(hotel?.hero_tagline_es, hotel?.hero_tagline_en, lang) ||
+            t("cartagenaHero", "tagline")}
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row animate-fade-in-delay-3">
           <a
-            href={WHATSAPP_URL}
+            href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Cartagena")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 font-sans text-sm font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-lg"

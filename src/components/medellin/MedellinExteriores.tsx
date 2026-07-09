@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
-import { exteriorImages } from "@/data/medellin-room-images";
+import { useHotelGallery } from "@/hooks/useDirectusMedellin";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { Building2, Sofa, Dumbbell, Sun, UtensilsCrossed, X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -24,10 +24,11 @@ const categories: CategoryDef[] = [
 const MedellinExteriores = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
   const { t } = useTranslation();
+  const { byCategory } = useHotelGallery("medellin");
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("fachadas");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
-  const activeImages = exteriorImages[activeCategory] ?? [];
+  const activeImages = byCategory[activeCategory] ?? [];
 
   const openLightbox = (idx: number) => setLightboxIdx(idx);
   const closeLightbox = () => setLightboxIdx(null);
@@ -75,7 +76,7 @@ const MedellinExteriores = () => {
         >
           {categories.map((cat) => {
             const Icon = cat.icon;
-            const count = exteriorImages[cat.key]?.length ?? 0;
+            const count = byCategory[cat.key]?.length ?? 0;
             const isActive = activeCategory === cat.key;
             return (
               <button

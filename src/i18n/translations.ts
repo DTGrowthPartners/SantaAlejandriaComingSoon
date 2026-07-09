@@ -62,7 +62,7 @@ const translations = {
     cama: { es: "Cama", en: "Bed" },
     capacidad: { es: "Capacidad", en: "Capacity" },
     personas: { es: "personas", en: "guests" },
-    disponibles: { es: "Disponibles", en: "Available" },
+    disponibles: { es: "Habitaciones de este tipo", en: "Rooms of this type" },
     hab: { es: "hab.", en: "rooms" },
     reservarHabitacion: { es: "Reservar esta Habitación", en: "Book this Room" },
     irAFoto: { es: "Ir a foto", en: "Go to photo" },

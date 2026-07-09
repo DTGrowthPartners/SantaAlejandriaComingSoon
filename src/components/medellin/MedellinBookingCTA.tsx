@@ -4,13 +4,19 @@ import { Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 
 const MedellinBookingCTA = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.15 });
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { waUrl } = useWhatsapp("medellin");
+  const { hotel } = useDirectusHotel("medellin");
+  const phoneDisplay = hotel?.phone || "305 309 3723";
+  const phoneTel = hotel?.phone_tel || "573053093723";
+  const landlineDisplay = hotel?.phone_landline || "(604) 324 6004";
+  const landlineTel = hotel?.phone_landline_tel || "576043246004";
 
   return (
     <section ref={ref} className="relative min-h-[60vh] flex items-center overflow-hidden">
@@ -48,11 +54,12 @@ const MedellinBookingCTA = () => {
           </h2>
 
           <p className="mb-8 mx-auto max-w-lg font-sans text-sm text-background/70 leading-relaxed">
-            {t("medellinBookingCTA", "subtitle")}
+            {pickLang(hotel?.cta_subtitle_es, hotel?.cta_subtitle_en, lang) ||
+              t("medellinBookingCTA", "subtitle")}
           </p>
 
           <a
-            href={WHATSAPP_URL}
+            href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-10 py-4 font-sans text-base font-medium text-foreground tracking-wide uppercase transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-xl"
@@ -65,18 +72,18 @@ const MedellinBookingCTA = () => {
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
               <a
-                href="tel:+573053093723"
+                href={`tel:+${phoneTel}`}
                 className="font-sans text-sm hover:text-background/80 transition-colors"
               >
-                305 309 3723
+                {phoneDisplay}
               </a>
             </div>
             <span className="text-background/30">|</span>
             <a
-              href="tel:+576043246004"
+              href={`tel:+${landlineTel}`}
               className="font-sans text-sm hover:text-background/80 transition-colors"
             >
-              (604) 324 6004
+              {landlineDisplay}
             </a>
           </div>
         </div>

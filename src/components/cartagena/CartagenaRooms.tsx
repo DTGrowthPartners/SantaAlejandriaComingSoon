@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ADDITIONAL_PRICING } from "@/data/cartagena-rooms";
 import { useCartagenaRooms } from "@/hooks/useDirectusRooms";
+import { useHotelPricing } from "@/hooks/useDirectusMedellin";
 import { Users, Baby } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import translations from "@/i18n/translations";
@@ -22,6 +23,9 @@ const CartagenaRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
   const { t, lang } = useTranslation();
   const { rooms, loading, beds24PropertyId } = useCartagenaRooms();
+  const { amounts } = useHotelPricing("cartagena");
+  const additionalPerson = amounts["additional_person"] ?? ADDITIONAL_PRICING.additionalPerson;
+  const children3to10 = amounts["child_3_10"] ?? ADDITIONAL_PRICING.children3to10;
 
   return (
     <section
@@ -73,7 +77,9 @@ const CartagenaRooms = () => {
                   value={room.id}
                   className="rounded-full border border-border bg-transparent px-4 py-2 font-sans text-xs font-medium tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary transition-all duration-300 hover:border-primary/50"
                 >
-                  {t("roomShortNames", room.id)}
+                  {t("roomShortNames", room.id) !== room.id
+                    ? t("roomShortNames", room.id)
+                    : room.shortName || room.name}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -102,7 +108,7 @@ const CartagenaRooms = () => {
                   {t("cartagenaRooms", "personaAdicional")}
                 </p>
                 <p className="font-serif text-lg text-accent">
-                  {formatPrice(ADDITIONAL_PRICING.additionalPerson)}
+                  {formatPrice(additionalPerson)}
                 </p>
               </div>
             </div>
@@ -114,7 +120,7 @@ const CartagenaRooms = () => {
                   {t("cartagenaRooms", "ninos")}
                 </p>
                 <p className="font-serif text-lg text-accent">
-                  {formatPrice(ADDITIONAL_PRICING.children3to10)}
+                  {formatPrice(children3to10)}
                 </p>
               </div>
             </div>

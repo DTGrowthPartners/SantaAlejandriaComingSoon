@@ -4,6 +4,7 @@ import logo from "@/assets/logo-santa-alejandria.png";
 import fondoImage from "@/assets/Fondo LV.png";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 
 interface FooterProps {
   variant?: "cartagena" | "medellin";
@@ -31,6 +32,8 @@ const Footer = ({ variant }: FooterProps) => {
   const { t } = useTranslation();
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.15 });
   const links = variant ? socialLinks[variant] : defaultLinks;
+  const { hotel } = useDirectusHotel(variant ?? "cartagena");
+  const instagramUrl = hotel?.instagram_url || links.instagram.url;
 
   return (
     <footer ref={ref} className="relative py-12 md:py-16" style={{ backgroundImage: `url(${fondoImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
@@ -74,7 +77,7 @@ const Footer = ({ variant }: FooterProps) => {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}>
               <a
-                href={links.instagram.url}
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 font-sans text-sm text-secondary-foreground/80 transition-colors hover:text-highlight"

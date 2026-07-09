@@ -3,18 +3,17 @@ import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/LanguageContext";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 const MedellinWhatsAppButton = () => {
   const { scrollY } = useScrollProgress();
   const isVisible = scrollY > window.innerHeight * 0.5;
   const { t } = useTranslation();
+  const { waUrl } = useWhatsapp("medellin");
 
   return (
     <a
-      href={WHATSAPP_URL}
+      href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín")}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(

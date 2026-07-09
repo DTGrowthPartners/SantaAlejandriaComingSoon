@@ -4,13 +4,17 @@ import { Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import kingRoomImg from "@/assets/cartagena/king-room-1.webp";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 
 const CartagenaBookingCTA = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.15 });
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { waUrl } = useWhatsapp("cartagena");
+  const { hotel } = useDirectusHotel("cartagena");
+  const phoneDisplay = hotel?.phone || "+57 312 6915453";
+  const phoneTel = hotel?.phone_tel || "573126915453";
 
   return (
     <section ref={ref} className="relative min-h-[60vh] flex items-center overflow-hidden">
@@ -48,11 +52,12 @@ const CartagenaBookingCTA = () => {
           </h2>
 
           <p className="mb-8 mx-auto max-w-lg font-sans text-sm text-[#FDFCF6]/70 leading-relaxed">
-            {t("cartagenaBookingCTA", "subtitle")}
+            {pickLang(hotel?.cta_subtitle_es, hotel?.cta_subtitle_en, lang) ||
+              t("cartagenaBookingCTA", "subtitle")}
           </p>
 
           <a
-            href={WHATSAPP_URL}
+            href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Cartagena")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-accent px-10 py-4 font-sans text-base font-medium text-white tracking-wide uppercase transition-all duration-300 hover:bg-accent/90 hover:scale-105 hover:shadow-xl"
@@ -64,10 +69,10 @@ const CartagenaBookingCTA = () => {
           <div className="mt-6 flex items-center justify-center gap-2 text-[#FDFCF6]/50">
             <Phone className="h-4 w-4" />
             <a
-              href="tel:+573126915453"
+              href={`tel:+${phoneTel}`}
               className="font-sans text-sm hover:text-[#FDFCF6]/80 transition-colors"
             >
-              +57 312 6915453
+              {phoneDisplay}
             </a>
           </div>
         </div>

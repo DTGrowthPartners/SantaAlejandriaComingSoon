@@ -1,11 +1,9 @@
-import { Home, ChefHat, Tv, Sofa, Utensils, Wind, DoorOpen } from "lucide-react";
+import { Home } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { apartaestudios } from "@/data/medellin-rooms";
-import { apartaestudioImages } from "@/data/medellin-room-images";
+import type { Apartaestudio } from "@/data/medellin-rooms";
 import { useTranslation } from "@/i18n/LanguageContext";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_BASE = "https://wa.me/573053093723?text=";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -16,21 +14,15 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-const includeIcons: Record<string, React.ElementType> = {
-  "Cocina integral": ChefHat,
-  "TV": Tv,
-  "Sofá": Sofa,
-  "Comedor": Utensils,
-  "Ventilador": Wind,
-  "Closet": DoorOpen,
-};
+interface MedellinApartaestudiosProps {
+  apartaestudios: Apartaestudio[];
+}
 
-const MedellinApartaestudios = () => {
+const MedellinApartaestudios = ({ apartaestudios }: MedellinApartaestudiosProps) => {
   const { t } = useTranslation();
-  // Photos served locally from the repo, not Directus.
-  const aptoImagesById = apartaestudioImages;
+  const { waUrl } = useWhatsapp("medellin");
 
-  const whatsappMessage = encodeURIComponent(
+  const whatsappHref = waUrl(
     "Hola, me gustaría información sobre los Apartaestudios en Santa Alejandría Hotel – Medellín"
   );
 
@@ -49,7 +41,7 @@ const MedellinApartaestudios = () => {
       {/* Cards grid */}
       <div className="grid gap-6 md:grid-cols-3">
         {apartaestudios.map((apto) => {
-          const aptoImages = aptoImagesById[apto.id] ?? [];
+          const aptoImages = apto.images ?? [];
           const previewImage = aptoImages[0];
           return (
           <div
@@ -138,7 +130,7 @@ const MedellinApartaestudios = () => {
           {t("medellinApartaestudios", "todosIncluyen")}
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          {apartaestudios[0].includes.map((item) => (
+          {(apartaestudios[0]?.includes ?? []).map((item) => (
             <span key={item} className="flex items-center gap-1.5 font-sans text-sm text-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               {item}
@@ -150,7 +142,7 @@ const MedellinApartaestudios = () => {
       {/* CTA */}
       <div className="text-center">
         <a
-          href={`${WHATSAPP_BASE}${whatsappMessage}`}
+          href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-8 py-3.5 font-sans text-sm font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-lg"

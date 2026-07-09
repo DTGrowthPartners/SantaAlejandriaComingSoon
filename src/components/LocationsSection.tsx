@@ -1,11 +1,14 @@
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 import LocationCard from "./LocationCard";
 import cartagenaImage from "@/assets/centro-historico-cartagena.webp";
 import medellinImage from "@/assets/Medellin2.webp";
 
 const LocationsSection = () => {
   const { t } = useTranslation();
+  const { number: cartagenaWa } = useWhatsapp("cartagena");
+  const { number: medellinWa } = useWhatsapp("medellin");
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation({ threshold: 0.2 });
   const { ref: card1Ref, isVisible: card1Visible } = useScrollAnimation({ threshold: 0.1 });
   const { ref: card2Ref, isVisible: card2Visible } = useScrollAnimation({ threshold: 0.1 });
@@ -40,7 +43,7 @@ const LocationsSection = () => {
               city="Cartagena"
               image={cartagenaImage}
               description={t("locations", "cartagenaDesc")}
-              whatsappNumber="573126915453"
+              whatsappNumber={cartagenaWa}
               link="/cartagena"
             />
           </div>
@@ -55,7 +58,7 @@ const LocationsSection = () => {
               city="Medellín"
               image={medellinImage}
               description={t("locations", "medellinDesc")}
-              whatsappNumber="573053093723"
+              whatsappNumber={medellinWa}
               link="/medellin"
               reversed
             />

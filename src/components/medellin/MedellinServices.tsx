@@ -14,12 +14,12 @@ import {
   Dumbbell,
   Leaf,
 } from "lucide-react";
-import {
-  medellinIncludedServices,
-  medellinAdditionalServices,
-  medellinAmenities,
-} from "@/data/medellin-services";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useHotelServices } from "@/hooks/useDirectusMedellin";
+import { pickLang, type DirectusService } from "@/lib/directus";
+
+const kindOf = (s: DirectusService) =>
+  s.kind ?? (s.included ? "included" : "additional");
 
 const iconComponents: Record<string, React.ElementType> = {
   UtensilsCrossed,
@@ -38,7 +38,11 @@ const iconComponents: Record<string, React.ElementType> = {
 
 const MedellinServices = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { services } = useHotelServices("medellin");
+  const includedServices = services.filter((s) => kindOf(s) === "included");
+  const additionalServices = services.filter((s) => kindOf(s) === "additional");
+  const facilities = services.filter((s) => kindOf(s) === "facility");
 
   return (
     <section
@@ -70,8 +74,8 @@ const MedellinServices = () => {
 
         {/* Included services grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-12">
-          {medellinIncludedServices.map((service, i) => {
-            const Icon = iconComponents[service.icon];
+          {includedServices.map((service, i) => {
+            const Icon = service.icon ? iconComponents[service.icon] : undefined;
             return (
               <div
                 key={service.id}
@@ -85,51 +89,55 @@ const MedellinServices = () => {
               >
                 {Icon && <Icon className="mx-auto mb-3 h-8 w-8 text-highlight" />}
                 <h3 className="font-serif text-lg font-medium text-white">
-                  {t("medellinServiceNames", service.name)}
+                  {pickLang(service.name, service.name_en, lang)}
                 </h3>
                 <p className="mt-1 font-sans text-sm text-white/60">
-                  {t("medellinServiceDescriptions", service.description)}
+                  {pickLang(service.description, service.description_en, lang)}
                 </p>
               </div>
             );
           })}
         </div>
 
-        {/* Divider */}
-        <div className="mx-auto mb-12 h-px w-32 bg-white/15" />
+        {facilities.length > 0 && (
+          <>
+            {/* Divider */}
+            <div className="mx-auto mb-12 h-px w-32 bg-white/15" />
 
-        {/* Amenities/Facilities - unique layout for Medellín */}
-        <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
-          {t("medellinServices", "facilitiesLabel")}
-        </p>
+            {/* Amenities/Facilities - unique layout for Medellín */}
+            <p className="mb-6 text-center font-sans text-xs tracking-[0.2em] uppercase text-highlight/70">
+              {t("medellinServices", "facilitiesLabel")}
+            </p>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-12">
-          {medellinAmenities.map((amenity, i) => {
-            const Icon = iconComponents[amenity.icon];
-            return (
-              <div
-                key={amenity.name}
-                className={cn(
-                  "flex flex-col items-center gap-3 rounded-lg border border-white/10 p-6 text-center transition-all duration-500 hover:bg-white/5",
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                )}
-                style={{
-                  transitionDelay: isVisible ? `${i * 100 + 400}ms` : "0ms",
-                }}
-              >
-                {Icon && <Icon className="h-7 w-7 text-highlight" />}
-                <div>
-                  <p className="font-sans text-sm font-medium text-white">
-                    {t("medellinAmenityNames", amenity.name)}
-                  </p>
-                  <p className="font-sans text-xs text-white/50">
-                    {amenity.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+              {facilities.map((service, i) => {
+                const Icon = service.icon ? iconComponents[service.icon] : undefined;
+                return (
+                  <div
+                    key={service.id}
+                    className={cn(
+                      "flex flex-col items-center gap-3 rounded-lg border border-white/10 p-6 text-center transition-all duration-500 hover:bg-white/5",
+                      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    )}
+                    style={{
+                      transitionDelay: isVisible ? `${i * 100 + 400}ms` : "0ms",
+                    }}
+                  >
+                    {Icon && <Icon className="h-7 w-7 text-highlight" />}
+                    <div>
+                      <p className="font-sans text-sm font-medium text-white">
+                        {pickLang(service.name, service.name_en, lang)}
+                      </p>
+                      <p className="font-sans text-xs text-white/50">
+                        {pickLang(service.description, service.description_en, lang)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {/* Divider */}
         <div className="mx-auto mb-12 h-px w-32 bg-white/15" />
@@ -140,8 +148,8 @@ const MedellinServices = () => {
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {medellinAdditionalServices.map((service, i) => {
-            const Icon = iconComponents[service.icon];
+          {additionalServices.map((service, i) => {
+            const Icon = service.icon ? iconComponents[service.icon] : undefined;
             return (
               <div
                 key={service.id}
@@ -156,10 +164,10 @@ const MedellinServices = () => {
                 {Icon && <Icon className="h-5 w-5 text-highlight shrink-0" />}
                 <div>
                   <p className="font-sans text-sm font-medium text-white">
-                    {t("medellinServiceNames", service.name)}
+                    {pickLang(service.name, service.name_en, lang)}
                   </p>
                   <p className="font-sans text-xs text-white/50">
-                    {t("medellinServiceDescriptions", service.description)}
+                    {pickLang(service.description, service.description_en, lang)}
                   </p>
                 </div>
               </div>

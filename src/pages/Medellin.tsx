@@ -13,9 +13,7 @@ import ClosedBanner from "@/components/ClosedBanner";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { useDirectusHotel } from "@/hooks/useDirectusHotel";
-
-const MEDELLIN_WHATSAPP =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20que%20me%20avisen%20cuando%20reabra%20Santa%20Alejandr%C3%ADa%20Hotel%20Medell%C3%ADn";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 const medellinStructuredData = {
   "@context": "https://schema.org",
@@ -87,6 +85,7 @@ const medellinStructuredData = {
 const Medellin = () => {
   const [showLoader, setShowLoader] = useState(true);
   const { hotel } = useDirectusHotel("medellin");
+  const { waUrl } = useWhatsapp("medellin");
   const isClosed = hotel?.is_closed === true;
 
   useEffect(() => {
@@ -110,7 +109,7 @@ const Medellin = () => {
         <ClosedBanner
           message={hotel?.closed_message ?? null}
           reopenDate={hotel?.reopen_date ?? null}
-          whatsappUrl={MEDELLIN_WHATSAPP}
+          whatsappUrl={waUrl("Hola, me gustaría que me avisen cuando reabra Santa Alejandría Hotel Medellín")}
         />
       )}
       <div className="medellin-theme bg-background text-foreground">

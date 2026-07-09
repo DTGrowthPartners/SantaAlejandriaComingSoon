@@ -4,9 +4,8 @@ import { MapPin, Phone, Clock, Mail, Instagram } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
+import { useDirectusHotel } from "@/hooks/useDirectusHotel";
 
 const MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.9487923431166!2d-75.5467512!3d10.425638399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef6256ffa796155%3A0x10db7b27a315cbd3!2sHotel%20Santa%20Alejandr%C3%ADa!5e0!3m2!1ses-419!2sco!4v1772551734782!5m2!1ses-419!2sco";
@@ -14,25 +13,34 @@ const MAP_EMBED_URL =
 const CartagenaLocation = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { t } = useTranslation();
+  const { waUrl } = useWhatsapp("cartagena");
+  const { hotel } = useDirectusHotel("cartagena");
+
+  const phoneDisplay = hotel?.phone || "+57 312 6915453";
+  const phoneTel = hotel?.phone_tel || "573126915453";
+  const email = hotel?.reservation_email || "reservatiosantaalejandria@gmail.com";
+  const mapEmbed = hotel?.maps_embed_url || MAP_EMBED_URL;
+  const instagramUrl =
+    hotel?.instagram_url || "https://www.instagram.com/santaalejandriahotelctg/";
 
   const contactInfo = [
     {
       icon: MapPin,
       label: t("cartagenaLocation", "direccion"),
-      value: "Calle de la Cruz N° 9-42, Barrio San Diego",
-      sublabel: "Centro Histórico, Cartagena, Colombia 13001",
+      value: hotel?.address || "Calle de la Cruz N° 9-42, Barrio San Diego",
+      sublabel: hotel?.address_line2 || "Centro Histórico, Cartagena, Colombia 13001",
     },
     {
       icon: Phone,
       label: t("cartagenaLocation", "telefono"),
-      value: "+57 312 6915453",
-      href: "tel:+573126915453",
+      value: phoneDisplay + (hotel?.phone_landline ? ` – ${hotel.phone_landline}` : ""),
+      href: `tel:+${phoneTel}`,
     },
     {
       icon: Mail,
       label: t("cartagenaLocation", "email"),
-      value: "reservatiosantaalejandria@gmail.com",
-      href: "mailto:reservatiosantaalejandria@gmail.com",
+      value: email,
+      href: `mailto:${email}`,
     },
     {
       icon: Clock,
@@ -128,7 +136,7 @@ const CartagenaLocation = () => {
             {/* Action buttons */}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
-                href={WHATSAPP_URL}
+                href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Cartagena")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-sans text-sm font-medium text-white transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02]"
@@ -137,7 +145,7 @@ const CartagenaLocation = () => {
                 WhatsApp
               </a>
               <a
-                href="https://www.instagram.com/santaalejandriahotelctg/"
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-3 font-sans text-sm font-medium text-foreground transition-all duration-300 hover:bg-foreground/5"
@@ -159,7 +167,7 @@ const CartagenaLocation = () => {
           >
             <div className="overflow-hidden rounded-lg border-2 border-accent/20 shadow-lg">
               <iframe
-                src={MAP_EMBED_URL}
+                src={mapEmbed}
                 width="100%"
                 height="400"
                 style={{ border: 0 }}

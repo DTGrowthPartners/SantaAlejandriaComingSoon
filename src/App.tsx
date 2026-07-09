@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import LoadingScreen from "./components/LoadingScreen";
+import { installWhatsappTracker } from "./lib/trackWhatsapp";
 import Index from "./pages/Index";
 import Cartagena from "./pages/Cartagena";
 import Medellin from "./pages/Medellin";
@@ -29,6 +30,9 @@ const App = () => {
       return true;
     }
   });
+
+  // Cuenta clics en botones de WhatsApp (registra en Directus: whatsapp_clicks).
+  useEffect(() => installWhatsappTracker(), []);
 
   const handleLoaderFinish = () => {
     try {

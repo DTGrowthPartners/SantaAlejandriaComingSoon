@@ -13,9 +13,10 @@ import {
 import LanguageToggle from "@/components/LanguageToggle";
 import logo from "@/assets/logo-santa-alejandria.png";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
-const WHATSAPP_URL =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
+const RESERVA_MSG =
+  "Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín";
 
 const navKeys = [
   { key: "inicio", href: "#inicio" },
@@ -28,6 +29,7 @@ const navKeys = [
 const MedellinNavbar = () => {
   const { scrollY } = useScrollProgress();
   const { t } = useTranslation();
+  const { waUrl } = useWhatsapp("medellin");
   const [activeSection, setActiveSection] = useState("inicio");
   const [sheetOpen, setSheetOpen] = useState(false);
   const isScrolled = scrollY > 80;
@@ -99,7 +101,7 @@ const MedellinNavbar = () => {
         <div className="hidden md:flex items-center gap-2">
           <LanguageToggle />
           <a
-            href={WHATSAPP_URL}
+            href={waUrl(RESERVA_MSG)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-[#D9D9D9] px-4 py-2 font-sans text-xs font-medium text-foreground tracking-wide transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105"
@@ -135,7 +137,7 @@ const MedellinNavbar = () => {
                 ))}
                 <div className="mt-4 border-t border-white/10 pt-4">
                   <a
-                    href={WHATSAPP_URL}
+                    href={waUrl(RESERVA_MSG)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setSheetOpen(false)}

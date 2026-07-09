@@ -13,9 +13,10 @@ import {
 import LanguageToggle from "@/components/LanguageToggle";
 import logo from "@/assets/logo-santa-alejandria.png";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
-const WHATSAPP_URL =
-  "https://wa.me/573126915453?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Cartagena";
+const RESERVA_MSG =
+  "Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Cartagena";
 
 const navKeys = [
   { key: "inicio", href: "#inicio" },
@@ -28,6 +29,7 @@ const navKeys = [
 const CartagenaNavbar = () => {
   const { scrollY } = useScrollProgress();
   const { t } = useTranslation();
+  const { waUrl } = useWhatsapp("cartagena");
   const [activeSection, setActiveSection] = useState("inicio");
   const [sheetOpen, setSheetOpen] = useState(false);
   const isScrolled = scrollY > 80;
@@ -97,7 +99,7 @@ const CartagenaNavbar = () => {
         <div className="hidden md:flex items-center gap-2">
           <LanguageToggle />
           <a
-            href={WHATSAPP_URL}
+            href={waUrl(RESERVA_MSG)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 font-sans text-xs font-medium text-white tracking-wide transition-all duration-300 hover:bg-accent/90 hover:scale-105"
@@ -133,7 +135,7 @@ const CartagenaNavbar = () => {
                 ))}
                 <div className="mt-4 border-t border-primary-foreground/10 pt-4">
                   <a
-                    href={WHATSAPP_URL}
+                    href={waUrl(RESERVA_MSG)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setSheetOpen(false)}

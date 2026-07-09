@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 import entradaImg from "@/assets/cartagena/entrada-2.webp";
 import imgGeneral from "@/assets/cartagena/img_6215.webp";
 
@@ -10,8 +11,8 @@ const badgeKeys = ["badge14", "badgeColonial", "badgeCentro", "badge24h"] as con
 
 const CartagenaAbout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { t } = useTranslation();
-  const { images } = useDirectusHotel("cartagena");
+  const { t, lang } = useTranslation();
+  const { hotel, images } = useDirectusHotel("cartagena");
   const mainSrc = images.gallery[0] ?? entradaImg;
   const secondarySrc = images.gallery[1] ?? imgGeneral;
 
@@ -72,7 +73,8 @@ const CartagenaAbout = () => {
 
             {/* Heading */}
             <h2 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl leading-tight">
-              {t("cartagenaAbout", "heading")}
+              {pickLang(hotel?.about_heading_es, hotel?.about_heading_en, lang) ||
+                t("cartagenaAbout", "heading")}
             </h2>
 
             {/* Separator */}
@@ -81,10 +83,12 @@ const CartagenaAbout = () => {
             {/* Body text */}
             <div className="space-y-4 font-sans text-sm text-muted-foreground leading-relaxed md:text-base">
               <p>
-                {t("cartagenaAbout", "paragraph1")}
+                {pickLang(hotel?.about_p1_es, hotel?.about_p1_en, lang) ||
+                  t("cartagenaAbout", "paragraph1")}
               </p>
-<p>
-                {t("cartagenaAbout", "paragraph2")}
+              <p>
+                {pickLang(hotel?.about_p2_es, hotel?.about_p2_en, lang) ||
+                  t("cartagenaAbout", "paragraph2")}
               </p>
             </div>
 
@@ -105,11 +109,11 @@ const CartagenaAbout = () => {
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-background p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">{t("cartagenaAbout", "checkIn")}</p>
-                <p className="mt-1 font-serif text-lg font-medium text-foreground">3:00 PM</p>
+                <p className="mt-1 font-serif text-lg font-medium text-foreground">{hotel?.checkin_time || "3:00 PM"}</p>
               </div>
               <div className="rounded-lg bg-background p-4 text-center">
                 <p className="font-sans text-xs text-muted-foreground uppercase tracking-wide">{t("cartagenaAbout", "checkOut")}</p>
-                <p className="mt-1 font-serif text-lg font-medium text-foreground">12:00 M</p>
+                <p className="mt-1 font-serif text-lg font-medium text-foreground">{hotel?.checkout_time || "12:00 M"}</p>
               </div>
             </div>
           </div>

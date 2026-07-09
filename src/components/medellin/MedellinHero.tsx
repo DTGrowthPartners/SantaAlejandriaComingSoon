@@ -2,17 +2,17 @@ import { ChevronDown } from "lucide-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useDirectusHotel } from "@/hooks/useDirectusHotel";
+import { pickLang } from "@/lib/directus";
 import medellinImg from "@/assets/ciudad-edificios-hotel-nutibara-medellin-colombia.webp";
 import logo from "@/assets/logo-santa-alejandria.png";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-
-const WHATSAPP_URL =
-  "https://wa.me/573053093723?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva%20en%20Santa%20Alejandr%C3%ADa%20Hotel%20%E2%80%93%20Medell%C3%ADn";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 const MedellinHero = () => {
   const { scrollY } = useScrollProgress();
-  const { t } = useTranslation();
-  const { images } = useDirectusHotel("medellin");
+  const { t, lang } = useTranslation();
+  const { hotel, images } = useDirectusHotel("medellin");
+  const { waUrl } = useWhatsapp("medellin");
   const heroSrc = images.heroImage ?? medellinImg;
 
   return (
@@ -74,13 +74,14 @@ const MedellinHero = () => {
 
         {/* Tagline */}
         <p className="mb-10 max-w-lg font-sans text-sm tracking-wide text-background/70 animate-fade-in-delay-2 leading-relaxed">
-          {t("medellinHero", "tagline")}
+          {pickLang(hotel?.hero_tagline_es, hotel?.hero_tagline_en, lang) ||
+            t("medellinHero", "tagline")}
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row animate-fade-in-delay-3">
           <a
-            href={WHATSAPP_URL}
+            href={waUrl("Hola, me gustaría hacer una reserva en Santa Alejandría Hotel – Medellín")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-[#D9D9D9] px-8 py-3.5 font-sans text-sm font-medium text-foreground tracking-wide uppercase transition-all duration-300 hover:bg-[#C4C4C4] hover:scale-105 hover:shadow-lg"

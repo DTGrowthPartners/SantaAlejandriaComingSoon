@@ -3,13 +3,18 @@ import type { Amenity } from "@/lib/directus";
 export interface MedellinRoomCategory {
   id: string;
   name: string;
+  nameEn?: string | null;
   shortName: string;
+  shortNameEn?: string | null;
   description: string;
+  descriptionEn?: string | null;
+  pricePerNight?: number | null;
   variants: MedellinRoomVariant[];
   amenities: Amenity[];
   highlights: string[];
+  highlightsEn?: string[] | null;
   beds24RoomId?: string | null;
-  images: string[]; // placeholder for now
+  images: string[];
 }
 
 export interface MedellinRoomVariant {
@@ -207,11 +212,13 @@ export const medellinRoomCategories: MedellinRoomCategory[] = [
 export interface Apartaestudio {
   id: string;
   name: string;
+  nameEn?: string | null;
   ambientes: number;
   quantity: number | null;
   pricePerDay: number;
   pricePerMonth: number;
   includes: string[];
+  images?: string[];
 }
 
 export const apartaestudios: Apartaestudio[] = [

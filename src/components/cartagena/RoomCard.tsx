@@ -15,6 +15,7 @@ import MaterialIcon from "@/components/MaterialIcon";
 import RoomGalleryDialog from "./RoomGalleryDialog";
 // import BookingWidget from "@/components/booking/BookingWidget"; // Beds24 deshabilitado jun-2026 (solo WhatsApp)
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import { useWhatsapp } from "@/hooks/useWhatsapp";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -23,6 +24,23 @@ function formatPrice(price: number) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+/** Formatea una fecha ISO (YYYY-MM-DD) como "07 de Julio" / "July 07" sin corrimiento de zona horaria. */
+function formatDayMonth(iso: string, lang: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1));
+  const locale = lang === "en" ? "en-US" : "es-CO";
+  const day = new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
+  let month = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    timeZone: "UTC",
+  }).format(date);
+  month = month.charAt(0).toUpperCase() + month.slice(1);
+  return lang === "en" ? `${month} ${day}` : `${day} de ${month}`;
 }
 
 interface RoomCardProps {
@@ -35,7 +53,8 @@ const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const { waUrl } = useWhatsapp("cartagena");
 
   const handleApiChange = (carouselApi: CarouselApi) => {
     setApi(carouselApi);
@@ -53,7 +72,7 @@ const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
 
   const roomName = room.name || t("roomNames", room.id);
   const roomDescription = room.description || t("roomDescriptions", room.id);
-  const whatsappMessage = encodeURIComponent(
+  const whatsappHref = waUrl(
     `Hola, me gustaría reservar la ${roomName} en Santa Alejandría Hotel – Cartagena`
   );
 
@@ -112,12 +131,37 @@ const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
             {roomName}
           </h3>
 
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-serif text-3xl font-medium text-accent">
-              {formatPrice(room.pricePerNight)}
-            </span>
-            <span className="font-sans text-sm text-muted-foreground">{t("cartagenaRooms", "noche")}</span>
-          </div>
+          {room.pricePeriods.length > 0 ? (
+            <div className="mt-2 space-y-3">
+              {room.pricePeriods.map((p, i) => (
+                <div key={i}>
+                  {p.label && p.label.trim() && (
+                    <p className="font-sans text-xs font-semibold uppercase tracking-wide text-primary">
+                      {p.label}
+                    </p>
+                  )}
+                  <p className="font-sans text-xs tracking-wide text-muted-foreground">
+                    {lang === "en" ? "from" : "de"} {formatDayMonth(p.startDate, lang)} - {formatDayMonth(p.endDate, lang)}
+                  </p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-serif text-2xl font-medium text-accent">
+                      {formatPrice(p.price)}
+                    </span>
+                    <span className="font-sans text-sm text-muted-foreground">
+                      {t("cartagenaRooms", "noche")}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="font-serif text-3xl font-medium text-accent">
+                {formatPrice(room.pricePerNight)}
+              </span>
+              <span className="font-sans text-sm text-muted-foreground">{t("cartagenaRooms", "noche")}</span>
+            </div>
+          )}
 
           {/* Description */}
           <p className="mt-4 font-sans text-sm text-muted-foreground leading-relaxed">
@@ -190,7 +234,7 @@ const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
 
           {/* CTA */}
           <a
-            href={`https://wa.me/573126915453?text=${whatsappMessage}`}
+            href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 font-sans text-sm font-medium text-white tracking-wide transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02] hover:shadow-lg"
