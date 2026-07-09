@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 
 export default async function LoginPage() {
   const session = await getSession();
-  if (session) redirect("/dashboard/forecast");
+  if (session) redirect("/dashboard/inicio");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-cream to-brand-light p-4">

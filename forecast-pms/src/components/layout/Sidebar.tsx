@@ -8,6 +8,7 @@ import { ROLE_META } from "@/lib/domain";
 import type { UserRole } from "@/generated/prisma/client";
 
 const NAV = [
+  { href: "/dashboard/inicio", label: "Inicio", icon: "fa-solid fa-house" },
   { href: "/dashboard/forecast", label: "Forecast", icon: "fa-solid fa-calendar-days" },
   { href: "/dashboard/reservations", label: "Reservas", icon: "fa-solid fa-clipboard-list" },
   { href: "/dashboard/payments", label: "Pagos", icon: "fa-solid fa-credit-card" },

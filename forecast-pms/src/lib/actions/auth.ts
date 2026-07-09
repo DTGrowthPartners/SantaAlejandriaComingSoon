@@ -31,7 +31,7 @@ export async function loginAction(
     email: user.email,
   });
 
-  redirect("/dashboard/forecast");
+  redirect("/dashboard/inicio");
 }
 
 export async function logoutAction(): Promise<void> {
