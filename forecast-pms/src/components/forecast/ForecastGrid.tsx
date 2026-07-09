@@ -190,8 +190,8 @@ export function ForecastGrid({
 
         <div className="overflow-x-auto thin-scroll">
           <div style={{ minWidth: LABEL_W + data.daysInMonth * DAY_MIN }}>
-            <div className="sticky top-0 z-20 grid border-b border-slate-200 bg-slate-50" style={{ gridTemplateColumns: gridCols }}>
-              <div className="sticky left-0 z-30 flex items-center border-r border-slate-200 bg-slate-50 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500" style={{ gridColumn: 1, height: 40 }}>
+            <div className="sticky top-0 z-40 grid border-b border-slate-200 bg-slate-50" style={{ gridTemplateColumns: gridCols }}>
+              <div className="sticky left-0 z-50 flex items-center border-r border-slate-200 bg-slate-50 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500" style={{ gridColumn: 1, height: 40 }}>
                 Habitación
               </div>
               {data.days.map((d) => (
@@ -207,7 +207,7 @@ export function ForecastGrid({
               const blocks = data.blocksByRoom[room.id] ?? [];
               return (
                 <div key={room.id} className="grid border-b border-slate-100" style={{ gridTemplateColumns: gridCols, height: ROW_H }}>
-                  <div className={cn("sticky left-0 z-10 flex flex-col justify-center border-r border-slate-200 px-3", idx % 2 ? "bg-slate-50" : "bg-white")} style={{ gridColumn: 1, gridRow: 1 }}>
+                  <div className={cn("sticky left-0 z-30 flex flex-col justify-center border-r border-slate-200 px-3", idx % 2 ? "bg-slate-50" : "bg-white")} style={{ gridColumn: 1, gridRow: 1 }}>
                     <span className="text-sm font-semibold text-slate-800">{room.name}</span>
                     {room.type && <span className="truncate text-[11px] text-slate-400">{room.type}</span>}
                   </div>
