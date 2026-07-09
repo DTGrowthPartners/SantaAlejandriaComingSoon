@@ -112,3 +112,6 @@ temp/
 # Documentos corporativos sensibles (no pertenecen al repo de la web)
 CAMARA DE COMERCIO PANDORA.pdf
 Escaneo 24-03-2026, 11.57 a.m..pdf
+
+# Env de producción (no debe ir al repo)
+.env.production
