@@ -1,13 +1,22 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-raleway), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
+
+  /* Paleta de marca Santa Alejandría */
+  --color-brand: hsl(84 76% 28%);
+  --color-brand-dark: hsl(84 76% 20%);
+  --color-brand-light: hsl(84 45% 92%);
+  --color-gold: hsl(41 74% 42%);
+  --color-gold-soft: hsl(47 76% 74%);
+  --color-cream: hsl(47 55% 96%);
+  --color-ink: hsl(84 30% 16%);
 }
 
 html,
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-raleway), system-ui, sans-serif;
 }
 
 /* Scrollbar discreto para el grid del forecast */
@@ -16,9 +25,9 @@ body {
   width: 10px;
 }
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d6cfa8;
   border-radius: 6px;
 }
 .thin-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #b8ad7a;
 }

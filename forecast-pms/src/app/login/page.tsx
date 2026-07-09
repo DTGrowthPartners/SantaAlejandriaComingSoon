@@ -7,19 +7,19 @@ export default async function LoginPage() {
   if (session) redirect("/dashboard/forecast");
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-cream to-brand-light p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold text-slate-900">Forecast PMS</h1>
-          <p className="mt-1 text-sm text-slate-500">Santa Alejandría Hotel</p>
+          <i className="fa-solid fa-hotel text-3xl text-brand" aria-hidden />
+          <h1 className="mt-3 font-serif text-2xl font-bold text-brand-dark">
+            Santa Alejandría
+          </h1>
+          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-gold">
+            Forecast PMS
+          </p>
         </div>
 
         <LoginForm />
-
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Demo: admin@hotel.com · recepcion@hotel.com · contraseña{" "}
-          <span className="font-mono">Admin123</span>
-        </p>
       </div>
     </main>
   );

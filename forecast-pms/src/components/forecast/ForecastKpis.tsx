@@ -21,7 +21,7 @@ export function ForecastKpisRow({ kpis }: { kpis: ForecastKpis }) {
           className={
             "rounded-xl border px-3 py-2.5 " +
             (it.highlight
-              ? "border-emerald-200 bg-emerald-50"
+              ? "border-brand-light bg-brand-light"
               : "border-slate-200 bg-white")
           }
         >

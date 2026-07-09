@@ -81,3 +81,26 @@ export const INACTIVE_RESERVATION_STATUSES: ReservationStatus[] = [
 export function isActiveStatus(status: ReservationStatus): boolean {
   return ACTIVE_RESERVATION_STATUSES.includes(status);
 }
+
+/** Canales en orden, para selects y validación (zod). */
+export const BOOKING_CHANNELS = [
+  "DIRECT",
+  "WHATSAPP",
+  "BOOKING",
+  "EXPEDIA",
+  "AIRBNB",
+  "WALK_IN",
+  "AGENCY",
+  "OTHER",
+] as const satisfies readonly BookingChannel[];
+
+/** Estados asignables manualmente al editar una reserva. */
+export const EDITABLE_RESERVATION_STATUSES = [
+  "PENDING",
+  "PENDING_PAYMENT",
+  "DEPOSIT_PAID",
+  "CONFIRMED",
+  "PAID",
+  "NO_SHOW",
+  "CANCELLED",
+] as const satisfies readonly ReservationStatus[];

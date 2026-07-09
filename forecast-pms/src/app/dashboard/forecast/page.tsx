@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireUser } from "@/lib/auth";
+import { requireUser, canEditReservations, canManagePayments } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getForecastData } from "@/lib/forecast";
 import { ForecastKpisRow } from "@/components/forecast/ForecastKpis";
@@ -34,12 +34,14 @@ export default async function ForecastPage({
   const hotel = await prisma.hotel.findUnique({ where: { id: user.hotelId } });
   const tz = hotel?.timezone ?? "America/Bogota";
   const data = await getForecastData(user.hotelId, year, month, tz);
+  const canEdit = canEditReservations(user.role);
+  const canPay = canManagePayments(user.role);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-3 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">
+          <h1 className="font-serif text-xl font-bold text-brand-dark">
             {hotel?.name ?? "Forecast"}
           </h1>
           <p className="text-sm text-slate-500">Forecast de ocupación</p>
@@ -52,18 +54,17 @@ export default async function ForecastPage({
           >
             ⬆ Importar forecast
           </Link>
-          <Link
-            href="/dashboard/reservations"
-            className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
-          >
-            + Crear reserva
-          </Link>
         </div>
       </header>
 
       <ForecastKpisRow kpis={data.kpis} />
 
-      <ForecastGrid data={data} hotelName={hotel?.name ?? "el hotel"} />
+      <ForecastGrid
+        data={data}
+        hotelName={hotel?.name ?? "el hotel"}
+        canEdit={canEdit}
+        canPay={canPay}
+      />
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
