@@ -1,0 +1,180 @@
+// Forecast PMS Online - Santa Alejandría Hotels
+// Esquema base. Modelos alineados al brief y a la lógica del forecast Excel real.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ────────────────────────────── Enums ──────────────────────────────
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  RECEPTION
+  ACCOUNTING
+  VIEWER
+}
+
+enum ReservationStatus {
+  PENDING // Reserva creada sin pago
+  PENDING_PAYMENT // Link de pago generado, esperando pago
+  DEPOSIT_PAID // Abono recibido
+  CONFIRMED // Reserva confirmada
+  PAID // Pago completo recibido
+  CANCELLED // Reserva cancelada
+  EXPIRED // Vencida por falta de pago
+  NO_SHOW // Huésped no llegó
+}
+
+enum PaymentStatus {
+  NO_PAYMENT
+  LINK_CREATED
+  PAYMENT_PENDING
+  APPROVED
+  REJECTED // "TC negada" en el forecast del hotel
+  EXPIRED
+  REFUNDED
+}
+
+// Canales de reserva. Colores alineados a la leyenda del forecast Excel del hotel.
+enum BookingChannel {
+  DIRECT // Directo Hotel  → verde  #00A650
+  WHATSAPP // WhatsApp     → verde claro #25D366
+  BOOKING // Booking.com   → azul   #00B0F0
+  EXPEDIA // Expedia       → morado #7030A0
+  AIRBNB // Airbnb         → rojo/rosa #FF385C
+  WALK_IN // Walk-in       → amarillo #FFC400
+  AGENCY // Agencia        → naranja #FF8A00
+  OTHER // Otro/Comply     → gris   #9CA3AF
+}
+
+// ────────────────────────────── Modelos ──────────────────────────────
+
+model Hotel {
+  id        String   @id @default(cuid())
+  name      String
+  timezone  String   @default("America/Bogota")
+  currency  String   @default("COP")
+  rooms     Room[]
+  users     User[]
+  reservations Reservation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(RECEPTION)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hotelId])
+}
+
+model Room {
+  id           String        @id @default(cuid())
+  hotelId      String
+  hotel        Hotel         @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  name         String // "101", "203", etc.
+  type         String? // "Doble Estándar", "King Superior", "Suite Alejandría"...
+  capacity     Int           @default(2)
+  active       Boolean       @default(true)
+  sortOrder    Int           @default(0)
+  reservations Reservation[]
+  blocks       RoomBlock[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([hotelId, sortOrder])
+}
+
+model Reservation {
+  id                   String               @id @default(cuid())
+  hotelId              String
+  hotel                Hotel                @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId               String
+  room                 Room                 @relation(fields: [roomId], references: [id])
+  guestName            String
+  guestPhone           String?
+  guestEmail           String?
+  channel              BookingChannel       @default(DIRECT)
+  checkIn              DateTime             @db.Date
+  checkOut             DateTime             @db.Date
+  nights               Int
+  guestsCount          Int                  @default(1)
+  totalAmount          Int                  @default(0) // en COP (sin decimales)
+  depositRequired      Int                  @default(0)
+  paidAmount           Int                  @default(0)
+  balanceAmount        Int                  @default(0)
+  reservationStatus    ReservationStatus    @default(PENDING)
+  paymentStatus        PaymentStatus        @default(NO_PAYMENT)
+  notes                String?
+  paymentLink          String?
+  paymentLinkExpiresAt DateTime?
+  createdById          String?
+  payments             Payment[]
+  history              ReservationHistory[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+
+  @@index([hotelId, roomId, checkIn, checkOut])
+  @@index([hotelId, checkIn])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  reservationId     String
+  reservation       Reservation   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  provider          String        @default("bold")
+  providerPaymentId String?
+  providerReference String?
+  paymentLink       String?
+  amount            Int
+  status            PaymentStatus @default(PAYMENT_PENDING)
+  method            String? // "manual", "link", "efectivo", "transferencia"...
+  paidAt            DateTime?
+  rawPayload        Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([reservationId])
+}
+
+model ReservationHistory {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  action        String // "created", "updated", "moved", "payment", "status_change", "cancelled"
+  oldData       Json?
+  newData       Json?
+  userId        String?
+  userName      String?
+  createdAt     DateTime    @default(now())
+
+  @@index([reservationId, createdAt])
+}
+
+model RoomBlock {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  reason    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomId, startDate, endDate])
+}
