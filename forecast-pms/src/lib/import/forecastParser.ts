@@ -144,8 +144,10 @@ export async function parseForecastWorkbook(
       if (!dm) continue;
       const dIn = parseInt(dm[1], 10);
       const dOut = parseInt(dm[2], 10);
-      const mm = parseInt(dm[3], 10) || curMonth;
-      if (dIn < 1 || dIn > 31) continue;
+      let mm = parseInt(dm[3], 10);
+      // "/25", "/24"… (fragmentos de año) → mes inválido: usar el mes del bloque
+      if (!(mm >= 1 && mm <= 12)) mm = curMonth;
+      if (dIn < 1 || dIn > 31 || dOut < 1 || dOut > 31) continue;
 
       const checkIn = isoFrom(curYear, mm, dIn);
       // Si el día de salida es <= entrada, cruza al mes siguiente
