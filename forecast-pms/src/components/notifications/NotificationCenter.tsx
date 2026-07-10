@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { dismissNotification, dismissAllNotifications } from "@/lib/actions/notifications";
 
 type Notif = {
@@ -30,6 +31,7 @@ export function NotificationCenter() {
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const seen = useRef<Set<string>>(new Set());
   const first = useRef(true);
+  const router = useRouter();
 
   useEffect(() => {
     let alive = true;
@@ -41,7 +43,12 @@ export function NotificationCenter() {
         const list: Notif[] = d.notifications ?? [];
         const fresh = list.filter((n) => !seen.current.has(n.id)).map((n) => n.id);
         list.forEach((n) => seen.current.add(n.id));
-        if (!first.current && fresh.length) setNewIds(new Set(fresh));
+        if (!first.current && fresh.length) {
+          setNewIds(new Set(fresh));
+          // Refresca los datos de servidor (grid del forecast, listas, etc.)
+          // para que la reserva nueva/movida aparezca sin recargar la página.
+          router.refresh();
+        }
         first.current = false;
         setItems(list);
       } catch {
