@@ -11,6 +11,7 @@ import {
   ivaOf,
 } from "@/lib/publicBooking";
 import { createBoldPaymentLink } from "@/lib/bold";
+import { notifyNewReservation } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -122,6 +123,18 @@ export async function POST(req: NextRequest) {
           },
         },
       },
+    });
+
+    // Notificación de reserva NUEVA por la web (no aplica a importaciones).
+    await notifyNewReservation({
+      hotelId: hotel.id,
+      number: reservation.number,
+      guestName: data.guestName,
+      roomName: free.name,
+      channel: "DIRECT",
+      checkIn,
+      checkOut,
+      via: "web",
     });
 
     // Pago virtual → link Bold por el total con IVA.

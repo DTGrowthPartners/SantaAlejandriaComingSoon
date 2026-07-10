@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession, canEditReservations, canManagePayments } from "@/lib/auth";
 import { BOOKING_CHANNELS, EDITABLE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
 import { parseDateInput, nightsBetween, addDays, findConflicts } from "@/lib/reservations";
+import { notifyNewReservation, notifyReservationMoved } from "@/lib/notify";
 
 export type ActionState = { ok: boolean; error: string | null };
 const OK: ActionState = { ok: true, error: null };
@@ -67,7 +68,7 @@ export async function createReservationAction(
     return fail(`Cruce con ${conflicts[0].label}. La habitación ya está ocupada en esas fechas.`);
   }
 
-  await prisma.reservation.create({
+  const created = await prisma.reservation.create({
     data: {
       hotelId: session.hotelId,
       roomId: d.roomId,
@@ -96,6 +97,17 @@ export async function createReservationAction(
         },
       },
     },
+  });
+
+  await notifyNewReservation({
+    hotelId: session.hotelId,
+    number: created.number,
+    guestName: d.guestName,
+    roomName: room.name,
+    channel: d.channel,
+    checkIn,
+    checkOut,
+    via: "recepción",
   });
 
   revalidate();
@@ -217,6 +229,11 @@ export async function moveReservationAction(input: {
     );
   }
 
+  const fromRoom = await prisma.room.findFirst({
+    where: { id: existing.roomId },
+    select: { name: true },
+  });
+
   await prisma.reservation.update({
     where: { id: input.id },
     data: {
@@ -236,6 +253,17 @@ export async function moveReservationAction(input: {
         },
       },
     },
+  });
+
+  await notifyReservationMoved({
+    hotelId: session.hotelId,
+    number: existing.number,
+    guestName: existing.guestName,
+    fromRoom: fromRoom?.name ?? "—",
+    toRoom: room.name,
+    checkIn,
+    checkOut,
+    by: session.name,
   });
 
   revalidate();

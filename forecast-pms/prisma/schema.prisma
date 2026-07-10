@@ -179,3 +179,16 @@ model RoomBlock {
 
   @@index([roomId, startDate, endDate])
 }
+
+model Notification {
+  id                String   @id @default(cuid())
+  hotelId           String
+  kind              String   @default("reservation") // "reservation"
+  title             String
+  message           String
+  reservationNumber Int?
+  dismissed         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  @@index([hotelId, dismissed, createdAt])
+}
