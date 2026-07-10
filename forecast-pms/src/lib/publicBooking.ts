@@ -162,6 +162,53 @@ export async function blockedDates(
   return out;
 }
 
+/**
+ * Ocupación POR habitación física del tipo, en [from, to).
+ * Devuelve, por cada habitación, las noches ocupadas. El cliente usa esto para
+ * calcular disponibilidad real: una estadía es válida solo si UNA habitación
+ * está libre TODAS las noches del rango.
+ */
+export async function roomOccupancy(
+  room: DirectusPublicRoom,
+  hotelId: string,
+  from: Date,
+  to: Date,
+): Promise<{ count: number; rooms: { busy: string[] }[] }> {
+  const physical = await pmsRoomsForType(room, hotelId);
+  if (physical.length === 0) return { count: 0, rooms: [] };
+  const ids = physical.map((r) => r.id);
+
+  const [reservations, blocks] = await Promise.all([
+    prisma.reservation.findMany({
+      where: {
+        roomId: { in: ids },
+        reservationStatus: { in: ACTIVE_RESERVATION_STATUSES },
+        checkIn: { lt: to },
+        checkOut: { gt: from },
+      },
+      select: { roomId: true, checkIn: true, checkOut: true },
+    }),
+    prisma.roomBlock.findMany({
+      where: { roomId: { in: ids }, active: true, startDate: { lt: to }, endDate: { gt: from } },
+      select: { roomId: true, startDate: true, endDate: true },
+    }),
+  ]);
+
+  const rooms = physical.map((pr) => {
+    const spans = [
+      ...reservations.filter((r) => r.roomId === pr.id).map((r) => ({ s: r.checkIn.getTime(), e: r.checkOut.getTime() })),
+      ...blocks.filter((b) => b.roomId === pr.id).map((b) => ({ s: b.startDate.getTime(), e: b.endDate.getTime() })),
+    ];
+    const busy: string[] = [];
+    for (let t = from.getTime(); t < to.getTime(); t += DAY_MS) {
+      if (spans.some((x) => x.s <= t && t < x.e)) busy.push(iso(new Date(t)));
+    }
+    return { busy };
+  });
+
+  return { count: physical.length, rooms };
+}
+
 /** Primera habitación física del tipo libre en TODO el rango (o null). */
 export async function findFreeRoom(
   room: DirectusPublicRoom,

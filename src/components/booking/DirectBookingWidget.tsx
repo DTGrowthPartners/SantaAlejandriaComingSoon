@@ -51,7 +51,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const [checkIn, setCheckIn] = useState<Date | undefined>();
   const [checkOut, setCheckOut] = useState<Date | undefined>();
   const [adults, setAdults] = useState(2);
-  const [blocked, setBlocked] = useState<Set<string>>(new Set());
+  const [roomsBusy, setRoomsBusy] = useState<Set<string>[]>([]);
   const [ciOpen, setCiOpen] = useState(false);
   const [coOpen, setCoOpen] = useState(false);
 
@@ -72,7 +72,9 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
     fetch(`${PMS_API}/api/public/availability?room=${encodeURIComponent(room.id)}&from=${from}&to=${to}`)
       .then((r) => r.json())
       .then((d) => {
-        if (!cancelled && Array.isArray(d.blocked)) setBlocked(new Set(d.blocked));
+        if (!cancelled && Array.isArray(d.rooms)) {
+          setRoomsBusy(d.rooms.map((r: { busy: string[] }) => new Set(r.busy)));
+        }
       })
       .catch(() => {});
     return () => {
@@ -99,15 +101,20 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
     return { nights, subtotal, iva, total: subtotal + iva };
   }, [checkIn, checkOut, room]);
 
-  const isBlocked = (d: Date) => blocked.has(toISO(d));
-  const crossesBlocked = (candidate: Date): boolean => {
-    if (!checkIn) return false;
-    const cur = new Date(checkIn);
-    while (cur < candidate) {
-      if (blocked.has(toISO(cur))) return true;
-      cur.setDate(cur.getDate() + 1);
-    }
-    return false;
+  // Un día no sirve de check-in si TODAS las habitaciones del tipo están ocupadas esa noche.
+  const allRoomsBusy = (d: Date) => roomsBusy.length > 0 && roomsBusy.every((bs) => bs.has(toISO(d)));
+
+  // ¿Existe UNA habitación libre TODAS las noches [ci, co)? (sin datos → no bloquea; el server valida)
+  const someRoomFree = (ci: Date, co: Date): boolean => {
+    if (roomsBusy.length === 0) return true;
+    return roomsBusy.some((bs) => {
+      const cur = new Date(ci);
+      while (cur < co) {
+        if (bs.has(toISO(cur))) return false;
+        cur.setDate(cur.getDate() + 1);
+      }
+      return true;
+    });
   };
 
   async function submit() {
@@ -146,7 +153,9 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
     }
   }
 
-  const canReserve = Boolean(checkIn && checkOut && quote && quote.nights > 0);
+  const canReserve = Boolean(
+    checkIn && checkOut && quote && quote.nights > 0 && someRoomFree(checkIn, checkOut),
+  );
   const formValid = name.trim().length >= 3 && phone.trim().length >= 7;
 
   return (
@@ -180,21 +189,12 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                 onSelect={(d) => {
                   setCheckIn(d);
                   if (d) {
-                    let next = checkOut && checkOut > d ? checkOut : plusDays(d, 1);
-                    const cur = new Date(d);
-                    while (cur < next) {
-                      if (blocked.has(toISO(cur))) {
-                        next = new Date(cur);
-                        break;
-                      }
-                      cur.setDate(cur.getDate() + 1);
-                    }
-                    if (next <= d) next = plusDays(d, 1);
-                    setCheckOut(next);
+                    const keep = checkOut && checkOut > d && someRoomFree(d, checkOut);
+                    setCheckOut(keep ? checkOut : plusDays(d, 1));
                   }
                   setCiOpen(false);
                 }}
-                disabled={(d) => d < today || isBlocked(d)}
+                disabled={(d) => d < today || allRoomsBusy(d)}
                 initialFocus
                 locale={es}
               />
@@ -226,7 +226,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                 }}
                 disabled={(d) => {
                   if (checkIn ? d <= checkIn : d < today) return true;
-                  if (checkIn && crossesBlocked(d)) return true;
+                  if (checkIn && !someRoomFree(checkIn, d)) return true;
                   return false;
                 }}
                 initialFocus
@@ -272,6 +272,12 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
             <span className="text-accent">{formatCOP(quote.total)}</span>
           </div>
         </div>
+      )}
+
+      {checkIn && checkOut && quote && quote.nights > 0 && !someRoomFree(checkIn, checkOut) && (
+        <p className="mt-2 font-sans text-xs text-amber-700">
+          No hay una habitación libre para todas esas noches. Prueba con otras fechas.
+        </p>
       )}
 
       <button

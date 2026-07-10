@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { corsJson, corsPreflight } from "@/lib/cors";
-import { getDirectusRoom, blockedDates, parseIsoDate } from "@/lib/publicBooking";
+import { getDirectusRoom, roomOccupancy, parseIsoDate } from "@/lib/publicBooking";
 
 export const runtime = "nodejs";
 
@@ -10,9 +10,10 @@ export async function OPTIONS(req: NextRequest) {
 }
 
 /**
- * GET /api/public/availability?room=<slug directus>&from=YYYY-MM-DD&to=YYYY-MM-DD
- * → { blocked: ["2026-07-05", ...] }  fechas sin ninguna habitación libre del tipo.
- * Rango por defecto: hoy → +6 meses (máx. 12 meses).
+ * GET /api/public/availability?room=<slug>&from=YYYY-MM-DD&to=YYYY-MM-DD
+ * → { count, rooms: [{ busy: ["2026-07-18", ...] }] }
+ *   Ocupación por habitación física del tipo. Una estadía es válida solo si
+ *   UNA habitación está libre TODAS las noches. Rango: hoy → +6 meses (máx 12).
  */
 export async function GET(req: NextRequest) {
   const origin = req.headers.get("origin");
@@ -34,12 +35,13 @@ export async function GET(req: NextRequest) {
     const hotel = await prisma.hotel.findFirst();
     if (!hotel) return corsJson(origin, { error: "Hotel no configurado" }, { status: 500 });
 
-    const blocked = await blockedDates(room, hotel.id, from, to);
+    const occ = await roomOccupancy(room, hotel.id, from, to);
     return corsJson(origin, {
       room: room.slug,
       from: from.toISOString().slice(0, 10),
       to: to.toISOString().slice(0, 10),
-      blocked,
+      count: occ.count,
+      rooms: occ.rooms,
     });
   } catch (e) {
     console.error("[public/availability]", e);
