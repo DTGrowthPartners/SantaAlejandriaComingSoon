@@ -11,6 +11,7 @@ import {
 import { formatCOP, formatDate } from "@/lib/format";
 import { cancelReservationAction } from "@/lib/actions/reservations";
 import { ReservationForm, type ReservationInitial } from "@/components/forecast/ReservationForm";
+import { DepositLinkButton } from "@/components/payments/DepositLink";
 import type { BookingChannel, ReservationStatus, PaymentStatus } from "@/generated/prisma/client";
 
 export type ReservationRow = {
@@ -39,10 +40,12 @@ export function ReservationsTable({
   reservations,
   rooms,
   canEdit,
+  canPay = false,
 }: {
   reservations: ReservationRow[];
   rooms: { id: string; name: string; type: string | null }[];
   canEdit: boolean;
+  canPay?: boolean;
 }) {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -120,7 +123,7 @@ export function ReservationsTable({
               <th className="px-3 py-2.5 text-center">Estado</th>
               <th className="px-3 py-2.5 text-right">Total (IVA inc.)</th>
               <th className="px-3 py-2.5 text-right">Saldo</th>
-              {canEdit && <th className="px-3 py-2.5" />}
+              {(canEdit || canPay) && <th className="px-3 py-2.5" />}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -144,12 +147,25 @@ export function ReservationsTable({
                   </td>
                   <td className="px-3 py-2.5 text-right text-slate-700">{formatCOP(totalConIva(r.totalAmount))}</td>
                   <td className="px-3 py-2.5 text-right font-semibold text-slate-900">{formatCOP(r.balanceAmount)}</td>
-                  {canEdit && (
+                  {(canEdit || canPay) && (
                     <td className="whitespace-nowrap px-3 py-2.5 text-right">
-                      <button onClick={() => setEditing(r)} className="mr-3 text-slate-400 hover:text-brand" title="Editar">
-                        <i className="fa-solid fa-pen" aria-hidden />
-                      </button>
-                      {r.reservationStatus !== "CANCELLED" && (
+                      {canPay && r.reservationStatus !== "CANCELLED" && (
+                        <span className="mr-3 inline-block">
+                          <DepositLinkButton
+                            reservationId={r.id}
+                            number={r.number}
+                            guestName={r.guestName}
+                            balanceAmount={r.balanceAmount}
+                            variant="icon"
+                          />
+                        </span>
+                      )}
+                      {canEdit && (
+                        <button onClick={() => setEditing(r)} className="mr-3 text-slate-400 hover:text-brand" title="Editar">
+                          <i className="fa-solid fa-pen" aria-hidden />
+                        </button>
+                      )}
+                      {canEdit && r.reservationStatus !== "CANCELLED" && (
                         <button onClick={() => cancel(r.id)} disabled={isPending} className="text-slate-400 hover:text-red-600" title="Cancelar">
                           <i className="fa-solid fa-ban" aria-hidden />
                         </button>

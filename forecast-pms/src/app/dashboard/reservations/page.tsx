@@ -1,4 +1,4 @@
-import { requireUser, canEditReservations } from "@/lib/auth";
+import { requireUser, canEditReservations, canManagePayments } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ReservationsTable, type ReservationRow } from "@/components/reservations/ReservationsTable";
 
@@ -45,6 +45,7 @@ export default async function ReservationsPage() {
       reservations={rows}
       rooms={rooms}
       canEdit={canEditReservations(user.role)}
+      canPay={canManagePayments(user.role)}
     />
   );
 }

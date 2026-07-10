@@ -29,6 +29,7 @@ import {
   moveReservationAction,
 } from "@/lib/actions/reservations";
 import { ReservationForm, type ReservationInitial } from "./ReservationForm";
+import { DepositLinkButton } from "@/components/payments/DepositLink";
 import type { ForecastData, ForecastReservation } from "@/lib/forecast";
 
 const LABEL_W = 220;
@@ -525,6 +526,15 @@ function ReservationDrawer({
                 </button>
               )}
             </div>
+            {canPay && (
+              <DepositLinkButton
+                reservationId={r.id}
+                number={r.number}
+                guestName={r.guestName}
+                balanceAmount={r.balanceAmount}
+                variant="button"
+              />
+            )}
             {canEdit && r.reservationStatus !== "CANCELLED" && (
               <button disabled={busy} onClick={onCancel} className="rounded-lg px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60">
                 Cancelar reserva
