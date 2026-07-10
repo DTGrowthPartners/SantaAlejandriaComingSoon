@@ -112,13 +112,26 @@ export async function listBoldLinks(
   }
 }
 
+// Caché en memoria del historial completo: traer 9+ páginas en cada carga es
+// lento y el historial cambia despacio, así que se cachea unos minutos.
+let _allLinksCache: { at: number; data: BoldLink[] } | null = null;
+const ALL_LINKS_TTL_MS = 120_000;
+
+/** Invalida el caché del historial (tras crear/pagar un link). */
+export function invalidateBoldLinksCache(): void {
+  _allLinksCache = null;
+}
+
 /**
  * Trae TODOS los links de Bold (todas las páginas) y los ordena de más nuevos a
  * más viejos. Bold no expone fecha de creación ni acepta orden, así que se usa la
  * fecha de vencimiento como referencia; los links sin vencimiento (los que genera
- * el PMS por API) quedan de primeros por ser los más recientes.
+ * el PMS por API) quedan de primeros por ser los más recientes. Cacheado ~2 min.
  */
 export async function listAllBoldLinks(pageSize = 50, maxPages = 20): Promise<BoldLink[]> {
+  if (_allLinksCache && Date.now() - _allLinksCache.at < ALL_LINKS_TTL_MS) {
+    return _allLinksCache.data;
+  }
   const first = await listBoldLinks(1, pageSize);
   const total = Math.min(first.totalPages || 1, maxPages);
   const rest =
@@ -133,20 +146,29 @@ export async function listAllBoldLinks(pageSize = 50, maxPages = 20): Promise<Bo
     const eb = b.expiration_date ?? Number.MAX_VALUE;
     return eb - ea; // descendente: más nuevo primero
   });
+  // No cachea respuestas vacías (posible fallo transitorio de la API).
+  if (all.length > 0) _allLinksCache = { at: Date.now(), data: all };
   return all;
 }
 
-/** Consulta el estado de un link de pago por su id (LNK_xxx). */
+const _linkCache = new Map<string, { at: number; data: BoldLink | null }>();
+const LINK_TTL_MS = 60_000;
+
+/** Consulta el estado de un link de pago por su id (LNK_xxx). Cacheado ~1 min. */
 export async function getBoldLink(id: string): Promise<BoldLink | null> {
   const apiKey = process.env.BOLD_API_KEY;
   if (!apiKey) return null;
+  const hit = _linkCache.get(id);
+  if (hit && Date.now() - hit.at < LINK_TTL_MS) return hit.data;
   try {
     const res = await fetch(`${BOLD_LINK_API}/${id}`, {
       headers: { Authorization: `x-api-key ${apiKey}` },
       cache: "no-store",
     });
-    if (!res.ok) return null;
-    return (await res.json()) as BoldLink;
+    const data = res.ok ? ((await res.json()) as BoldLink) : null;
+    // Solo cachea un estado válido (no un fallo transitorio).
+    if (data) _linkCache.set(id, { at: Date.now(), data });
+    return data;
   } catch {
     return null;
   }

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession, canManagePayments } from "@/lib/auth";
-import { getBoldLink, createBoldPaymentLink } from "@/lib/bold";
+import { getBoldLink, createBoldPaymentLink, invalidateBoldLinksCache } from "@/lib/bold";
 import { totalConIva, IVA_RATE } from "@/lib/domain";
 import { formatCOP } from "@/lib/format";
 import { notifyPaymentReceived } from "@/lib/notify";
@@ -82,6 +82,7 @@ export async function createDepositLinkAction(input: {
     }),
   ]);
 
+  invalidateBoldLinksCache(); // que el nuevo link aparezca ya en el historial
   revalidatePath("/dashboard/payments");
   revalidatePath("/dashboard/forecast");
   return { ok: true, url: link.url };
