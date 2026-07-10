@@ -132,6 +132,9 @@ export async function reconcileBoldPayments(): Promise<ReconcileResult> {
       const already = r.payments.some((p) => p.status === "APPROVED");
       if (already) continue;
 
+      // Usa el transaction_id de Bold como id del pago: es el MISMO que manda el
+      // webhook, así ninguno de los dos procesa el pago dos veces (dedup común).
+      const paymentId = bold.transaction_id ?? lnk;
       const amount = bold.total ?? totalConIva(r.totalAmount);
       const newPaid = r.paidAmount + amount;
       const totalDue = totalConIva(r.totalAmount);
@@ -143,7 +146,7 @@ export async function reconcileBoldPayments(): Promise<ReconcileResult> {
           data: {
             reservationId: r.id,
             provider: "bold",
-            providerPaymentId: lnk,
+            providerPaymentId: paymentId,
             providerReference: bold.reference ?? `RSV-${r.number}`,
             amount,
             status: "APPROVED",
