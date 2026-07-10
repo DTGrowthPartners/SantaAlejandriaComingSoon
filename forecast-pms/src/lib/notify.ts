@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { CHANNEL_META, RESERVATION_STATUS_META, ivaOf, totalConIva } from "@/lib/domain";
 import { formatDateShort, nightsBetween } from "@/lib/format";
 import { sendNewReservationEmail } from "@/lib/email";
+import { emitNotification } from "@/lib/notifyBus";
 import type { BookingChannel, ReservationStatus } from "@/generated/prisma/client";
 
 /**
@@ -39,6 +40,7 @@ export async function notifyNewReservation(params: {
         reservationNumber: params.number,
       },
     });
+    emitNotification(params.hotelId);
   } catch (e) {
     console.error("[notify] no se pudo crear la notificación:", e);
   }
@@ -93,6 +95,7 @@ export async function notifyReservationMoved(params: {
         reservationNumber: params.number,
       },
     });
+    emitNotification(params.hotelId);
   } catch (e) {
     console.error("[notify] no se pudo crear la notificación de movimiento:", e);
   }

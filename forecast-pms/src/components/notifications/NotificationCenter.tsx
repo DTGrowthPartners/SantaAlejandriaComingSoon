@@ -48,11 +48,30 @@ export function NotificationCenter() {
         /* red intermitente: reintenta en el próximo intervalo */
       }
     }
+
     load();
-    const iv = setInterval(load, 15000);
+
+    // Tiempo real: el servidor empuja "changed" en cuanto entra/mueve una reserva.
+    const es = new EventSource("/api/notifications/stream");
+    es.onmessage = () => {
+      if (alive) load();
+    };
+    // EventSource reintenta la conexión solo ante errores; no hace falta más.
+
+    // Respaldo: polling lento + recarga al volver a la pestaña.
+    const iv = setInterval(load, 30000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", load);
+
     return () => {
       alive = false;
+      es.close();
       clearInterval(iv);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", load);
     };
   }, []);
 
