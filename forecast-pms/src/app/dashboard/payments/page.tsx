@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { listBoldLinks } from "@/lib/bold";
-import { PAYMENT_STATUS_META, ACTIVE_RESERVATION_STATUSES } from "@/lib/domain";
+import { listBoldLinks, getBoldLink } from "@/lib/bold";
+import { PAYMENT_STATUS_META, ACTIVE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
+import { ReconcileButton, CopyLinkButton } from "@/components/payments/PaymentsClient";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,22 @@ export default async function PaymentsPage({
     listBoldLinks(bpage, 50),
   ]);
 
+  // ── Links de pago del PMS con estado EN VIVO desde Bold ──
+  const linkRes = await prisma.reservation.findMany({
+    where: { hotelId: user.hotelId, paymentLink: { not: null } },
+    include: { payments: true },
+    orderBy: { createdAt: "desc" },
+    take: 40,
+  });
+  const linkRows = await Promise.all(
+    linkRes.map(async (r) => {
+      const lnk = r.payments.find((p) => p.providerPaymentId?.startsWith("LNK"))?.providerPaymentId ?? null;
+      // Solo consulta a Bold si aún no está pagada en el PMS (ahorra llamadas).
+      const bold = lnk && r.reservationStatus !== "PAID" ? await getBoldLink(lnk) : null;
+      return { r, lnk, bold };
+    }),
+  );
+
   const cobrado = pmsPayments
     .filter((p) => p.status === "APPROVED")
     .reduce((s, p) => s + p.amount, 0);
@@ -81,6 +98,79 @@ export default async function PaymentsPage({
             <p className="mt-0.5 text-xl font-bold text-slate-900">{c.value}</p>
           </div>
         ))}
+      </div>
+
+      {/* ── Links de pago del PMS · estado en vivo ── */}
+      <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-3">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-700">Links de pago · estado en vivo</h2>
+            <p className="text-xs text-slate-400">Consultado a Bold; se marca solo al recibir el pago</p>
+          </div>
+          <ReconcileButton />
+        </div>
+        {linkRows.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-slate-400">
+            Aún no se han generado links de pago desde el PMS.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wide text-slate-400">
+                  <th className="px-5 py-2 font-medium">Reserva</th>
+                  <th className="px-3 py-2 font-medium">Huésped</th>
+                  <th className="px-3 py-2 font-medium">Estado del link</th>
+                  <th className="px-3 py-2 font-medium">Link de pago</th>
+                  <th className="px-5 py-2 text-right font-medium">Monto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {linkRows.map(({ r, bold }) => {
+                  const b = bold
+                    ? boldBadge(bold.status)
+                    : r.reservationStatus === "PAID" || r.paymentStatus === "APPROVED"
+                      ? { label: "Pagado", color: "#047857", bg: "#d1fae5" }
+                      : { label: "Pendiente", color: "#b45309", bg: "#fef3c7" };
+                  return (
+                    <tr key={r.id} className="border-t border-slate-50 hover:bg-slate-50/60">
+                      <td className="whitespace-nowrap px-5 py-2.5 font-semibold text-brand">#{r.number}</td>
+                      <td className="px-3 py-2.5 text-slate-700">{r.guestName}</td>
+                      <td className="px-3 py-2.5">
+                        <span
+                          className="inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                          style={{ color: b.color, backgroundColor: b.bg }}
+                        >
+                          {b.label}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {r.paymentLink ? (
+                          <span className="flex items-center gap-1.5">
+                            <a
+                              href={r.paymentLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-medium text-brand hover:underline"
+                            >
+                              Abrir
+                            </a>
+                            <CopyLinkButton url={r.paymentLink} />
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-300">—</span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-2.5 text-right font-semibold text-slate-900">
+                        {formatCOP(totalConIva(r.totalAmount))}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* ── Pagos del PMS ── */}
