@@ -98,6 +98,7 @@ export async function handleBoldWebhook(req: NextRequest): Promise<NextResponse>
           balanceAmount: balance,
           paymentStatus: "APPROVED",
           reservationStatus,
+          holdExpiresAt: null, // pagado → ya no es un hold que expira
           history: {
             create: {
               action: "payment",

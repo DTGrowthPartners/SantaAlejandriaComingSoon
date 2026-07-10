@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { corsJson, corsPreflight } from "@/lib/cors";
 import { getDirectusRoom, roomOccupancy, parseIsoDate } from "@/lib/publicBooking";
+import { expireStaleHolds } from "@/lib/holds";
 
 export const runtime = "nodejs";
 
@@ -35,6 +36,7 @@ export async function GET(req: NextRequest) {
     const hotel = await prisma.hotel.findFirst();
     if (!hotel) return corsJson(origin, { error: "Hotel no configurado" }, { status: 500 });
 
+    await expireStaleHolds(hotel.id); // libera holds vencidos antes de calcular
     const occ = await roomOccupancy(room, hotel.id, from, to);
     return corsJson(origin, {
       room: room.slug,

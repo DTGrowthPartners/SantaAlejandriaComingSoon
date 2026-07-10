@@ -5,6 +5,7 @@ import type {
   PaymentStatus,
 } from "@/generated/prisma/client";
 import { ACTIVE_RESERVATION_STATUSES } from "@/lib/domain";
+import { expireStaleHolds } from "@/lib/holds";
 
 export type ForecastRoom = { id: string; name: string; type: string | null };
 
@@ -105,6 +106,8 @@ export async function getForecastData(
   const monthStart = utc(year, month, 1);
   const monthEndExcl = month === 12 ? utc(year + 1, 1, 1) : utc(year, month + 1, 1);
   const daysInMonth = dayDiff(monthStart, monthEndExcl);
+
+  await expireStaleHolds(hotelId); // limpia holds web vencidos sin pagar
 
   const [rooms, reservations, blocks] = await Promise.all([
     prisma.room.findMany({

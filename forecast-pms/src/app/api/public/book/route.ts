@@ -12,6 +12,7 @@ import {
 } from "@/lib/publicBooking";
 import { createBoldPaymentLink } from "@/lib/bold";
 import { notifyNewReservation } from "@/lib/notify";
+import { expireStaleHolds, HOLD_MINUTES } from "@/lib/holds";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -99,6 +100,13 @@ export async function POST(req: NextRequest) {
     const chargeIva = data.payMode === "deposit" ? 0 : ivaOf(chargeSubtotal);
     const chargeTotal = chargeSubtotal + chargeIva;
 
+    // Reserva web con pago online = "hold": aparta el cuarto pero se auto-elimina
+    // si no se paga antes de esta hora. "Pagar en el hotel" no expira.
+    const holdExpiresAt = payOnline ? new Date(Date.now() + HOLD_MINUTES * 60_000) : null;
+
+    // Libera holds vencidos sin pagar antes de revisar disponibilidad.
+    await expireStaleHolds(hotel.id);
+
     // Anti-sobreventa: asignar una habitación física libre en TODO el rango.
     const free = await findFreeRoom(dRoom, hotel.id, checkIn, checkOut);
     if (!free) {
@@ -122,6 +130,7 @@ export async function POST(req: NextRequest) {
         depositRequired: data.payMode === "deposit" ? depositSubtotal : 0,
         paidAmount: 0,
         balanceAmount: total,
+        holdExpiresAt,
         reservationStatus: payOnline ? "PENDING_PAYMENT" : "PENDING",
         paymentStatus: "NO_PAYMENT",
         notes:
@@ -178,6 +187,8 @@ export async function POST(req: NextRequest) {
               : `Reserva #${reservation.number} · ${dRoom.short_name} · ${data.checkIn} a ${data.checkOut}`).slice(0, 100),
           payerEmail: data.guestEmail || null,
           callbackUrl: `https://santalejandriahotels.com/cartagena?reserva=${reservation.number}`,
+          // El link caduca junto con el hold: no se puede pagar después de que expira.
+          expirationDate: holdExpiresAt ? holdExpiresAt.getTime() : undefined,
         });
 
         await prisma.$transaction([

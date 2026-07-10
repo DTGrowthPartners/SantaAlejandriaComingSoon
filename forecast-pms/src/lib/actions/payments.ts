@@ -161,6 +161,7 @@ export async function reconcileBoldPayments(): Promise<ReconcileResult> {
             balanceAmount: balance,
             paymentStatus: "APPROVED",
             reservationStatus,
+            holdExpiresAt: null,
             history: {
               create: {
                 action: "payment",

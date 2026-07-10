@@ -126,6 +126,8 @@ model Reservation {
   notes                String?
   paymentLink          String?
   paymentLinkExpiresAt DateTime?
+  // Reserva web con pago online: se auto-elimina si no se paga antes de esta hora.
+  holdExpiresAt        DateTime?
   createdById          String?
   payments             Payment[]
   history              ReservationHistory[]
