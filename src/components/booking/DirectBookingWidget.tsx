@@ -42,18 +42,68 @@ function formatCOP(n: number): string {
 }
 
 const COUNTRY_CODES: { code: string; label: string }[] = [
-  { code: "+57", label: "🇨🇴 +57" },
-  { code: "+1", label: "🇺🇸 +1" },
-  { code: "+52", label: "🇲🇽 +52" },
-  { code: "+34", label: "🇪🇸 +34" },
-  { code: "+54", label: "🇦🇷 +54" },
-  { code: "+51", label: "🇵🇪 +51" },
-  { code: "+56", label: "🇨🇱 +56" },
-  { code: "+593", label: "🇪🇨 +593" },
-  { code: "+58", label: "🇻🇪 +58" },
-  { code: "+507", label: "🇵🇦 +507" },
-  { code: "+55", label: "🇧🇷 +55" },
-  { code: "+44", label: "🇬🇧 +44" },
+  { code: "+57", label: "🇨🇴 +57 Colombia" },
+  { code: "+49", label: "🇩🇪 +49 Alemania" },
+  { code: "+54", label: "🇦🇷 +54 Argentina" },
+  { code: "+61", label: "🇦🇺 +61 Australia" },
+  { code: "+43", label: "🇦🇹 +43 Austria" },
+  { code: "+32", label: "🇧🇪 +32 Bélgica" },
+  { code: "+591", label: "🇧🇴 +591 Bolivia" },
+  { code: "+55", label: "🇧🇷 +55 Brasil" },
+  { code: "+1", label: "🇨🇦 +1 Canadá" },
+  { code: "+56", label: "🇨🇱 +56 Chile" },
+  { code: "+86", label: "🇨🇳 +86 China" },
+  { code: "+506", label: "🇨🇷 +506 Costa Rica" },
+  { code: "+53", label: "🇨🇺 +53 Cuba" },
+  { code: "+45", label: "🇩🇰 +45 Dinamarca" },
+  { code: "+593", label: "🇪🇨 +593 Ecuador" },
+  { code: "+20", label: "🇪🇬 +20 Egipto" },
+  { code: "+503", label: "🇸🇻 +503 El Salvador" },
+  { code: "+971", label: "🇦🇪 +971 Emiratos Árabes" },
+  { code: "+34", label: "🇪🇸 +34 España" },
+  { code: "+1", label: "🇺🇸 +1 Estados Unidos" },
+  { code: "+63", label: "🇵🇭 +63 Filipinas" },
+  { code: "+358", label: "🇫🇮 +358 Finlandia" },
+  { code: "+33", label: "🇫🇷 +33 Francia" },
+  { code: "+995", label: "🇬🇪 +995 Georgia" },
+  { code: "+30", label: "🇬🇷 +30 Grecia" },
+  { code: "+502", label: "🇬🇹 +502 Guatemala" },
+  { code: "+509", label: "🇭🇹 +509 Haití" },
+  { code: "+504", label: "🇭🇳 +504 Honduras" },
+  { code: "+852", label: "🇭🇰 +852 Hong Kong" },
+  { code: "+91", label: "🇮🇳 +91 India" },
+  { code: "+62", label: "🇮🇩 +62 Indonesia" },
+  { code: "+353", label: "🇮🇪 +353 Irlanda" },
+  { code: "+972", label: "🇮🇱 +972 Israel" },
+  { code: "+39", label: "🇮🇹 +39 Italia" },
+  { code: "+81", label: "🇯🇵 +81 Japón" },
+  { code: "+7", label: "🇰🇿 +7 Kazajistán" },
+  { code: "+60", label: "🇲🇾 +60 Malasia" },
+  { code: "+212", label: "🇲🇦 +212 Marruecos" },
+  { code: "+52", label: "🇲🇽 +52 México" },
+  { code: "+505", label: "🇳🇮 +505 Nicaragua" },
+  { code: "+47", label: "🇳🇴 +47 Noruega" },
+  { code: "+64", label: "🇳🇿 +64 Nueva Zelanda" },
+  { code: "+31", label: "🇳🇱 +31 Países Bajos" },
+  { code: "+507", label: "🇵🇦 +507 Panamá" },
+  { code: "+595", label: "🇵🇾 +595 Paraguay" },
+  { code: "+51", label: "🇵🇪 +51 Perú" },
+  { code: "+48", label: "🇵🇱 +48 Polonia" },
+  { code: "+351", label: "🇵🇹 +351 Portugal" },
+  { code: "+1", label: "🇵🇷 +1 Puerto Rico" },
+  { code: "+44", label: "🇬🇧 +44 Reino Unido" },
+  { code: "+420", label: "🇨🇿 +420 República Checa" },
+  { code: "+1", label: "🇩🇴 +1 República Dominicana" },
+  { code: "+7", label: "🇷🇺 +7 Rusia" },
+  { code: "+46", label: "🇸🇪 +46 Suecia" },
+  { code: "+41", label: "🇨🇭 +41 Suiza" },
+  { code: "+66", label: "🇹🇭 +66 Tailandia" },
+  { code: "+886", label: "🇹🇼 +886 Taiwán" },
+  { code: "+90", label: "🇹🇷 +90 Turquía" },
+  { code: "+380", label: "🇺🇦 +380 Ucrania" },
+  { code: "+598", label: "🇺🇾 +598 Uruguay" },
+  { code: "+58", label: "🇻🇪 +58 Venezuela" },
+  { code: "+84", label: "🇻🇳 +84 Vietnam" },
 ];
 
 export default function DirectBookingWidget({ room }: { room: RoomType }) {
@@ -74,9 +124,10 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const [payMode, setPayMode] = useState<"hotel" | "online" | "deposit">("deposit");
   const [prepayFull, setPrepayFull] = useState(false);
   const [name, setName] = useState("");
-  const [dialCode, setDialCode] = useState("+57");
+  const [country, setCountry] = useState(COUNTRY_CODES[0].label);
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const dialCode = COUNTRY_CODES.find((c) => c.label === country)?.code ?? "+57";
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ number: number; total: number; mode: string } | null>(null);
@@ -380,14 +431,14 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex gap-1">
                   <select
-                    value={dialCode}
-                    onChange={(e) => setDialCode(e.target.value)}
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
                     aria-label="Indicativo de país"
                     autoComplete="tel-country-code"
-                    className="shrink-0 rounded-md border border-border bg-background px-1.5 py-2 font-sans text-sm outline-none focus:border-accent"
+                    className="w-24 shrink-0 rounded-md border border-border bg-background px-1.5 py-2 font-sans text-sm outline-none focus:border-accent"
                   >
                     {COUNTRY_CODES.map((c) => (
-                      <option key={c.code} value={c.code}>
+                      <option key={c.label} value={c.label}>
                         {c.label}
                       </option>
                     ))}
