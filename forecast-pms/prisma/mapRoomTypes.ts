@@ -15,9 +15,9 @@ const prisma = new PrismaClient({
 const MAPPING: Record<string, string> = {
   "101": "Doble Económica",
   "102": "Doble Económica",
-  "103": "Doble Estándar",
+  "103": "Familiar - Económica",
   "201": "Doble Estándar",
-  "202": "Familiar - Económica",
+  "202": "Doble Estándar",
   "203": "King",
   "204": "King",
   "205": "King",
