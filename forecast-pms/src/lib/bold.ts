@@ -78,6 +78,56 @@ export async function createBoldPaymentLink(params: {
   };
 }
 
+export type BoldLink = {
+  id: string;
+  total: number;
+  status: string; // ACTIVE | PAID | EXPIRED | VOIDED | ...
+  description: string | null;
+  currency: string;
+  expiration_date?: number | null;
+  subtotal?: number;
+  reference?: string | null;
+  payment_method?: string | null;
+  transaction_id?: string | null;
+  creation_date?: number;
+};
+
+/** Lista los links de pago de Bold (paginado). Solo funciona con llaves de producción. */
+export async function listBoldLinks(
+  page = 1,
+  pageSize = 50,
+): Promise<{ page: number; totalPages: number; links: BoldLink[] }> {
+  const apiKey = process.env.BOLD_API_KEY;
+  if (!apiKey) return { page: 1, totalPages: 0, links: [] };
+  try {
+    const res = await fetch(`${BOLD_LINK_API}?page_size=${pageSize}&page=${page}`, {
+      headers: { Authorization: `x-api-key ${apiKey}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return { page, totalPages: 0, links: [] };
+    const j = (await res.json()) as { page?: number; total_pages?: number; links?: BoldLink[] };
+    return { page: j.page ?? page, totalPages: j.total_pages ?? 1, links: j.links ?? [] };
+  } catch {
+    return { page, totalPages: 0, links: [] };
+  }
+}
+
+/** Consulta el estado de un link de pago por su id (LNK_xxx). */
+export async function getBoldLink(id: string): Promise<BoldLink | null> {
+  const apiKey = process.env.BOLD_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch(`${BOLD_LINK_API}/${id}`, {
+      headers: { Authorization: `x-api-key ${apiKey}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as BoldLink;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Verifica la firma del webhook de Bold.
  * Firma = HMAC-SHA256( base64(rawBody), llaveSecreta ) en hex, header `x-bold-signature`.

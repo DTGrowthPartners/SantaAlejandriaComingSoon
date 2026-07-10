@@ -16,6 +16,7 @@ type Notif = {
 const ICON: Record<string, string> = {
   reservation: "fa-calendar-check",
   move: "fa-right-left",
+  payment: "fa-circle-dollar-to-slot",
 };
 
 function timeAgo(iso: string): string {

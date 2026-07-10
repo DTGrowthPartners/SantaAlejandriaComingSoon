@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verifyBoldSignature } from "@/lib/bold";
 import { totalConIva } from "@/lib/domain";
+import { notifyPaymentReceived } from "@/lib/notify";
 
 type BoldEvent = {
   id: string;
@@ -108,6 +109,13 @@ export async function handleBoldWebhook(req: NextRequest): Promise<NextResponse>
       }),
     ]);
     revalidatePath("/dashboard/forecast");
+    revalidatePath("/dashboard/payments");
+    await notifyPaymentReceived({
+      hotelId: reservation.hotelId,
+      number: reservation.number,
+      guestName: reservation.guestName,
+      amount,
+    });
   } else if (event.type === "SALE_REJECTED") {
     await prisma.reservation.update({
       where: { id: reservation.id },

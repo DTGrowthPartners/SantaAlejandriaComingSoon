@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { CHANNEL_META, RESERVATION_STATUS_META, ivaOf, totalConIva } from "@/lib/domain";
-import { formatDateShort, nightsBetween } from "@/lib/format";
+import { formatDateShort, nightsBetween, formatCOP } from "@/lib/format";
 import { sendNewReservationEmail } from "@/lib/email";
 import { emitNotification } from "@/lib/notifyBus";
 import type { BookingChannel, ReservationStatus } from "@/generated/prisma/client";
@@ -65,6 +65,33 @@ export async function notifyNewReservation(params: {
     statusLabel: params.status ? RESERVATION_STATUS_META[params.status]?.label ?? params.status : "Pendiente",
     notes: params.notes,
   });
+}
+
+/**
+ * Notifica un PAGO recibido (webhook Bold aprobado o reconciliación).
+ * Crea el cuadrito y empuja el evento SSE para refrescar la pantalla de Pagos.
+ * Nunca lanza.
+ */
+export async function notifyPaymentReceived(params: {
+  hotelId: string;
+  number: number;
+  guestName: string;
+  amount: number;
+}): Promise<void> {
+  try {
+    await prisma.notification.create({
+      data: {
+        hotelId: params.hotelId,
+        kind: "payment",
+        title: `Pago recibido · Reserva #${params.number}`,
+        message: `${params.guestName} · ${formatCOP(params.amount)}`,
+        reservationNumber: params.number,
+      },
+    });
+    emitNotification(params.hotelId);
+  } catch (e) {
+    console.error("[notify] no se pudo crear la notificación de pago:", e);
+  }
 }
 
 /**
