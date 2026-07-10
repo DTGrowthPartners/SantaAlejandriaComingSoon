@@ -19,15 +19,54 @@ body {
   font-family: var(--font-raleway), system-ui, sans-serif;
 }
 
-/* Scrollbar discreto para el grid del forecast */
-.thin-scroll::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+/* Fondo cálido con sutil textura de luz */
+body {
+  background-color: hsl(47 55% 96%);
+  background-image:
+    radial-gradient(1100px 520px at 100% -12%, hsl(84 45% 90% / 0.55), transparent 60%),
+    radial-gradient(900px 520px at -10% 112%, hsl(47 76% 74% / 0.18), transparent 55%);
+  background-attachment: fixed;
 }
-.thin-scroll::-webkit-scrollbar-thumb {
-  background: #d6cfa8;
-  border-radius: 6px;
+
+/* ── Animaciones ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }
-.thin-scroll::-webkit-scrollbar-thumb:hover {
-  background: #b8ad7a;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-fade-up { animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in { animation: fadeIn 0.7s ease both; }
+
+/* ── Tarjetas elegantes ── */
+.card {
+  border-radius: 1rem;
+  background: #ffffff;
+  border: 1px solid hsl(84 20% 88% / 0.7);
+  box-shadow: 0 1px 2px hsl(84 40% 20% / 0.04), 0 8px 24px hsl(84 40% 20% / 0.05);
+}
+.card-hover {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px hsl(84 40% 20% / 0.06), 0 16px 38px hsl(84 40% 20% / 0.11);
+}
+
+/* Botón con micro-interacción */
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-press:hover { filter: brightness(1.05); box-shadow: 0 6px 18px hsl(84 76% 28% / 0.25); }
+.btn-press:active { transform: translateY(1px) scale(0.99); }
+
+/* ── Scrollbar dorado ── */
+.thin-scroll::-webkit-scrollbar { height: 10px; width: 10px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: hsl(41 40% 72%); border-radius: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb:hover { background: hsl(41 55% 55%); }

@@ -30,20 +30,30 @@ export default async function InicioPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl p-6">
+    <div className="mx-auto w-full max-w-5xl animate-fade-up p-6">
       <header className="mb-5">
-        <h1 className="font-serif text-2xl font-bold text-brand-dark">Resumen del día</h1>
-        <p className="text-sm capitalize text-slate-500">{s.todayLabel} · {hotel?.name}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Resumen del día</p>
+        <h1 className="font-serif text-3xl font-bold capitalize text-brand-dark">{s.todayLabel}</h1>
+        <p className="text-sm text-slate-500">{hotel?.name}</p>
       </header>
 
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        {kpis.map((it) => (
-          <div key={it.label} className={"rounded-xl border px-3.5 py-3 " + (it.accent ? "border-brand-light bg-brand-light/50" : "border-slate-200 bg-white")}>
+        {kpis.map((it, i) => (
+          <div
+            key={it.label}
+            style={{ animationDelay: `${i * 45}ms` }}
+            className={
+              "card-hover animate-fade-up px-3.5 py-3 " +
+              (it.accent
+                ? "rounded-2xl border border-gold/30 bg-gradient-to-br from-brand-light/70 to-cream shadow-sm"
+                : "card")
+            }
+          >
             <div className="mb-1 flex items-center justify-between">
               <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{it.label}</span>
-              <i className={`fa-solid ${it.icon} text-brand/70`} aria-hidden />
+              <i className={"fa-solid " + it.icon + " text-gold/80"} aria-hidden />
             </div>
-            <p className="truncate text-xl font-bold text-slate-900">{it.value}</p>
+            <p className="truncate font-serif text-2xl font-bold text-brand-dark">{it.value}</p>
           </div>
         ))}
       </div>
@@ -80,7 +90,7 @@ function ResCard({
   showContact?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white">
+    <div className="card overflow-hidden">
       <div className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
         <p className="flex items-center gap-2 text-sm font-semibold text-slate-700">
           <i className={`fa-solid ${icon} text-brand/70`} aria-hidden />

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { logoutAction } from "@/lib/actions/auth";
@@ -25,18 +26,20 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
-        <i className="fa-solid fa-hotel text-lg text-brand" aria-hidden />
-        <div>
-          <p className="font-serif text-base font-bold leading-tight text-brand-dark">
-            Santa Alejandría
-          </p>
-          <p className="text-[11px] uppercase tracking-widest text-gold">Forecast PMS</p>
+    <aside className="flex w-64 shrink-0 flex-col bg-gradient-to-b from-[#2f5111] to-[#20390b] text-white">
+      {/* Logo */}
+      <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
+        <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-white/10 ring-1 ring-white/15">
+          <Image src="/favicon.png" alt="Santa Alejandría" width={40} height={40} unoptimized className="h-9 w-9 object-contain" />
+        </span>
+        <div className="leading-tight">
+          <p className="font-serif text-lg font-bold text-white">Santa Alejandría</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-gold-soft">Forecast PMS</p>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 p-3">
+      {/* Navegación */}
+      <nav className="flex-1 space-y-0.5 p-3">
         {NAV.map((item) => {
           const active = pathname.startsWith(item.href);
           return (
@@ -44,28 +47,47 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+                "group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
                 active
-                  ? "bg-brand-light text-brand-dark"
-                  : "text-slate-600 hover:bg-slate-50",
+                  ? "bg-white/12 text-white shadow-sm"
+                  : "text-white/65 hover:translate-x-0.5 hover:bg-white/8 hover:text-white",
               )}
             >
-              <i className={cn(item.icon, "w-5 text-center text-[15px]")} aria-hidden />
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-gold transition-all duration-200",
+                  active ? "opacity-100" : "opacity-0 group-hover:opacity-40",
+                )}
+              />
+              <i
+                className={cn(
+                  item.icon,
+                  "w-5 text-center text-[15px] transition-colors",
+                  active ? "text-gold-soft" : "text-white/55 group-hover:text-gold-soft",
+                )}
+                aria-hidden
+              />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-slate-200 p-3">
-        <div className="mb-2 px-2">
-          <p className="truncate text-sm font-medium text-slate-800">{user.name}</p>
-          <p className="text-xs text-slate-500">{ROLE_META[user.role].label}</p>
+      {/* Usuario */}
+      <div className="border-t border-white/10 p-3">
+        <div className="mb-1 flex items-center gap-3 px-2 py-1.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/20 text-sm font-bold text-gold-soft">
+            {user.name.charAt(0).toUpperCase()}
+          </span>
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-sm font-semibold text-white">{user.name}</p>
+            <p className="text-xs text-gold-soft/80">{ROLE_META[user.role].label}</p>
+          </div>
         </div>
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-slate-50"
+            className="flex w-full items-center gap-2.5 rounded-xl px-3.5 py-2 text-left text-sm text-white/60 transition-colors hover:bg-white/8 hover:text-white"
           >
             <i className="fa-solid fa-right-from-bracket w-5 text-center" aria-hidden />
             Cerrar sesión
