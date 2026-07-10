@@ -17,7 +17,15 @@ function getTransporter(): Transporter | null {
   }
   const port = Number(process.env.SMTP_PORT ?? 465);
   const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === "true" : port === 465;
-  transporter = nodemailer.createTransport({ host, port, secure, auth: { user, pass } });
+  // Permite conectarse al Postfix local aunque el certificado no valide contra "localhost".
+  const rejectUnauthorized = process.env.SMTP_TLS_REJECT_UNAUTHORIZED !== "false";
+  transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    tls: { rejectUnauthorized },
+  });
   return transporter;
 }
 
