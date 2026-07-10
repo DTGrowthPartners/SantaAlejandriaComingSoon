@@ -131,10 +131,17 @@ export async function POST(req: NextRequest) {
       number: reservation.number,
       guestName: data.guestName,
       roomName: free.name,
+      roomType: dRoom.short_name,
       channel: "DIRECT",
       checkIn,
       checkOut,
       via: "web",
+      guestPhone: data.guestPhone,
+      guestEmail: data.guestEmail || null,
+      guestsCount: data.guestsCount,
+      subtotal: quote.subtotal,
+      status: data.payMode === "online" ? "PENDING_PAYMENT" : "PENDING",
+      notes: data.notes || null,
     });
 
     // Pago virtual → link Bold por el total con IVA.

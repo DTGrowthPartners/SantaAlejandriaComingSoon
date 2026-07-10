@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { CHANNEL_META } from "@/lib/domain";
-import { formatDateShort } from "@/lib/format";
-import type { BookingChannel } from "@/generated/prisma/client";
+import { CHANNEL_META, RESERVATION_STATUS_META, ivaOf, totalConIva } from "@/lib/domain";
+import { formatDateShort, nightsBetween } from "@/lib/format";
+import { sendNewReservationEmail } from "@/lib/email";
+import type { BookingChannel, ReservationStatus } from "@/generated/prisma/client";
 
 /**
- * Crea una notificación por una reserva NUEVA (web o recepción).
- * NO se llama en la importación de Excel (esas no deben notificar).
+ * Crea una notificación por una reserva NUEVA (web o recepción) y envía el
+ * correo corporativo con toda la info. NO se llama en la importación de Excel.
  * Nunca lanza: si falla, no rompe la creación de la reserva.
  */
 export async function notifyNewReservation(params: {
@@ -17,9 +18,18 @@ export async function notifyNewReservation(params: {
   checkIn: Date;
   checkOut: Date;
   via: string; // "web" | "recepción"
+  // Detalle opcional para el correo:
+  guestPhone?: string | null;
+  guestEmail?: string | null;
+  roomType?: string | null;
+  guestsCount?: number;
+  subtotal?: number;
+  status?: ReservationStatus;
+  notes?: string | null;
 }): Promise<void> {
+  const ch = CHANNEL_META[params.channel]?.label ?? params.channel;
+
   try {
-    const ch = CHANNEL_META[params.channel]?.label ?? params.channel;
     await prisma.notification.create({
       data: {
         hotelId: params.hotelId,
@@ -32,6 +42,27 @@ export async function notifyNewReservation(params: {
   } catch (e) {
     console.error("[notify] no se pudo crear la notificación:", e);
   }
+
+  const subtotal = params.subtotal ?? 0;
+  await sendNewReservationEmail({
+    number: params.number,
+    guestName: params.guestName,
+    guestPhone: params.guestPhone,
+    guestEmail: params.guestEmail,
+    roomName: params.roomName,
+    roomType: params.roomType,
+    channelLabel: ch,
+    via: params.via,
+    checkIn: params.checkIn,
+    checkOut: params.checkOut,
+    nights: nightsBetween(params.checkIn, params.checkOut),
+    guestsCount: params.guestsCount ?? 1,
+    subtotal,
+    iva: ivaOf(subtotal),
+    total: totalConIva(subtotal),
+    statusLabel: params.status ? RESERVATION_STATUS_META[params.status]?.label ?? params.status : "Pendiente",
+    notes: params.notes,
+  });
 }
 
 /**

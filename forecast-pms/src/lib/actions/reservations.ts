@@ -104,10 +104,17 @@ export async function createReservationAction(
     number: created.number,
     guestName: d.guestName,
     roomName: room.name,
+    roomType: room.type,
     channel: d.channel,
     checkIn,
     checkOut,
     via: "recepción",
+    guestPhone: d.guestPhone || null,
+    guestEmail: d.guestEmail || null,
+    guestsCount: d.guestsCount,
+    subtotal: d.totalAmount,
+    status: "PENDING",
+    notes: d.notes || null,
   });
 
   revalidate();
