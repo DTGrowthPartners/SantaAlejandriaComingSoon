@@ -112,6 +112,30 @@ export async function listBoldLinks(
   }
 }
 
+/**
+ * Trae TODOS los links de Bold (todas las páginas) y los ordena de más nuevos a
+ * más viejos. Bold no expone fecha de creación ni acepta orden, así que se usa la
+ * fecha de vencimiento como referencia; los links sin vencimiento (los que genera
+ * el PMS por API) quedan de primeros por ser los más recientes.
+ */
+export async function listAllBoldLinks(pageSize = 50, maxPages = 20): Promise<BoldLink[]> {
+  const first = await listBoldLinks(1, pageSize);
+  const total = Math.min(first.totalPages || 1, maxPages);
+  const rest =
+    total > 1
+      ? await Promise.all(
+          Array.from({ length: total - 1 }, (_, i) => listBoldLinks(i + 2, pageSize)),
+        )
+      : [];
+  const all = [...first.links, ...rest.flatMap((r) => r.links)];
+  all.sort((a, b) => {
+    const ea = a.expiration_date ?? Number.MAX_VALUE;
+    const eb = b.expiration_date ?? Number.MAX_VALUE;
+    return eb - ea; // descendente: más nuevo primero
+  });
+  return all;
+}
+
 /** Consulta el estado de un link de pago por su id (LNK_xxx). */
 export async function getBoldLink(id: string): Promise<BoldLink | null> {
   const apiKey = process.env.BOLD_API_KEY;

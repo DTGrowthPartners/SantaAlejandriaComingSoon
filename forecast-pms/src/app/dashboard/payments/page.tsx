@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { listBoldLinks, getBoldLink } from "@/lib/bold";
+import { listAllBoldLinks, getBoldLink } from "@/lib/bold";
 import { PAYMENT_STATUS_META, ACTIVE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import { ReconcileButton, CopyLinkButton } from "@/components/payments/PaymentsClient";
@@ -33,7 +33,7 @@ export default async function PaymentsPage({
   const bpage = Math.max(1, parseInt(sp.bpage ?? "1", 10) || 1);
 
   // ── Pagos del PMS (nuestra BD) ──
-  const [pmsPayments, activeRes, boldData] = await Promise.all([
+  const [pmsPayments, activeRes, allBoldLinks] = await Promise.all([
     prisma.payment.findMany({
       where: { reservation: { hotelId: user.hotelId } },
       include: { reservation: { select: { number: true, guestName: true } } },
@@ -44,8 +44,17 @@ export default async function PaymentsPage({
       where: { hotelId: user.hotelId, reservationStatus: { in: ACTIVE_RESERVATION_STATUSES } },
       select: { balanceAmount: true, paymentStatus: true },
     }),
-    listBoldLinks(bpage, 50),
+    listAllBoldLinks(),
   ]);
+
+  // Paginación en cliente del historial ya ordenado (más nuevos primero).
+  const BOLD_PER_PAGE = 50;
+  const boldTotalPages = Math.max(1, Math.ceil(allBoldLinks.length / BOLD_PER_PAGE));
+  const boldPage = Math.min(bpage, boldTotalPages);
+  const boldData = {
+    totalPages: boldTotalPages,
+    links: allBoldLinks.slice((boldPage - 1) * BOLD_PER_PAGE, boldPage * BOLD_PER_PAGE),
+  };
 
   // ── Links de pago del PMS con estado EN VIVO desde Bold ──
   const linkRes = await prisma.reservation.findMany({
@@ -78,8 +87,8 @@ export default async function PaymentsPage({
     { label: "Links por cobrar", value: linksActivos },
   ];
 
-  const boldPrev = bpage > 1 ? bpage - 1 : null;
-  const boldNext = bpage < boldData.totalPages ? bpage + 1 : null;
+  const boldPrev = boldPage > 1 ? boldPage - 1 : null;
+  const boldNext = boldPage < boldData.totalPages ? boldPage + 1 : null;
   const navBtn =
     "flex h-8 min-w-8 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-600 hover:bg-slate-50";
   const navOff = "flex h-8 min-w-8 items-center justify-center rounded-lg border border-slate-100 bg-slate-50 px-2 text-sm text-slate-300";
@@ -245,7 +254,7 @@ export default async function PaymentsPage({
               <span className={navOff}>‹</span>
             )}
             <span className="px-1 text-xs text-slate-500">
-              {boldData.totalPages > 0 ? `${bpage} / ${boldData.totalPages}` : "—"}
+              {boldData.totalPages > 0 ? `${boldPage} / ${boldData.totalPages}` : "—"}
             </span>
             {boldNext ? (
               <Link href={`/dashboard/payments?bpage=${boldNext}`} className={navBtn}>›</Link>
