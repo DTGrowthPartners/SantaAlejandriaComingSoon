@@ -111,9 +111,8 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
       cur.setDate(cur.getDate() + 1);
     }
     const iva = Math.round(subtotal * IVA_RATE);
-    // Abono = valor de la 1.ª noche + IVA (política del hotel para apartar).
-    const firstNight = priceForNight(toISO(checkIn));
-    const depositTotal = firstNight + Math.round(firstNight * IVA_RATE);
+    // Abono = SOLO la 1.ª noche, sin IVA. El IVA y las noches restantes van al saldo.
+    const depositTotal = priceForNight(toISO(checkIn));
     return { nights, subtotal, iva, total: subtotal + iva, depositTotal };
   }, [checkIn, checkOut, room]);
 
@@ -412,8 +411,9 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                   </div>
                   {payMode === "deposit" && quote && (
                     <p className="font-sans text-[11px] text-muted-foreground">
-                      Pagas {formatCOP(quote.depositTotal)} ahora para apartar; el saldo de{" "}
-                      <strong className="text-foreground">{formatCOP(quote.total - quote.depositTotal)}</strong> lo pagas al llegar al hotel.
+                      Pagas {formatCOP(quote.depositTotal)} ahora (1.ª noche, sin IVA) para apartar. El saldo de{" "}
+                      <strong className="text-foreground">{formatCOP(quote.total - quote.depositTotal)}</strong>{" "}
+                      (noches restantes + IVA) lo pagas al llegar al hotel.
                     </p>
                   )}
                 </>

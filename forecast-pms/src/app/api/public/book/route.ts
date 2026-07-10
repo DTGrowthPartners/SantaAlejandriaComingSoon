@@ -79,10 +79,9 @@ export async function POST(req: NextRequest) {
     const iva = ivaOf(quote.subtotal);
     const total = quote.subtotal + iva;
 
-    // Abono = valor de la 1.ª noche (+ IVA), política del hotel para apartar.
+    // Abono = SOLO el valor de la 1.ª noche, SIN IVA. El IVA y las noches
+    // restantes se cobran después (quedan en el saldo).
     const depositSubtotal = quote.perNight[0]?.price ?? quote.subtotal;
-    const depositIva = ivaOf(depositSubtotal);
-    const depositTotal = depositSubtotal + depositIva;
 
     // Modo por temporada: alta = prepago total obligatorio; baja = apartar con 1 noche.
     if (hotel.webPrepayFull && data.payMode !== "online") {
@@ -96,7 +95,8 @@ export async function POST(req: NextRequest) {
     // Monto a cobrar en línea según el modo elegido.
     const payOnline = data.payMode === "online" || data.payMode === "deposit";
     const chargeSubtotal = data.payMode === "deposit" ? depositSubtotal : quote.subtotal;
-    const chargeIva = ivaOf(chargeSubtotal);
+    // El abono NO lleva IVA (solo la noche); el prepago total sí.
+    const chargeIva = data.payMode === "deposit" ? 0 : ivaOf(chargeSubtotal);
     const chargeTotal = chargeSubtotal + chargeIva;
 
     // Anti-sobreventa: asignar una habitación física libre en TODO el rango.
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
         nights,
         guestsCount: data.guestsCount,
         totalAmount: quote.subtotal,
-        depositRequired: data.payMode === "deposit" ? depositTotal : 0,
+        depositRequired: data.payMode === "deposit" ? depositSubtotal : 0,
         paidAmount: 0,
         balanceAmount: total,
         reservationStatus: payOnline ? "PENDING_PAYMENT" : "PENDING",
