@@ -41,6 +41,21 @@ function formatCOP(n: number): string {
   }).format(n);
 }
 
+const COUNTRY_CODES: { code: string; label: string }[] = [
+  { code: "+57", label: "🇨🇴 +57" },
+  { code: "+1", label: "🇺🇸 +1" },
+  { code: "+52", label: "🇲🇽 +52" },
+  { code: "+34", label: "🇪🇸 +34" },
+  { code: "+54", label: "🇦🇷 +54" },
+  { code: "+51", label: "🇵🇪 +51" },
+  { code: "+56", label: "🇨🇱 +56" },
+  { code: "+593", label: "🇪🇨 +593" },
+  { code: "+58", label: "🇻🇪 +58" },
+  { code: "+507", label: "🇵🇦 +507" },
+  { code: "+55", label: "🇧🇷 +55" },
+  { code: "+44", label: "🇬🇧 +44" },
+];
+
 export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const today = useMemo(() => {
     const d = new Date();
@@ -59,6 +74,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const [payMode, setPayMode] = useState<"hotel" | "online" | "deposit">("deposit");
   const [prepayFull, setPrepayFull] = useState(false);
   const [name, setName] = useState("");
+  const [dialCode, setDialCode] = useState("+57");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -145,7 +161,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
           checkIn: toISO(checkIn),
           checkOut: toISO(checkOut),
           guestName: name,
-          guestPhone: phone,
+          guestPhone: `${dialCode} ${phone}`.trim(),
           guestEmail: email,
           guestsCount: adults,
           payMode,
@@ -335,7 +351,14 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
+            <form
+              className="flex flex-col gap-3"
+              autoComplete="on"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (formValid && !submitting) submit();
+              }}
+            >
               {quote && (
                 <p className="font-sans text-sm text-muted-foreground">
                   {checkIn && format(checkIn, "d MMM", { locale: es })} →{" "}
@@ -347,20 +370,44 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
 
               <input
                 placeholder="Nombre completo *"
+                type="text"
+                name="name"
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="rounded-md border border-border bg-background px-3 py-2 font-sans text-sm outline-none focus:border-accent"
               />
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  placeholder="Teléfono *"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="rounded-md border border-border bg-background px-3 py-2 font-sans text-sm outline-none focus:border-accent"
-                />
+                <div className="flex gap-1">
+                  <select
+                    value={dialCode}
+                    onChange={(e) => setDialCode(e.target.value)}
+                    aria-label="Indicativo de país"
+                    autoComplete="tel-country-code"
+                    className="shrink-0 rounded-md border border-border bg-background px-1.5 py-2 font-sans text-sm outline-none focus:border-accent"
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    placeholder="Teléfono *"
+                    type="tel"
+                    inputMode="tel"
+                    name="phone"
+                    autoComplete="tel-national"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full min-w-0 rounded-md border border-border bg-background px-3 py-2 font-sans text-sm outline-none focus:border-accent"
+                  />
+                </div>
                 <input
                   placeholder="Correo"
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-md border border-border bg-background px-3 py-2 font-sans text-sm outline-none focus:border-accent"
@@ -426,9 +473,8 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
               )}
 
               <button
-                type="button"
+                type="submit"
                 disabled={!formValid || submitting}
-                onClick={submit}
                 className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-2.5 font-sans text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-50"
               >
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -441,7 +487,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                     ? "Pagas la 1.ª noche con Bold; el saldo al llegar al hotel."
                     : "Pago seguro con Bold. Serás redirigido al checkout."}
               </p>
-            </div>
+            </form>
           )}
         </DialogContent>
       </Dialog>
