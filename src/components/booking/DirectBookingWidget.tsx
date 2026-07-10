@@ -56,13 +56,26 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const [coOpen, setCoOpen] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [payMode, setPayMode] = useState<"hotel" | "online">("online");
+  const [payMode, setPayMode] = useState<"hotel" | "online" | "deposit">("deposit");
+  const [prepayFull, setPrepayFull] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ number: number; total: number; mode: string } | null>(null);
+
+  // Modo de pago según temporada (lo controla el hotel en Configuración).
+  useEffect(() => {
+    fetch(`${PMS_API}/api/public/config`)
+      .then((r) => r.json())
+      .then((d) => {
+        const full = Boolean(d.prepayFull);
+        setPrepayFull(full);
+        setPayMode(full ? "online" : "deposit");
+      })
+      .catch(() => {});
+  }, []);
 
   // Disponibilidad (fechas bloqueadas) desde el PMS
   useEffect(() => {
@@ -98,7 +111,10 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
       cur.setDate(cur.getDate() + 1);
     }
     const iva = Math.round(subtotal * IVA_RATE);
-    return { nights, subtotal, iva, total: subtotal + iva };
+    // Abono = valor de la 1.ª noche + IVA (política del hotel para apartar).
+    const firstNight = priceForNight(toISO(checkIn));
+    const depositTotal = firstNight + Math.round(firstNight * IVA_RATE);
+    return { nights, subtotal, iva, total: subtotal + iva, depositTotal };
   }, [checkIn, checkOut, room]);
 
   // Un día no sirve de check-in si TODAS las habitaciones del tipo están ocupadas esa noche.
@@ -141,7 +157,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
         setError(data.error ?? "No se pudo crear la reserva.");
         return;
       }
-      if (payMode === "online" && data.paymentUrl) {
+      if ((payMode === "online" || payMode === "deposit") && data.paymentUrl) {
         window.location.href = data.paymentUrl; // → checkout Bold
         return;
       }
@@ -352,35 +368,56 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                 />
               </div>
 
-              {/* Elección de pago */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPayMode("online")}
-                  className={cn(
-                    "flex flex-col items-center gap-1 rounded-lg border p-3 font-sans text-xs transition",
-                    payMode === "online"
-                      ? "border-accent bg-accent/5 text-foreground"
-                      : "border-border text-muted-foreground hover:border-accent/50",
+              {/* Elección de pago según temporada */}
+              {prepayFull ? (
+                <div className="rounded-lg border border-accent bg-accent/5 p-3 font-sans text-sm">
+                  <div className="flex items-center gap-2 font-medium text-foreground">
+                    <CreditCard className="h-5 w-5 text-accent" /> Prepago total en línea
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    En esta temporada la reserva se confirma pagando el total
+                    {quote && <> <strong className="text-foreground">{formatCOP(quote.total)}</strong></>} antes de llegar.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPayMode("deposit")}
+                      className={cn(
+                        "flex flex-col items-center gap-1 rounded-lg border p-3 font-sans text-xs transition",
+                        payMode === "deposit"
+                          ? "border-accent bg-accent/5 text-foreground"
+                          : "border-border text-muted-foreground hover:border-accent/50",
+                      )}
+                    >
+                      <CreditCard className="h-5 w-5 text-accent" />
+                      Apartar con 1 noche
+                      {quote && <span className="font-semibold text-foreground">{formatCOP(quote.depositTotal)}</span>}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPayMode("hotel")}
+                      className={cn(
+                        "flex flex-col items-center gap-1 rounded-lg border p-3 font-sans text-xs transition",
+                        payMode === "hotel"
+                          ? "border-accent bg-accent/5 text-foreground"
+                          : "border-border text-muted-foreground hover:border-accent/50",
+                      )}
+                    >
+                      <Hotel className="h-5 w-5 text-accent" />
+                      Pagar en el hotel
+                    </button>
+                  </div>
+                  {payMode === "deposit" && quote && (
+                    <p className="font-sans text-[11px] text-muted-foreground">
+                      Pagas {formatCOP(quote.depositTotal)} ahora para apartar; el saldo de{" "}
+                      <strong className="text-foreground">{formatCOP(quote.total - quote.depositTotal)}</strong> lo pagas al llegar al hotel.
+                    </p>
                   )}
-                >
-                  <CreditCard className="h-5 w-5 text-accent" />
-                  Pagar en línea
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPayMode("hotel")}
-                  className={cn(
-                    "flex flex-col items-center gap-1 rounded-lg border p-3 font-sans text-xs transition",
-                    payMode === "hotel"
-                      ? "border-accent bg-accent/5 text-foreground"
-                      : "border-border text-muted-foreground hover:border-accent/50",
-                  )}
-                >
-                  <Hotel className="h-5 w-5 text-accent" />
-                  Pagar en el hotel
-                </button>
-              </div>
+                </>
+              )}
 
               {error && (
                 <p className="flex items-center gap-1.5 rounded-md bg-red-50 px-3 py-2 font-sans text-xs text-red-700">
@@ -395,12 +432,14 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                 className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-2.5 font-sans text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-50"
               >
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {payMode === "online" ? "Ir a pagar" : "Confirmar reserva"}
+                {payMode === "hotel" ? "Confirmar reserva" : "Ir a pagar"}
               </button>
               <p className="text-center font-sans text-[10px] text-muted-foreground">
-                {payMode === "online"
-                  ? "Pago seguro con Bold. Serás redirigido al checkout."
-                  : "Guardamos tu reserva y pagas al llegar."}
+                {payMode === "hotel"
+                  ? "Guardamos tu reserva y pagas al llegar."
+                  : payMode === "deposit"
+                    ? "Pagas la 1.ª noche con Bold; el saldo al llegar al hotel."
+                    : "Pago seguro con Bold. Serás redirigido al checkout."}
               </p>
             </div>
           )}

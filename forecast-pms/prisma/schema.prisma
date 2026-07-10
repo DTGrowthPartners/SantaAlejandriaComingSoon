@@ -60,6 +60,9 @@ model Hotel {
   name      String
   timezone  String   @default("America/Bogota")
   currency  String   @default("COP")
+  // true = temporada alta: la reserva web exige prepago total.
+  // false = temporada baja: el cliente aparta pagando 1 noche y paga el resto al llegar.
+  webPrepayFull Boolean @default(false)
   rooms     Room[]
   users     User[]
   reservations Reservation[]

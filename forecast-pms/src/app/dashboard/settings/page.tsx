@@ -16,6 +16,7 @@ export default async function SettingsPage() {
       hotelName={hotel?.name ?? "—"}
       reservationsCount={reservationsCount}
       isAdmin={user.role === "ADMIN"}
+      webPrepayFull={hotel?.webPrepayFull ?? false}
     />
   );
 }

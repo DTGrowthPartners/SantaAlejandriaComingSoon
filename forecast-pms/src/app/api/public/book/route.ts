@@ -24,7 +24,7 @@ const bookSchema = z.object({
   guestPhone: z.string().trim().min(7).max(30),
   guestEmail: z.string().trim().email().max(120).optional().or(z.literal("")),
   guestsCount: z.coerce.number().int().min(1).max(6).default(2),
-  payMode: z.enum(["hotel", "online"]),
+  payMode: z.enum(["hotel", "online", "deposit"]),
   notes: z.string().trim().max(500).optional().default(""),
 });
 
@@ -79,6 +79,26 @@ export async function POST(req: NextRequest) {
     const iva = ivaOf(quote.subtotal);
     const total = quote.subtotal + iva;
 
+    // Abono = valor de la 1.ª noche (+ IVA), política del hotel para apartar.
+    const depositSubtotal = quote.perNight[0]?.price ?? quote.subtotal;
+    const depositIva = ivaOf(depositSubtotal);
+    const depositTotal = depositSubtotal + depositIva;
+
+    // Modo por temporada: alta = prepago total obligatorio; baja = apartar con 1 noche.
+    if (hotel.webPrepayFull && data.payMode !== "online") {
+      return corsJson(
+        origin,
+        { error: "En este momento la reserva requiere el prepago total en línea." },
+        { status: 409 },
+      );
+    }
+
+    // Monto a cobrar en línea según el modo elegido.
+    const payOnline = data.payMode === "online" || data.payMode === "deposit";
+    const chargeSubtotal = data.payMode === "deposit" ? depositSubtotal : quote.subtotal;
+    const chargeIva = ivaOf(chargeSubtotal);
+    const chargeTotal = chargeSubtotal + chargeIva;
+
     // Anti-sobreventa: asignar una habitación física libre en TODO el rango.
     const free = await findFreeRoom(dRoom, hotel.id, checkIn, checkOut);
     if (!free) {
@@ -99,10 +119,10 @@ export async function POST(req: NextRequest) {
         nights,
         guestsCount: data.guestsCount,
         totalAmount: quote.subtotal,
-        depositRequired: 0,
+        depositRequired: data.payMode === "deposit" ? depositTotal : 0,
         paidAmount: 0,
         balanceAmount: total,
-        reservationStatus: data.payMode === "online" ? "PENDING_PAYMENT" : "PENDING",
+        reservationStatus: payOnline ? "PENDING_PAYMENT" : "PENDING",
         paymentStatus: "NO_PAYMENT",
         notes:
           `Reserva web (${dRoom.short_name})` +
@@ -140,18 +160,22 @@ export async function POST(req: NextRequest) {
       guestEmail: data.guestEmail || null,
       guestsCount: data.guestsCount,
       subtotal: quote.subtotal,
-      status: data.payMode === "online" ? "PENDING_PAYMENT" : "PENDING",
+      status: payOnline ? "PENDING_PAYMENT" : "PENDING",
       notes: data.notes || null,
     });
 
-    // Pago virtual → link Bold por el total con IVA.
-    if (data.payMode === "online") {
+    // Pago virtual → link Bold: total completo (online) o 1.ª noche (deposit).
+    if (payOnline) {
+      const isDeposit = data.payMode === "deposit";
       try {
         const link = await createBoldPaymentLink({
           reference: `RSV-${reservation.number}`,
-          subtotal: quote.subtotal,
-          iva,
-          description: `Reserva #${reservation.number} · ${dRoom.short_name} · ${data.checkIn} a ${data.checkOut}`,
+          subtotal: chargeSubtotal,
+          iva: chargeIva,
+          description:
+            (isDeposit
+              ? `Abono 1 noche · Reserva #${reservation.number} · ${dRoom.short_name}`
+              : `Reserva #${reservation.number} · ${dRoom.short_name} · ${data.checkIn} a ${data.checkOut}`).slice(0, 100),
           payerEmail: data.guestEmail || null,
           callbackUrl: `https://santalejandriahotels.com/cartagena?reserva=${reservation.number}`,
         });
@@ -164,7 +188,7 @@ export async function POST(req: NextRequest) {
               providerPaymentId: link.paymentLinkId,
               providerReference: `RSV-${reservation.number}`,
               paymentLink: link.url,
-              amount: total,
+              amount: chargeTotal,
               status: "LINK_CREATED",
               method: "link",
             },
@@ -183,6 +207,9 @@ export async function POST(req: NextRequest) {
           subtotal: quote.subtotal,
           iva,
           total,
+          mode: data.payMode,
+          amountToPay: chargeTotal,
+          balanceAtHotel: isDeposit ? total - chargeTotal : 0,
           paymentUrl: link.url,
         });
       } catch (e) {
@@ -195,6 +222,7 @@ export async function POST(req: NextRequest) {
           subtotal: quote.subtotal,
           iva,
           total,
+          mode: data.payMode,
           paymentUrl: null,
           warning: "Reserva creada, pero no se pudo generar el link de pago. El hotel te contactará.",
         });
@@ -209,6 +237,8 @@ export async function POST(req: NextRequest) {
       subtotal: quote.subtotal,
       iva,
       total,
+      mode: data.payMode,
+      amountToPay: 0,
       paymentUrl: null,
     });
   } catch (e) {

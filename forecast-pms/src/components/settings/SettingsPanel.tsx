@@ -2,18 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { resetDataAction } from "@/lib/actions/admin";
+import { resetDataAction, setWebPaymentModeAction } from "@/lib/actions/admin";
 
 export function SettingsPanel({
   user,
   hotelName,
   reservationsCount,
   isAdmin,
+  webPrepayFull,
 }: {
   user: { name: string; email: string; roleLabel: string };
   hotelName: string;
   reservationsCount: number;
   isAdmin: boolean;
+  webPrepayFull: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -21,6 +23,20 @@ export function SettingsPanel({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<number | null>(null);
+  const [prepayFull, setPrepayFull] = useState(webPrepayFull);
+  const [savingMode, setSavingMode] = useState(false);
+
+  function toggleMode() {
+    const next = !prepayFull;
+    setPrepayFull(next); // optimista
+    setSavingMode(true);
+    startTransition(async () => {
+      const res = await setWebPaymentModeAction(next);
+      if (!res.ok) setPrepayFull(!next); // revierte si falla
+      setSavingMode(false);
+      router.refresh();
+    });
+  }
 
   function confirmReset() {
     setError(null);
@@ -48,6 +64,44 @@ export function SettingsPanel({
         <Row k="Correo" v={user.email} />
         <Row k="Rol" v={user.roleLabel} />
       </section>
+
+      {isAdmin && (
+        <section className="mb-5 rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
+            <i className="fa-solid fa-calendar-days text-gold" aria-hidden />
+            Modo de pago web (temporada)
+          </h2>
+          <div className="mt-3 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-800">
+                {prepayFull ? "Temporada alta · prepago total" : "Temporada baja · apartar con 1 noche"}
+              </p>
+              <p className="mt-0.5 text-sm text-slate-500">
+                {prepayFull
+                  ? "En la reserva web el cliente debe pagar el total antes de llegar."
+                  : "En la reserva web el cliente aparta pagando la 1.ª noche y paga el resto al llegar al hotel."}
+              </p>
+            </div>
+            <button
+              onClick={toggleMode}
+              disabled={savingMode}
+              role="switch"
+              aria-checked={prepayFull}
+              className={`relative mt-1 h-7 w-12 shrink-0 rounded-full transition ${prepayFull ? "bg-brand" : "bg-slate-300"} disabled:opacity-60`}
+              title="Cambiar temporada"
+            >
+              <span
+                className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${prepayFull ? "left-[22px]" : "left-0.5"}`}
+              />
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-slate-400">
+            {prepayFull
+              ? "Enciende = temporada alta. Apágalo para volver a temporada baja (apartar con 1 noche)."
+              : "Apagado = temporada baja. Enciéndelo en temporada alta para exigir prepago total."}
+          </p>
+        </section>
+      )}
 
       {isAdmin && (
         <section className="rounded-xl border border-red-200 bg-red-50/40 p-5">
