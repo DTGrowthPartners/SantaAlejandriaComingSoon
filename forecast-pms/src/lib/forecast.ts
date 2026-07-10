@@ -70,6 +70,7 @@ export type ForecastData = {
   rooms: ForecastRoom[];
   reservationsByRoom: Record<string, ForecastReservation[]>;
   blocksByRoom: Record<string, ForecastBlock[]>;
+  dayTotals: number[]; // habitaciones ocupadas por día (índice 0 = día 1)
   kpis: ForecastKpis;
 };
 
@@ -215,6 +216,16 @@ export async function getForecastData(
   const capacity = rooms.length * daysInMonth;
   const occupancyPct = capacity > 0 ? Math.round((occupiedNights / capacity) * 1000) / 10 : 0;
 
+  // Habitaciones ocupadas por día (reservas activas + bloqueos) → fila de totales
+  const dayTotals = new Array<number>(daysInMonth).fill(0);
+  const addOccupancy = (start: Date, endExcl: Date) => {
+    const s = Math.max(1, dayDiff(monthStart, start) + 1);
+    const e = Math.min(daysInMonth + 1, dayDiff(monthStart, endExcl) + 1);
+    for (let d = s; d < e; d++) dayTotals[d - 1]++;
+  };
+  for (const r of activeRes) addOccupancy(r.checkIn, r.checkOut);
+  for (const b of blocks) addOccupancy(b.startDate, b.endDate);
+
   const t = today.date.getTime();
   const occupyingToday = isCurrentMonth
     ? activeRes.filter((r) => r.checkIn.getTime() <= t && t < r.checkOut.getTime()).length
@@ -232,6 +243,7 @@ export async function getForecastData(
     rooms: rooms.map((r) => ({ id: r.id, name: r.name, type: r.type })),
     reservationsByRoom,
     blocksByRoom,
+    dayTotals,
     kpis: {
       occupancyPct,
       roomsTotal: rooms.length,

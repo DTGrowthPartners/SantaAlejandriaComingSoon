@@ -237,6 +237,29 @@ export function ForecastGrid({
                 </div>
               );
             })}
+
+            {/* Fila de totales: habitaciones ocupadas por día */}
+            <div className="grid border-t-2 border-slate-300 bg-slate-100" style={{ gridTemplateColumns: gridCols, height: 34 }}>
+              <div className="sticky left-0 z-30 flex items-center border-r border-slate-200 bg-slate-100 px-3 text-xs font-bold uppercase tracking-wide text-slate-600" style={{ gridColumn: 1, gridRow: 1 }}>
+                Ocupadas / {data.rooms.length}
+              </div>
+              {data.days.map((d) => {
+                const n = data.dayTotals[d.day - 1];
+                const full = data.rooms.length > 0 && n >= data.rooms.length;
+                return (
+                  <div
+                    key={d.day}
+                    className={cn(
+                      "flex items-center justify-center border-r border-slate-200 text-xs font-bold",
+                      full ? "bg-red-100 text-red-700" : d.isToday ? "bg-brand-light text-brand-dark" : "text-slate-700",
+                    )}
+                    style={{ gridColumn: d.day + 1, gridRow: 1 }}
+                  >
+                    {n}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -358,10 +381,9 @@ function ReservationBlock({
         ...blockRadius(r),
       }}
     >
-      <span className="truncate">
+      <span className="truncate font-bold">
         {r.continuesLeft && "‹ "}
-        {isNoShow ? "🚫 " : ""}
-        {r.number}- {r.guestName}
+        {isNoShow ? "🚫" : "1"}
       </span>
     </button>
   );
