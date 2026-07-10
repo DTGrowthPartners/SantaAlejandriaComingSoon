@@ -243,8 +243,9 @@ const RoomCard = ({ room }: RoomCardProps) => {
             {t("cartagenaRooms", "reservarHabitacion")}
           </a>
 
-          {/* Reserva directa conectada al PMS (disponibilidad real + Bold). */}
-          <DirectBookingWidget room={room} />
+          {/* Reserva directa por web OCULTA temporalmente (cambiar `false` por `true`
+              para reactivarla). El código y la API del PMS siguen intactos. */}
+          {false && <DirectBookingWidget room={room} />}
         </div>
       </div>
 
