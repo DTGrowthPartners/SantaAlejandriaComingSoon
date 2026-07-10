@@ -44,6 +44,8 @@ export async function POST(req: NextRequest) {
   const reference = event.data?.metadata?.reference ?? "";
   const amount = Math.round(event.data?.amount?.total ?? 0);
 
+  console.log(`[webhooks/bold] ${event.type} ref=${reference} pay=${paymentId} amount=${amount}`);
+
   // Idempotencia: si ya procesamos este payment_id aprobado, respondemos 200.
   if (paymentId) {
     const dup = await prisma.payment.findFirst({

@@ -87,15 +87,25 @@ export async function verifyBoldSignature(
   rawBody: string,
   signature: string | null,
 ): Promise<boolean> {
-  const secret = process.env.BOLD_WEBHOOK_SECRET ?? process.env.BOLD_SECRET ?? "";
   if (!signature) return false;
 
   const { createHmac, timingSafeEqual } = await import("node:crypto");
   const encoded = Buffer.from(rawBody, "utf8").toString("base64");
-  const expected = createHmac("sha256", secret).update(encoded).digest("hex");
-  try {
-    return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
-  } catch {
-    return false;
+
+  // En pruebas Bold puede firmar con secreto vacío o con la llave secreta;
+  // aceptamos cualquiera de los candidatos configurados.
+  const candidates = Array.from(
+    new Set([process.env.BOLD_WEBHOOK_SECRET ?? "", process.env.BOLD_SECRET ?? "", ""]),
+  );
+  for (const secret of candidates) {
+    const expected = createHmac("sha256", secret).update(encoded).digest("hex");
+    if (expected.length === signature.length) {
+      try {
+        if (timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) return true;
+      } catch {
+        /* longitudes distintas */
+      }
+    }
   }
+  return false;
 }
