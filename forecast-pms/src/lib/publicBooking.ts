@@ -6,14 +6,19 @@ const HOTEL_SLUG = process.env.PUBLIC_BOOKING_HOTEL_SLUG ?? "cartagena";
 
 const DAY_MS = 86_400_000;
 
-/** Normaliza para comparar tipos: minúsculas, sin tildes, sin separadores. */
-export function normalizeType(s: string | null | undefined): string {
-  return (s ?? "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "");
-}
+/**
+ * Mapeo por defecto tipo comercial (slug Directus) → habitaciones físicas del PMS.
+ * Es solo un respaldo: si en Directus la habitación tiene el campo `pms_rooms`,
+ * ese valor manda (el usuario controla el mapeo desde Directus).
+ */
+const DEFAULT_ROOM_MAP: Record<string, string[]> = {
+  "Doble-Economica": ["101", "102"],
+  "Familiar- Económica": ["103"],
+  "doble-estandar": ["201", "202"],
+  king: ["203", "204", "205", "206", "209"],
+  "King- Familiar": ["210"],
+  twins: ["207", "208"],
+};
 
 export function parseIsoDate(s: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
@@ -34,6 +39,8 @@ export type DirectusPublicRoom = {
   quantity: number | null;
   max_guests: number | null;
   price_per_night: number | null;
+  /** Campo configurable en Directus: números de habitación del PMS, separados por coma. */
+  pms_rooms: string | null;
   price_overrides: Array<{
     status: string;
     label: string;
@@ -47,14 +54,25 @@ const ROOM_FIELDS =
   "id,slug,name,short_name,quantity,max_guests,price_per_night," +
   "price_overrides.status,price_overrides.label,price_overrides.start_date,price_overrides.end_date,price_overrides.price_per_night";
 
+// Se apaga si Directus aún no expone `pms_rooms` (403), para no romper la consulta.
+let pmsRoomsFieldAvailable = true;
+
 /** Habitación (tipo) publicada del hotel en Directus, por slug. */
 export async function getDirectusRoom(slug: string): Promise<DirectusPublicRoom | null> {
+  const withMapping = pmsRoomsFieldAvailable;
+  const fields = ROOM_FIELDS + (withMapping ? ",pms_rooms" : "");
   const url =
-    `${DIRECTUS_URL}/items/rooms?fields=${ROOM_FIELDS}` +
+    `${DIRECTUS_URL}/items/rooms?fields=${fields}` +
     `&filter[slug][_eq]=${encodeURIComponent(slug)}` +
     `&filter[status][_eq]=published` +
     `&filter[hotel][slug][_eq]=${encodeURIComponent(HOTEL_SLUG)}&limit=1`;
+
   const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (res.status === 403 && withMapping) {
+    // El campo pms_rooms aún no existe o el rol público no puede leerlo → reintentar sin él.
+    pmsRoomsFieldAvailable = false;
+    return getDirectusRoom(slug);
+  }
   if (!res.ok) throw new Error(`Directus ${res.status}`);
   const body = (await res.json()) as { data: DirectusPublicRoom[] };
   return body.data[0] ?? null;
@@ -62,8 +80,8 @@ export async function getDirectusRoom(slug: string): Promise<DirectusPublicRoom 
 
 /**
  * Precio por noche según "Precios por temporada" (price_overrides).
- * Cada noche de la estadía se cotiza con el periodo publicado que la cubra;
- * si ninguno aplica, usa el precio base (price_per_night).
+ * Cada noche se cotiza con el periodo publicado que la cubra; si ninguno aplica,
+ * usa el precio base (price_per_night).
  */
 export function quoteStay(
   room: DirectusPublicRoom,
@@ -88,17 +106,23 @@ export function quoteStay(
 
 // ── Disponibilidad contra el PMS ──
 
-/** Habitaciones físicas del PMS cuyo tipo corresponde al tipo de Directus. */
-export async function pmsRoomsForType(room: DirectusPublicRoom, hotelId: string) {
-  const wanted = new Set([normalizeType(room.short_name), normalizeType(room.name), normalizeType(room.slug)]);
-  const all = await prisma.room.findMany({ where: { hotelId, active: true } });
-  return all.filter((r) => wanted.has(normalizeType(r.type)));
+/** Números de habitación del PMS para un tipo: el campo de Directus manda; si no, el respaldo. */
+function roomNamesForType(room: DirectusPublicRoom): string[] {
+  const fromDirectus = (room.pms_rooms ?? "")
+    .split(/[\s,;]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return fromDirectus.length > 0 ? fromDirectus : DEFAULT_ROOM_MAP[room.slug] ?? [];
 }
 
-/**
- * Fechas bloqueadas (sin ninguna habitación libre del tipo) en [from, to).
- * Una fecha bloqueada no puede ser NOCHE de estadía.
- */
+/** Habitaciones físicas del PMS asociadas al tipo comercial. */
+export async function pmsRoomsForType(room: DirectusPublicRoom, hotelId: string) {
+  const names = roomNamesForType(room);
+  if (names.length === 0) return [];
+  return prisma.room.findMany({ where: { hotelId, active: true, name: { in: names } } });
+}
+
+/** Fechas bloqueadas (sin ninguna habitación libre del tipo) en [from, to). */
 export async function blockedDates(
   room: DirectusPublicRoom,
   hotelId: string,
@@ -138,7 +162,7 @@ export async function blockedDates(
   return out;
 }
 
-/** Primera habitación física del tipo libre en TODO el rango (o null si no hay). */
+/** Primera habitación física del tipo libre en TODO el rango (o null). */
 export async function findFreeRoom(
   room: DirectusPublicRoom,
   hotelId: string,

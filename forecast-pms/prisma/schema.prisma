@@ -87,7 +87,7 @@ model Room {
   hotelId      String
   hotel        Hotel         @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   name         String // "101", "203", etc.
-  type         String? // "Doble Estándar", "King Superior", "Suite Alejandría"...
+  type         String? // Nombre para el forecast (como lo conoce recepción)
   capacity     Int           @default(2)
   active       Boolean       @default(true)
   sortOrder    Int           @default(0)

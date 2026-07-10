@@ -7,40 +7,40 @@ const prisma = new PrismaClient({
 });
 
 /**
- * Alinea el `type` de las habitaciones físicas del PMS con los tipos
- * comerciales de Directus (short_name), para que la reserva web pueda
- * mapear tipo → habitaciones físicas. Las cantidades siguen el `quantity`
- * de Directus (Cartagena). Editable luego en /dashboard/rooms.
+ * Nombre de cada habitación EN EL FORECAST (como lo conoce recepción).
+ * OJO: esto es solo el display. El mapeo a los tipos comerciales de Directus
+ * (para venta web) se controla en Directus con el campo `pms_rooms`, con
+ * respaldo en publicBooking.ts (DEFAULT_ROOM_MAP). Editable en /dashboard/rooms.
  */
-const MAPPING: Record<string, string> = {
-  "101": "Doble Económica",
-  "102": "Doble Económica",
-  "103": "Familiar - Económica",
+const DISPLAY: Record<string, string> = {
+  "101": "Doble Estándar",
+  "102": "Doble Estándar",
+  "103": "Doble Estándar",
   "201": "Doble Estándar",
   "202": "Doble Estándar",
-  "203": "King",
-  "204": "King",
-  "205": "King",
-  "206": "King",
-  "209": "King",
+  "203": "King Superior",
+  "204": "King Superior",
+  "205": "King Superior",
+  "206": "King Superior",
+  "209": "King Superior",
   "210": "King Superior",
-  "207": "Twins",
-  "208": "Twins",
-  "211": "Suite Alejandría", // no está en Directus → sin venta web (solo directa)
+  "207": "Twin Estándar",
+  "208": "Twin Estándar",
+  "211": "Suite Alejandría",
 };
 
 async function main() {
   const rooms = await prisma.room.findMany();
   let updated = 0;
   for (const r of rooms) {
-    const type = MAPPING[r.name];
+    const type = DISPLAY[r.name];
     if (type && r.type !== type) {
       await prisma.room.update({ where: { id: r.id }, data: { type } });
       console.log(`  ${r.name}: "${r.type}" → "${type}"`);
       updated++;
     }
   }
-  console.log(`✅ Tipos actualizados: ${updated}/${rooms.length}`);
+  console.log(`✅ Nombres del forecast actualizados: ${updated}/${rooms.length}`);
 }
 
 main()
