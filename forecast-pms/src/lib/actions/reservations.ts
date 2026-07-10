@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession, canEditReservations, canManagePayments } from "@/lib/auth";
-import { BOOKING_CHANNELS, EDITABLE_RESERVATION_STATUSES } from "@/lib/domain";
+import { BOOKING_CHANNELS, EDITABLE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
 import { parseDateInput, nightsBetween, addDays, findConflicts } from "@/lib/reservations";
 
 export type ActionState = { ok: boolean; error: string | null };
@@ -82,7 +82,7 @@ export async function createReservationAction(
       totalAmount: d.totalAmount,
       depositRequired: d.depositRequired,
       paidAmount: 0,
-      balanceAmount: d.totalAmount,
+      balanceAmount: totalConIva(d.totalAmount), // saldo = total + IVA 19%
       reservationStatus: "PENDING",
       paymentStatus: "NO_PAYMENT",
       notes: d.notes || null,
@@ -134,7 +134,7 @@ export async function updateReservationAction(
     return fail(`Cruce con ${conflicts[0].label}. La habitación ya está ocupada en esas fechas.`);
   }
 
-  const balance = Math.max(0, d.totalAmount - existing.paidAmount);
+  const balance = Math.max(0, totalConIva(d.totalAmount) - existing.paidAmount);
 
   await prisma.reservation.update({
     where: { id: d.id },
@@ -289,10 +289,11 @@ export async function registerManualPaymentAction(input: {
   if (!r) return fail("La reserva no existe.");
 
   const newPaid = r.paidAmount + amount;
-  const balance = Math.max(0, r.totalAmount - newPaid);
+  const totalDue = totalConIva(r.totalAmount); // el pago total incluye IVA 19%
+  const balance = Math.max(0, totalDue - newPaid);
 
   let reservationStatus = r.reservationStatus;
-  if (r.totalAmount > 0 && newPaid >= r.totalAmount) reservationStatus = "PAID";
+  if (r.totalAmount > 0 && newPaid >= totalDue) reservationStatus = "PAID";
   else if (newPaid >= r.depositRequired && r.depositRequired > 0) reservationStatus = "DEPOSIT_PAID";
 
   await prisma.$transaction([

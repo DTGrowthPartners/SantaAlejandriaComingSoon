@@ -122,7 +122,7 @@ export function ReservationForm({
             <input name="guestsCount" type="number" min={1} defaultValue={initial.guestsCount} className={field} />
           </label>
           <label className="flex flex-col gap-1">
-            <span className={labelCls}>Valor total (COP)</span>
+            <span className={labelCls}>Valor total (COP, sin IVA)</span>
             <input name="totalAmount" type="number" min={0} step={1000} defaultValue={initial.totalAmount} className={field} />
           </label>
 

@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseForecastWorkbook } from "@/lib/import/forecastParser";
 import { findConflicts, parseDateInput, nightsBetween } from "@/lib/reservations";
+import { totalConIva } from "@/lib/domain";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
         totalAmount: r.totalAmount,
         depositRequired: 0,
         paidAmount: 0,
-        balanceAmount: r.totalAmount,
+        balanceAmount: totalConIva(r.totalAmount), // saldo incluye IVA 19%
         reservationStatus: "CONFIRMED",
         paymentStatus: "NO_PAYMENT",
         notes: `Importado del Excel · ${r.source}`,

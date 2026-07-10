@@ -6,6 +6,7 @@ import {
   CHANNEL_META,
   RESERVATION_STATUS_META,
   EDITABLE_RESERVATION_STATUSES,
+  totalConIva,
 } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import { cancelReservationAction } from "@/lib/actions/reservations";
@@ -117,7 +118,7 @@ export function ReservationsTable({
               <th className="px-3 py-2.5">Salida</th>
               <th className="px-3 py-2.5 text-center">Canal</th>
               <th className="px-3 py-2.5 text-center">Estado</th>
-              <th className="px-3 py-2.5 text-right">Total</th>
+              <th className="px-3 py-2.5 text-right">Total (IVA inc.)</th>
               <th className="px-3 py-2.5 text-right">Saldo</th>
               {canEdit && <th className="px-3 py-2.5" />}
             </tr>
@@ -141,7 +142,7 @@ export function ReservationsTable({
                   <td className="px-3 py-2.5 text-center">
                     <span className="rounded-full px-2 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: st.color }}>{st.label}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right text-slate-700">{formatCOP(r.totalAmount)}</td>
+                  <td className="px-3 py-2.5 text-right text-slate-700">{formatCOP(totalConIva(r.totalAmount))}</td>
                   <td className="px-3 py-2.5 text-right font-semibold text-slate-900">{formatCOP(r.balanceAmount)}</td>
                   {canEdit && (
                     <td className="whitespace-nowrap px-3 py-2.5 text-right">

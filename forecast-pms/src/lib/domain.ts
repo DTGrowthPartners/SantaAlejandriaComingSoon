@@ -82,6 +82,19 @@ export function isActiveStatus(status: ReservationStatus): boolean {
   return ACTIVE_RESERVATION_STATUSES.includes(status);
 }
 
+/** IVA aplicado a los pagos de reservas del hotel (Colombia). */
+export const IVA_RATE = 0.19;
+
+/** IVA (19%) de un subtotal en COP. */
+export function ivaOf(subtotal: number): number {
+  return Math.round(subtotal * IVA_RATE);
+}
+
+/** Total a pagar = subtotal + IVA 19%. */
+export function totalConIva(subtotal: number): number {
+  return subtotal + ivaOf(subtotal);
+}
+
 /** Canales en orden, para selects y validación (zod). */
 export const BOOKING_CHANNELS = [
   "DIRECT",

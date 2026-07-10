@@ -19,6 +19,8 @@ import {
   CHANNEL_META,
   RESERVATION_STATUS_META,
   PAYMENT_STATUS_META,
+  ivaOf,
+  totalConIva,
 } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import {
@@ -426,7 +428,7 @@ function ReservationDrawer({
       ``,
       `Fechas: ${formatDate(r.checkIn)} al ${formatDate(r.checkOut)} (${r.nights} noches)`,
       `Habitación: ${roomName}`,
-      `Valor total: ${formatCOP(r.totalAmount)}`,
+      `Valor: ${formatCOP(r.totalAmount)} + IVA 19% = ${formatCOP(totalConIva(r.totalAmount))}`,
       r.depositRequired > 0 ? `Abono requerido: ${formatCOP(r.depositRequired)}` : ``,
       r.balanceAmount > 0 ? `Saldo pendiente: ${formatCOP(r.balanceAmount)}` : ``,
     ].filter(Boolean).join("\n");
@@ -469,10 +471,12 @@ function ReservationDrawer({
           </Section>
 
           <Section title="Pagos">
-            <Row k="Valor total" v={formatCOP(r.totalAmount)} />
+            <Row k="Subtotal" v={formatCOP(r.totalAmount)} />
+            <Row k="IVA (19%)" v={formatCOP(ivaOf(r.totalAmount))} />
+            <Row k="Total con IVA" v={formatCOP(totalConIva(r.totalAmount))} strong />
             <Row k="Abono requerido" v={formatCOP(r.depositRequired)} />
             <Row k="Pagado" v={formatCOP(r.paidAmount)} />
-            <Row k="Saldo" v={formatCOP(r.balanceAmount)} strong />
+            <Row k="Saldo a pagar" v={formatCOP(r.balanceAmount)} strong />
           </Section>
 
           {r.notes && (
