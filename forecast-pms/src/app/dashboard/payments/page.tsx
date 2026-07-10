@@ -23,14 +23,30 @@ function fromNano(n?: number | null): Date | null {
   return new Date(Math.round(n / 1_000_000));
 }
 
+const BOLD_FILTERS = [
+  { key: "vigentes", label: "Vigentes" },
+  { key: "pagados", label: "Pagados" },
+  { key: "vencidos", label: "Vencidos" },
+  { key: "todos", label: "Todos" },
+] as const;
+
+function boldStatusKept(status: string, filter: string): boolean {
+  const s = (status ?? "").toUpperCase();
+  if (filter === "todos") return true;
+  if (filter === "pagados") return s === "PAID";
+  if (filter === "vencidos") return ["EXPIRED", "VOIDED", "REJECTED", "CANCELLED"].includes(s);
+  return s === "PAID" || s === "ACTIVE"; // vigentes (por defecto)
+}
+
 export default async function PaymentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ bpage?: string }>;
+  searchParams: Promise<{ bpage?: string; bfilter?: string }>;
 }) {
   const user = await requireUser();
   const sp = await searchParams;
   const bpage = Math.max(1, parseInt(sp.bpage ?? "1", 10) || 1);
+  const bfilter = BOLD_FILTERS.some((f) => f.key === sp.bfilter) ? sp.bfilter! : "vigentes";
 
   // ── Pagos del PMS (nuestra BD) ──
   const [pmsPayments, activeRes, allBoldLinks] = await Promise.all([
@@ -47,13 +63,15 @@ export default async function PaymentsPage({
     listAllBoldLinks(),
   ]);
 
-  // Paginación en cliente del historial ya ordenado (más nuevos primero).
+  // Filtra por estado y pagina en cliente el historial ya ordenado (más nuevos primero).
+  const filteredBold = allBoldLinks.filter((l) => boldStatusKept(l.status, bfilter));
   const BOLD_PER_PAGE = 50;
-  const boldTotalPages = Math.max(1, Math.ceil(allBoldLinks.length / BOLD_PER_PAGE));
+  const boldTotalPages = Math.max(1, Math.ceil(filteredBold.length / BOLD_PER_PAGE));
   const boldPage = Math.min(bpage, boldTotalPages);
   const boldData = {
     totalPages: boldTotalPages,
-    links: allBoldLinks.slice((boldPage - 1) * BOLD_PER_PAGE, boldPage * BOLD_PER_PAGE),
+    count: filteredBold.length,
+    links: filteredBold.slice((boldPage - 1) * BOLD_PER_PAGE, boldPage * BOLD_PER_PAGE),
   };
 
   // ── Links de pago del PMS con estado EN VIVO desde Bold ──
@@ -240,16 +258,16 @@ export default async function PaymentsPage({
 
       {/* ── Historial de links de Bold ── */}
       <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-3">
           <div>
             <h2 className="text-sm font-semibold text-slate-700">Historial de links · Bold</h2>
             <p className="text-xs text-slate-400">
-              Todos los links de la cuenta Bold (incluye los creados manualmente)
+              Links de la cuenta Bold (incluye los creados manualmente) · {boldData.count}
             </p>
           </div>
           <div className="flex items-center gap-1.5">
             {boldPrev ? (
-              <Link href={`/dashboard/payments?bpage=${boldPrev}`} className={navBtn}>‹</Link>
+              <Link href={`/dashboard/payments?bfilter=${bfilter}&bpage=${boldPrev}`} className={navBtn}>‹</Link>
             ) : (
               <span className={navOff}>‹</span>
             )}
@@ -257,15 +275,32 @@ export default async function PaymentsPage({
               {boldData.totalPages > 0 ? `${boldPage} / ${boldData.totalPages}` : "—"}
             </span>
             {boldNext ? (
-              <Link href={`/dashboard/payments?bpage=${boldNext}`} className={navBtn}>›</Link>
+              <Link href={`/dashboard/payments?bfilter=${bfilter}&bpage=${boldNext}`} className={navBtn}>›</Link>
             ) : (
               <span className={navOff}>›</span>
             )}
           </div>
         </div>
+        <div className="flex flex-wrap gap-1.5 border-b border-slate-100 px-5 py-2.5">
+          {BOLD_FILTERS.map((f) => (
+            <Link
+              key={f.key}
+              href={`/dashboard/payments?bfilter=${f.key}`}
+              className={
+                bfilter === f.key
+                  ? "rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white"
+                  : "rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500 hover:bg-slate-50"
+              }
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
         {boldData.links.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-slate-400">
-            No se pudo cargar el historial de Bold (revisa las llaves de producción).
+            {allBoldLinks.length === 0
+              ? "No se pudo cargar el historial de Bold (revisa las llaves de producción)."
+              : "No hay links en este filtro."}
           </p>
         ) : (
           <div className="overflow-x-auto">
