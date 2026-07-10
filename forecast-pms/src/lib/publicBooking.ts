@@ -15,8 +15,8 @@ const DEFAULT_ROOM_MAP: Record<string, string[]> = {
   "Doble-Economica": ["101", "102"],
   "Familiar- Económica": ["103"],
   "doble-estandar": ["201", "202"],
-  king: ["203", "204", "205", "206", "209"],
-  "King- Familiar": ["210"],
+  king: ["203", "204", "205", "206", "209", "210"],
+  "King- Familiar": ["211"], // "King Superior" comercial = la Suite (211)
   twins: ["207", "208"],
 };
 
