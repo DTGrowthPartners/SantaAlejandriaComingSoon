@@ -13,7 +13,7 @@ import type { RoomType } from "@/data/cartagena-rooms";
 import { useTranslation } from "@/i18n/LanguageContext";
 import MaterialIcon from "@/components/MaterialIcon";
 import RoomGalleryDialog from "./RoomGalleryDialog";
-// import BookingWidget from "@/components/booking/BookingWidget"; // Beds24 deshabilitado jun-2026 (solo WhatsApp)
+import DirectBookingWidget from "@/components/booking/DirectBookingWidget";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import { useWhatsapp } from "@/hooks/useWhatsapp";
 
@@ -48,7 +48,7 @@ interface RoomCardProps {
   beds24PropertyId: string | null;
 }
 
-const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
+const RoomCard = ({ room }: RoomCardProps) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
@@ -243,15 +243,8 @@ const RoomCard = ({ room, beds24PropertyId }: RoomCardProps) => {
             {t("cartagenaRooms", "reservarHabitacion")}
           </a>
 
-          {/* Reservas directas por Beds24 DESHABILITADAS (jun-2026): solo WhatsApp.
-              Para reactivar el motor standalone, descomentar este bloque.
-              Requiere tarifas cargadas en Beds24 (ver guía MANUAL_BEDS24_STANDALONE).
-          <BookingWidget
-            propertyId={beds24PropertyId}
-            roomId={room.beds24RoomId ?? null}
-            pricePerNight={room.pricePerNight}
-            maxGuests={room.maxGuests}
-          /> */}
+          {/* Reserva directa conectada al PMS (disponibilidad real + Bold). */}
+          <DirectBookingWidget room={room} />
         </div>
       </div>
 
