@@ -81,7 +81,8 @@ export async function createBoldPaymentLink(params: {
 /**
  * Verifica la firma del webhook de Bold.
  * Firma = HMAC-SHA256( base64(rawBody), llaveSecreta ) en hex, header `x-bold-signature`.
- * Nota: en ambiente de PRUEBAS la llave secreta del webhook es cadena vacía ''.
+ * En PRUEBAS Bold puede firmar con secreto vacío ''; en PRODUCCIÓN se firma con la
+ * llave secreta. Solo se acepta '' si BOLD_TEST_MODE=true (si no, se podría falsificar).
  */
 export async function verifyBoldSignature(
   rawBody: string,
@@ -92,11 +93,15 @@ export async function verifyBoldSignature(
   const { createHmac, timingSafeEqual } = await import("node:crypto");
   const encoded = Buffer.from(rawBody, "utf8").toString("base64");
 
-  // En pruebas Bold puede firmar con secreto vacío o con la llave secreta;
-  // aceptamos cualquiera de los candidatos configurados.
-  const candidates = Array.from(
-    new Set([process.env.BOLD_WEBHOOK_SECRET ?? "", process.env.BOLD_SECRET ?? "", ""]),
+  const configured = [process.env.BOLD_WEBHOOK_SECRET, process.env.BOLD_SECRET].filter(
+    (s): s is string => typeof s === "string" && s.length > 0,
   );
+  // El secreto vacío SOLO es válido en modo pruebas explícito.
+  const candidates = Array.from(
+    new Set(process.env.BOLD_TEST_MODE === "true" ? [...configured, ""] : configured),
+  );
+  if (candidates.length === 0) return false;
+
   for (const secret of candidates) {
     const expected = createHmac("sha256", secret).update(encoded).digest("hex");
     if (expected.length === signature.length) {
