@@ -22,7 +22,8 @@ export async function createBoldPaymentLink(params: {
   payerEmail?: string | null;
   /** URL a la que Bold redirige al pagador al terminar. */
   callbackUrl?: string;
-  /** Milisegundos epoch de expiración del link (opcional). */
+  /** Epoch en MILISEGUNDOS de expiración del link (opcional). Bold exige
+   *  nanosegundos, así que se convierte internamente (×1e6). */
   expirationDate?: number;
 }): Promise<BoldLinkResult> {
   const apiKey = process.env.BOLD_API_KEY;
@@ -48,7 +49,10 @@ export async function createBoldPaymentLink(params: {
     description: params.description.slice(0, 100),
     ...(params.payerEmail ? { payer_email: params.payerEmail } : {}),
     ...(params.callbackUrl ? { callback_url: params.callbackUrl } : {}),
-    ...(params.expirationDate ? { expiration_date: params.expirationDate } : {}),
+    // Bold exige expiration_date en NANOSEGUNDOS desde epoch (su doc dice "ns"
+    // aunque el ejemplo parezca ms). Verificado contra la API: en ms lo rechaza
+    // con "expiration date must be >= current date" (lo ve como 1970). ms → ns.
+    ...(params.expirationDate ? { expiration_date: params.expirationDate * 1_000_000 } : {}),
   };
 
   const res = await fetch(BOLD_LINK_API, {
