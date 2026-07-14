@@ -76,6 +76,22 @@ export async function handleBoldWebhook(req: NextRequest): Promise<NextResponse>
   }
 
   if (event.type === "SALE_APPROVED") {
+    // Idempotencia CRUZADA con la conciliación: si el cron ya registró ESTE mismo
+    // pago con otro id de Bold (por si `payment_id` ≠ `transaction_id`), existirá
+    // un APPROVED reciente del mismo monto en la reserva → no lo dupliques. El
+    // @@unique cubre el caso de mismo id; esto cubre el caso de ids distintos.
+    const recentCutoff = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const crossDup = await prisma.payment.findFirst({
+      where: {
+        reservationId: reservation.id,
+        provider: "bold",
+        status: "APPROVED",
+        amount,
+        createdAt: { gte: recentCutoff },
+      },
+    });
+    if (crossDup) return NextResponse.json({ ok: true, duplicate: true });
+
     // Si la reserva estaba inactiva (hold vencido → EXPIRED, o cancelada) y el
     // pago llega tarde, solo se puede reactivar si el cuarto sigue libre. Si ya
     // fue reasignado a otra reserva, NO reactivamos (evita sobreventa): se
