@@ -22,7 +22,7 @@ function formatPrice(price: number) {
 const CartagenaRooms = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
   const { t, lang } = useTranslation();
-  const { rooms, loading, beds24PropertyId } = useCartagenaRooms();
+  const { rooms, loading, beds24PropertyId, directBookingEnabled } = useCartagenaRooms();
   const { amounts } = useHotelPricing("cartagena");
   const additionalPerson = amounts["additional_person"] ?? ADDITIONAL_PRICING.additionalPerson;
   const children3to10 = amounts["child_3_10"] ?? ADDITIONAL_PRICING.children3to10;
@@ -86,7 +86,7 @@ const CartagenaRooms = () => {
 
             {rooms.map((room) => (
               <TabsContent key={room.id} value={room.id}>
-                <RoomCard room={room} beds24PropertyId={beds24PropertyId} />
+                <RoomCard room={room} beds24PropertyId={beds24PropertyId} bookingEnabled={directBookingEnabled} />
               </TabsContent>
             ))}
           </Tabs>

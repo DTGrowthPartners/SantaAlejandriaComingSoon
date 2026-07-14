@@ -1,5 +1,9 @@
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ACTIVE_RESERVATION_STATUSES, ivaOf } from "@/lib/domain";
+
+/** Cliente Prisma o de transacción interactiva. */
+type Db = typeof prisma | Prisma.TransactionClient;
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL ?? "https://cms.santalejandriahotels.com";
 const HOTEL_SLUG = process.env.PUBLIC_BOOKING_HOTEL_SLUG ?? "cartagena";
@@ -88,7 +92,11 @@ export function quoteStay(
   checkIn: Date,
   checkOut: Date,
 ): { nights: number; subtotal: number; perNight: { date: string; price: number; season: string | null }[] } {
-  const overrides = (room.price_overrides ?? []).filter((o) => o.status === "published");
+  // Ordenar por fecha de inicio para que, ante temporadas SOLAPADAS, el PMS elija
+  // la misma que la web (que también toma la de `start_date` más temprano).
+  const overrides = (room.price_overrides ?? [])
+    .filter((o) => o.status === "published")
+    .sort((a, b) => (a.start_date < b.start_date ? -1 : a.start_date > b.start_date ? 1 : 0));
   const base = room.price_per_night ?? 0;
   const perNight: { date: string; price: number; season: string | null }[] = [];
   let subtotal = 0;
@@ -115,8 +123,19 @@ function roomNamesForType(room: DirectusPublicRoom): string[] {
   return fromDirectus.length > 0 ? fromDirectus : DEFAULT_ROOM_MAP[room.slug] ?? [];
 }
 
-/** Habitaciones físicas del PMS asociadas al tipo comercial. */
+/**
+ * Habitaciones físicas del PMS asociadas al tipo comercial.
+ * Fuente preferida: el vínculo editable desde el PMS (`Room.directusSlug`). Si aún
+ * ninguna habitación está vinculada a este tipo, cae al respaldo histórico (campo
+ * `pms_rooms` de Directus o el mapa por defecto), para no romper nada antes de que
+ * recepción migre los vínculos.
+ */
 export async function pmsRoomsForType(room: DirectusPublicRoom, hotelId: string) {
+  const linked = await prisma.room.findMany({
+    where: { hotelId, active: true, directusSlug: room.slug },
+  });
+  if (linked.length > 0) return linked;
+
   const names = roomNamesForType(room);
   if (names.length === 0) return [];
   return prisma.room.findMany({ where: { hotelId, active: true, name: { in: names } } });
@@ -217,9 +236,23 @@ export async function findFreeRoom(
   checkOut: Date,
 ): Promise<{ id: string; name: string } | null> {
   const physical = await pmsRoomsForType(room, hotelId);
-  for (const r of physical.sort((a, b) => a.sortOrder - b.sortOrder)) {
+  return findFreeRoomWith(prisma, physical, checkIn, checkOut);
+}
+
+/**
+ * Igual que `findFreeRoom` pero contra una lista ya resuelta de cuartos y un
+ * cliente dado: se usa DENTRO de la transacción con lock por tipo, para que el
+ * chequeo de disponibilidad y el insert sean atómicos (anti-sobreventa web).
+ */
+export async function findFreeRoomWith(
+  db: Db,
+  physical: { id: string; name: string; sortOrder: number }[],
+  checkIn: Date,
+  checkOut: Date,
+): Promise<{ id: string; name: string } | null> {
+  for (const r of [...physical].sort((a, b) => a.sortOrder - b.sortOrder)) {
     const [conflictRes, conflictBlock] = await Promise.all([
-      prisma.reservation.count({
+      db.reservation.count({
         where: {
           roomId: r.id,
           reservationStatus: { in: ACTIVE_RESERVATION_STATUSES },
@@ -227,7 +260,7 @@ export async function findFreeRoom(
           checkOut: { gt: checkIn },
         },
       }),
-      prisma.roomBlock.count({
+      db.roomBlock.count({
         where: { roomId: r.id, active: true, startDate: { lt: checkOut }, endDate: { gt: checkIn } },
       }),
     ]);

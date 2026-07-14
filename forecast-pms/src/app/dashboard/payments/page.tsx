@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { listAllBoldLinks, getBoldLink } from "@/lib/bold";
-import { PAYMENT_STATUS_META, ACTIVE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
+import { PAYMENT_STATUS_META, ACTIVE_RESERVATION_STATUSES, totalDue } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import { ReconcileButton, CopyLinkButton } from "@/components/payments/PaymentsClient";
 
@@ -220,7 +220,7 @@ async function LinkStatusSection({ hotelId }: { hotelId: string }) {
                       )}
                     </td>
                     <td className="whitespace-nowrap px-5 py-2.5 text-right font-semibold text-slate-900">
-                      {formatCOP(totalConIva(r.totalAmount))}
+                      {formatCOP(totalDue(r.totalAmount, r.applyIva))}
                     </td>
                   </tr>
                 );

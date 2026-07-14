@@ -15,6 +15,13 @@ export interface RoomType {
   floor: string;
   bedType: string;
   pricePerNight: number;
+  /**
+   * Precio BASE crudo (`price_per_night` de Directus), sin aplicar la temporada
+   * vigente hoy. Es el fallback correcto para cotizar una noche que no cae en
+   * ninguna temporada — debe coincidir con lo que cobra el PMS (`quoteStay`).
+   * `pricePerNight` en cambio es el precio "vigente hoy" (para el titular "desde $").
+   */
+  basePricePerNight?: number;
   /** Periodos de precio por temporada (vacío = usar solo pricePerNight). */
   pricePeriods: PricePeriod[];
   maxGuests: number;

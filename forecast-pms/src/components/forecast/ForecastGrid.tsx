@@ -20,7 +20,7 @@ import {
   RESERVATION_STATUS_META,
   PAYMENT_STATUS_META,
   ivaOf,
-  totalConIva,
+  totalDue,
 } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import {
@@ -96,8 +96,18 @@ export function ForecastGrid({
         checkOut: checkIn ? isoAddDays(checkIn, 1) : "",
         guestsCount: 2,
         totalAmount: 0,
+        applyIva: true,
         depositRequired: 0,
         notes: "",
+        roomsCount: 1,
+        upgrade: false,
+        mealPlan: "",
+        arrivalTime: "",
+        nationality: "",
+        extraNights: 0,
+        company: "",
+        cardRef: "",
+        virtualAdvance: 0,
       },
     });
   }
@@ -117,9 +127,19 @@ export function ForecastGrid({
         checkOut: r.checkOut.slice(0, 10),
         guestsCount: r.guestsCount,
         totalAmount: r.totalAmount,
+        applyIva: r.applyIva,
         depositRequired: r.depositRequired,
         notes: r.notes ?? "",
         reservationStatus: r.reservationStatus,
+        roomsCount: r.roomsCount,
+        upgrade: r.upgrade,
+        mealPlan: r.mealPlan ?? "",
+        arrivalTime: r.arrivalTime ?? "",
+        nationality: r.nationality ?? "",
+        extraNights: r.extraNights,
+        company: r.company ?? "",
+        cardRef: r.cardRef ?? "",
+        virtualAdvance: r.virtualAdvance,
       },
     });
   }
@@ -243,8 +263,14 @@ export function ForecastGrid({
 
             {/* Fila de totales: habitaciones ocupadas por día */}
             <div className="grid border-t-2 border-slate-300 bg-slate-100" style={{ gridTemplateColumns: gridCols, height: 34 }}>
-              <div className="sticky left-0 z-30 flex items-center border-r border-slate-200 bg-slate-100 px-3 text-xs font-bold uppercase tracking-wide text-slate-600" style={{ gridColumn: 1, gridRow: 1 }}>
-                Ocupadas / {data.rooms.length}
+              <div className="sticky left-0 z-30 flex items-center justify-between gap-2 border-r border-slate-200 bg-slate-100 px-3 text-xs font-bold uppercase tracking-wide text-slate-600" style={{ gridColumn: 1, gridRow: 1 }}>
+                <span>Ocupadas / {data.rooms.length}</span>
+                <span
+                  className="rounded bg-brand px-1.5 py-0.5 text-[11px] font-bold normal-case text-white"
+                  title="Suma de habitaciones ocupadas de todos los días del mes"
+                >
+                  Total mes: {data.monthOccupiedTotal}
+                </span>
               </div>
               {data.days.map((d) => {
                 const n = data.dayTotals[d.day - 1];
@@ -372,7 +398,7 @@ function ReservationBlock({
       {...attributes}
       onClick={onOpen}
       title={`#${r.number} ${r.guestName} · ${meta.label} · ${formatDate(r.checkIn)} → ${formatDate(r.checkOut)} · ${formatCOP(r.totalAmount)}`}
-      className="z-20 m-[3px] flex items-center overflow-hidden px-2 text-left text-xs font-semibold shadow-sm transition hover:brightness-95"
+      className="z-20 m-[3px] flex items-center justify-around overflow-hidden px-1 text-center text-xs font-semibold shadow-sm transition hover:brightness-95"
       style={{
         gridColumn: `${r.startCol} / ${r.endCol}`,
         gridRow: 1,
@@ -384,10 +410,12 @@ function ReservationBlock({
         ...blockRadius(r),
       }}
     >
-      <span className="truncate font-bold">
-        {r.continuesLeft && "‹ "}
-        {isNoShow ? "🚫" : "1"}
-      </span>
+      {/* Un "1" por cada día de la estancia: se repite del primer al último día. */}
+      {Array.from({ length: Math.max(1, r.endCol - r.startCol) }).map((_, i) => (
+        <span key={i} className="font-bold leading-none">
+          {isNoShow ? "🚫" : "1"}
+        </span>
+      ))}
     </button>
   );
 }
@@ -429,7 +457,9 @@ function ReservationDrawer({
       ``,
       `Fechas: ${formatDate(r.checkIn)} al ${formatDate(r.checkOut)} (${r.nights} noches)`,
       `Habitación: ${roomName}`,
-      `Valor: ${formatCOP(r.totalAmount)} + IVA 19% = ${formatCOP(totalConIva(r.totalAmount))}`,
+      r.applyIva
+        ? `Valor: ${formatCOP(r.totalAmount)} + IVA 19% = ${formatCOP(totalDue(r.totalAmount, true))}`
+        : `Valor: ${formatCOP(r.totalAmount)} (sin IVA)`,
       r.depositRequired > 0 ? `Abono requerido: ${formatCOP(r.depositRequired)}` : ``,
       r.balanceAmount > 0 ? `Saldo pendiente: ${formatCOP(r.balanceAmount)}` : ``,
     ].filter(Boolean).join("\n");
@@ -473,8 +503,8 @@ function ReservationDrawer({
 
           <Section title="Pagos">
             <Row k="Subtotal" v={formatCOP(r.totalAmount)} />
-            <Row k="IVA (19%)" v={formatCOP(ivaOf(r.totalAmount))} />
-            <Row k="Total con IVA" v={formatCOP(totalConIva(r.totalAmount))} strong />
+            <Row k="IVA (19%)" v={r.applyIva ? formatCOP(ivaOf(r.totalAmount)) : "No aplica"} />
+            <Row k={r.applyIva ? "Total con IVA" : "Total"} v={formatCOP(totalDue(r.totalAmount, r.applyIva))} strong />
             <Row k="Abono requerido" v={formatCOP(r.depositRequired)} />
             <Row k="Pagado" v={formatCOP(r.paidAmount)} />
             <Row k="Saldo a pagar" v={formatCOP(r.balanceAmount)} strong />

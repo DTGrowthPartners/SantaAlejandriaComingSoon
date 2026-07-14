@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { verifyBoldSignature } from "@/lib/bold";
-import { totalConIva } from "@/lib/domain";
+import { totalDue, isActiveStatus } from "@/lib/domain";
+import { findConflicts } from "@/lib/reservations";
 import { notifyPaymentReceived } from "@/lib/notify";
+
+/** true si el error es una violación de constraint único (P2002) de Prisma. */
+function isUniqueViolation(e: unknown): boolean {
+  return e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
+}
 
 type BoldEvent = {
   id: string;
@@ -69,46 +76,75 @@ export async function handleBoldWebhook(req: NextRequest): Promise<NextResponse>
   }
 
   if (event.type === "SALE_APPROVED") {
+    // Si la reserva estaba inactiva (hold vencido → EXPIRED, o cancelada) y el
+    // pago llega tarde, solo se puede reactivar si el cuarto sigue libre. Si ya
+    // fue reasignado a otra reserva, NO reactivamos (evita sobreventa): se
+    // registra el pago y se marca para que recepción reubique al huésped.
+    const wasInactive = !isActiveStatus(reservation.reservationStatus);
+    let reassignNeeded = false;
+    if (wasInactive) {
+      const conflicts = await findConflicts({
+        hotelId: reservation.hotelId,
+        roomId: reservation.roomId,
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        excludeId: reservation.id,
+      });
+      reassignNeeded = conflicts.length > 0;
+    }
+
     const newPaid = reservation.paidAmount + amount;
-    const totalDue = totalConIva(reservation.totalAmount);
-    const balance = Math.max(0, totalDue - newPaid);
+    const due = totalDue(reservation.totalAmount, reservation.applyIva);
+    const balance = Math.max(0, due - newPaid);
 
     let reservationStatus = reservation.reservationStatus;
-    if (reservation.totalAmount > 0 && newPaid >= totalDue) reservationStatus = "PAID";
-    else if (newPaid > 0) reservationStatus = "DEPOSIT_PAID";
+    if (!reassignNeeded) {
+      if (reservation.totalAmount > 0 && newPaid >= due) reservationStatus = "PAID";
+      else if (newPaid > 0) reservationStatus = "DEPOSIT_PAID";
+    }
 
-    await prisma.$transaction([
-      prisma.payment.create({
-        data: {
-          reservationId: reservation.id,
-          provider: "bold",
-          providerPaymentId: paymentId,
-          providerReference: reference,
-          amount,
-          status: "APPROVED",
-          method: event.data?.payment_method ?? "bold",
-          paidAt: new Date(),
-          rawPayload: JSON.parse(rawBody),
-        },
-      }),
-      prisma.reservation.update({
-        where: { id: reservation.id },
-        data: {
-          paidAmount: newPaid,
-          balanceAmount: balance,
-          paymentStatus: "APPROVED",
-          reservationStatus,
-          holdExpiresAt: null, // pagado → ya no es un hold que expira
-          history: {
-            create: {
-              action: "payment",
-              newData: { provider: "bold", paymentId, amount, newPaid, balance, event: event.type },
-              userName: "Bold",
+    try {
+      await prisma.$transaction([
+        prisma.payment.create({
+          data: {
+            reservationId: reservation.id,
+            provider: "bold",
+            providerPaymentId: paymentId,
+            providerReference: reference,
+            amount,
+            status: "APPROVED",
+            method: event.data?.payment_method ?? "bold",
+            paidAt: new Date(),
+            rawPayload: JSON.parse(rawBody),
+          },
+        }),
+        prisma.reservation.update({
+          where: { id: reservation.id },
+          data: {
+            paidAmount: newPaid,
+            balanceAmount: balance,
+            paymentStatus: "APPROVED",
+            reservationStatus,
+            holdExpiresAt: null, // pagado → ya no es un hold que expira
+            ...(reassignNeeded
+              ? { notes: `${reservation.notes ?? ""} · ⚠️ PAGO TARDÍO: el cuarto ya fue reasignado, requiere reubicación`.trim() }
+              : {}),
+            history: {
+              create: {
+                action: reassignNeeded ? "payment_needs_reassign" : "payment",
+                newData: { provider: "bold", paymentId, amount, newPaid, balance, event: event.type, reassignNeeded },
+                userName: "Bold",
+              },
             },
           },
-        },
-      }),
-    ]);
+        }),
+      ]);
+    } catch (e) {
+      // Reintento de Bold con el mismo payment_id → el constraint único lo bloquea.
+      // Es idempotente: el pago ya quedó registrado, respondemos 200 sin duplicar.
+      if (isUniqueViolation(e)) return NextResponse.json({ ok: true, duplicate: true });
+      throw e;
+    }
     revalidatePath("/dashboard/forecast");
     revalidatePath("/dashboard/payments");
     await notifyPaymentReceived({

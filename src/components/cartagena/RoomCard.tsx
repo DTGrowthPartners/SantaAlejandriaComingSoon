@@ -46,9 +46,11 @@ function formatDayMonth(iso: string, lang: string) {
 interface RoomCardProps {
   room: RoomType;
   beds24PropertyId: string | null;
+  /** Switch en Directus (hotel.direct_booking_enabled): muestra u oculta la reserva directa. */
+  bookingEnabled?: boolean;
 }
 
-const RoomCard = ({ room }: RoomCardProps) => {
+const RoomCard = ({ room, bookingEnabled = false }: RoomCardProps) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
@@ -243,9 +245,9 @@ const RoomCard = ({ room }: RoomCardProps) => {
             {t("cartagenaRooms", "reservarHabitacion")}
           </a>
 
-          {/* Reserva directa por web OCULTA temporalmente (cambiar `false` por `true`
-              para reactivarla). El código y la API del PMS siguen intactos. */}
-          {false && <DirectBookingWidget room={room} />}
+          {/* Reserva directa por web: la controla el hotel desde Directus
+              (hotels.direct_booking_enabled). Apagado = solo WhatsApp. */}
+          {bookingEnabled && <DirectBookingWidget room={room} />}
         </div>
       </div>
 

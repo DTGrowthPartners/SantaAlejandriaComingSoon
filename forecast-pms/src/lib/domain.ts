@@ -95,6 +95,11 @@ export function totalConIva(subtotal: number): number {
   return subtotal + ivaOf(subtotal);
 }
 
+/** Total a cobrar respetando si la reserva lleva IVA o está exenta. */
+export function totalDue(subtotal: number, applyIva: boolean): number {
+  return applyIva ? totalConIva(subtotal) : subtotal;
+}
+
 /** Canales en orden, para selects y validación (zod). */
 export const BOOKING_CHANNELS = [
   "DIRECT",

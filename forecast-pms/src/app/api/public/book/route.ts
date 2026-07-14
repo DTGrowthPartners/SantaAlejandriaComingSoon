@@ -6,10 +6,12 @@ import { corsJson, corsPreflight } from "@/lib/cors";
 import {
   getDirectusRoom,
   quoteStay,
-  findFreeRoom,
+  pmsRoomsForType,
+  findFreeRoomWith,
   parseIsoDate,
   ivaOf,
 } from "@/lib/publicBooking";
+import { lockRoomType } from "@/lib/reservations";
 import { createBoldPaymentLink } from "@/lib/bold";
 import { notifyNewReservation } from "@/lib/notify";
 import { expireStaleHolds, HOLD_MINUTES } from "@/lib/holds";
@@ -77,7 +79,9 @@ export async function POST(req: NextRequest) {
     if (quote.subtotal <= 0) {
       return corsJson(origin, { error: "Esta habitación no tiene tarifa configurada." }, { status: 409 });
     }
-    const iva = ivaOf(quote.subtotal);
+    // El IVA de la web se controla con un switch global (Configuración → IVA web).
+    const applyIva = hotel.webApplyIva;
+    const iva = applyIva ? ivaOf(quote.subtotal) : 0;
     const total = quote.subtotal + iva;
 
     // Abono = SOLO el valor de la 1.ª noche, SIN IVA. El IVA y las noches
@@ -96,70 +100,84 @@ export async function POST(req: NextRequest) {
     // Monto a cobrar en línea según el modo elegido.
     const payOnline = data.payMode === "online" || data.payMode === "deposit";
     const chargeSubtotal = data.payMode === "deposit" ? depositSubtotal : quote.subtotal;
-    // El abono NO lleva IVA (solo la noche); el prepago total sí.
-    const chargeIva = data.payMode === "deposit" ? 0 : ivaOf(chargeSubtotal);
+    // El abono NO lleva IVA (solo la noche); el prepago total sí (si el switch web lo tiene activo).
+    const chargeIva = data.payMode === "deposit" || !applyIva ? 0 : ivaOf(chargeSubtotal);
     const chargeTotal = chargeSubtotal + chargeIva;
 
     // Reserva web con pago online = "hold": aparta el cuarto pero se auto-elimina
     // si no se paga antes de esta hora. "Pagar en el hotel" no expira.
     const holdExpiresAt = payOnline ? new Date(Date.now() + HOLD_MINUTES * 60_000) : null;
 
-    // Libera holds vencidos sin pagar antes de revisar disponibilidad.
+    // Libera (vence) holds sin pagar antes de revisar disponibilidad.
     await expireStaleHolds(hotel.id);
 
-    // Anti-sobreventa: asignar una habitación física libre en TODO el rango.
-    const free = await findFreeRoom(dRoom, hotel.id, checkIn, checkOut);
-    if (!free) {
+    // Cuartos físicos del tipo (fuera de la transacción; casi nunca cambian).
+    const physical = await pmsRoomsForType(dRoom, hotel.id);
+    if (physical.length === 0) {
       return corsJson(origin, { error: "No hay disponibilidad para esas fechas." }, { status: 409 });
     }
 
     const seasons = [...new Set(quote.perNight.map((n) => n.season).filter(Boolean))];
-    const reservation = await prisma.reservation.create({
-      data: {
-        hotelId: hotel.id,
-        roomId: free.id,
-        guestName: data.guestName,
-        guestPhone: data.guestPhone,
-        guestEmail: data.guestEmail || null,
-        channel: "DIRECT",
-        checkIn,
-        checkOut,
-        nights,
-        guestsCount: data.guestsCount,
-        totalAmount: quote.subtotal,
-        depositRequired: data.payMode === "deposit" ? depositSubtotal : 0,
-        paidAmount: 0,
-        balanceAmount: total,
-        holdExpiresAt,
-        reservationStatus: payOnline ? "PENDING_PAYMENT" : "PENDING",
-        paymentStatus: "NO_PAYMENT",
-        notes:
-          `Reserva web (${dRoom.short_name})` +
-          (seasons.length ? ` · Temporada: ${seasons.join(", ")}` : "") +
-          (data.notes ? ` · ${data.notes}` : ""),
-        history: {
-          create: {
-            action: "web_booking",
-            newData: {
-              room: dRoom.slug,
-              payMode: data.payMode,
-              subtotal: quote.subtotal,
-              iva,
-              total,
-              perNight: quote.perNight,
+
+    // Anti-sobreventa: lock por TIPO + asignar cuarto libre + create, todo atómico.
+    // Dos reservas web simultáneas del mismo tipo no pueden tomar el mismo cuarto.
+    const reservation = await prisma.$transaction(async (tx) => {
+      await lockRoomType(tx, hotel.id, dRoom.slug);
+      const free = await findFreeRoomWith(tx, physical, checkIn, checkOut);
+      if (!free) return null;
+      return tx.reservation.create({
+        data: {
+          hotelId: hotel.id,
+          roomId: free.id,
+          guestName: data.guestName,
+          guestPhone: data.guestPhone,
+          guestEmail: data.guestEmail || null,
+          channel: "DIRECT",
+          checkIn,
+          checkOut,
+          nights,
+          guestsCount: data.guestsCount,
+          applyIva,
+          totalAmount: quote.subtotal,
+          depositRequired: data.payMode === "deposit" ? depositSubtotal : 0,
+          paidAmount: 0,
+          balanceAmount: total,
+          holdExpiresAt,
+          reservationStatus: payOnline ? "PENDING_PAYMENT" : "PENDING",
+          paymentStatus: "NO_PAYMENT",
+          notes:
+            `Reserva web (${dRoom.short_name})` +
+            (seasons.length ? ` · Temporada: ${seasons.join(", ")}` : "") +
+            (data.notes ? ` · ${data.notes}` : ""),
+          history: {
+            create: {
+              action: "web_booking",
+              newData: {
+                room: dRoom.slug,
+                payMode: data.payMode,
+                subtotal: quote.subtotal,
+                iva,
+                total,
+                perNight: quote.perNight,
+              },
+              userName: "Web",
             },
-            userName: "Web",
           },
         },
-      },
+      });
     });
+
+    if (!reservation) {
+      return corsJson(origin, { error: "No hay disponibilidad para esas fechas." }, { status: 409 });
+    }
+    const roomName = physical.find((p) => p.id === reservation.roomId)?.name ?? "";
 
     // Notificación de reserva NUEVA por la web (no aplica a importaciones).
     await notifyNewReservation({
       hotelId: hotel.id,
       number: reservation.number,
       guestName: data.guestName,
-      roomName: free.name,
+      roomName,
       roomType: dRoom.short_name,
       channel: "DIRECT",
       checkIn,

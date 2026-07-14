@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser, canManageRooms } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RoomsManager, type RoomRow } from "@/components/rooms/RoomsManager";
 
@@ -14,13 +14,14 @@ export default async function RoomsPage() {
     id: r.id,
     name: r.name,
     type: r.type,
+    directusSlug: r.directusSlug,
     capacity: r.capacity,
     sortOrder: r.sortOrder,
     active: r.active,
     reservations: r._count.reservations,
   }));
 
-  const canManage = user.role === "ADMIN" || user.role === "MANAGER";
+  const canManage = canManageRooms(user.role);
 
   return <RoomsManager rooms={rows} canManage={canManage} />;
 }

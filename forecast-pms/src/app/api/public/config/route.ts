@@ -15,6 +15,9 @@ export async function OPTIONS(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   const origin = req.headers.get("origin");
-  const hotel = await prisma.hotel.findFirst({ select: { webPrepayFull: true } });
-  return corsJson(origin, { prepayFull: hotel?.webPrepayFull ?? false });
+  const hotel = await prisma.hotel.findFirst({ select: { webPrepayFull: true, webApplyIva: true } });
+  return corsJson(origin, {
+    prepayFull: hotel?.webPrepayFull ?? false,
+    applyIva: hotel?.webApplyIva ?? true,
+  });
 }

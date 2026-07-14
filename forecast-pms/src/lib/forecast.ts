@@ -7,7 +7,7 @@ import type {
 import { ACTIVE_RESERVATION_STATUSES } from "@/lib/domain";
 import { expireStaleHolds } from "@/lib/holds";
 
-export type ForecastRoom = { id: string; name: string; type: string | null };
+export type ForecastRoom = { id: string; name: string; type: string | null; directusSlug: string | null };
 
 export type ForecastReservation = {
   id: string;
@@ -24,10 +24,20 @@ export type ForecastReservation = {
   nights: number;
   guestsCount: number;
   totalAmount: number;
+  applyIva: boolean;
   depositRequired: number;
   paidAmount: number;
   balanceAmount: number;
   notes: string | null;
+  roomsCount: number;
+  upgrade: boolean;
+  mealPlan: string | null;
+  arrivalTime: string | null;
+  nationality: string | null;
+  extraNights: number;
+  company: string | null;
+  cardRef: string | null;
+  virtualAdvance: number;
   // Posición en la grilla (líneas de CSS grid; la columna 1 es la etiqueta de habitación).
   startCol: number;
   endCol: number;
@@ -72,6 +82,8 @@ export type ForecastData = {
   reservationsByRoom: Record<string, ForecastReservation[]>;
   blocksByRoom: Record<string, ForecastBlock[]>;
   dayTotals: number[]; // habitaciones ocupadas por día (índice 0 = día 1)
+  monthOccupiedTotal: number; // suma de todas las ocupaciones del mes (habitaciones-noche)
+  monthReservationsTotal: number; // cantidad de reservas del mes
   kpis: ForecastKpis;
 };
 
@@ -181,10 +193,20 @@ export async function getForecastData(
       nights: r.nights,
       guestsCount: r.guestsCount,
       totalAmount: r.totalAmount,
+      applyIva: r.applyIva,
       depositRequired: r.depositRequired,
       paidAmount: r.paidAmount,
       balanceAmount: r.balanceAmount,
       notes: r.notes,
+      roomsCount: r.roomsCount,
+      upgrade: r.upgrade,
+      mealPlan: r.mealPlan,
+      arrivalTime: r.arrivalTime,
+      nationality: r.nationality,
+      extraNights: r.extraNights,
+      company: r.company,
+      cardRef: r.cardRef,
+      virtualAdvance: r.virtualAdvance,
       startCol: pos.startCol,
       endCol: pos.endCol,
       continuesLeft: pos.continuesLeft,
@@ -237,16 +259,25 @@ export async function getForecastData(
     ? blocks.filter((b) => b.startDate.getTime() <= t && t < b.endDate.getTime()).length
     : 0;
 
+  // Total de reservas del mes (las que se ven en la grilla) y habitaciones-noche.
+  const monthReservationsTotal = Object.values(reservationsByRoom).reduce(
+    (s, list) => s + list.length,
+    0,
+  );
+  const monthOccupiedTotal = dayTotals.reduce((s, n) => s + n, 0);
+
   return {
     year,
     month,
     monthLabel: `${MONTHS[month - 1]} ${year}`,
     daysInMonth,
     days,
-    rooms: rooms.map((r) => ({ id: r.id, name: r.name, type: r.type })),
+    rooms: rooms.map((r) => ({ id: r.id, name: r.name, type: r.type, directusSlug: r.directusSlug })),
     reservationsByRoom,
     blocksByRoom,
     dayTotals,
+    monthOccupiedTotal,
+    monthReservationsTotal,
     kpis: {
       occupancyPct,
       roomsTotal: rooms.length,

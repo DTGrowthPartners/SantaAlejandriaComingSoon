@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CHANNEL_META, RESERVATION_STATUS_META, ivaOf, totalConIva } from "@/lib/domain";
+import { CHANNEL_META, RESERVATION_STATUS_META, ivaOf, totalDue } from "@/lib/domain";
 import { formatDateShort, nightsBetween, formatCOP } from "@/lib/format";
 import { sendNewReservationEmail } from "@/lib/email";
 import { emitNotification } from "@/lib/notifyBus";
@@ -25,6 +25,7 @@ export async function notifyNewReservation(params: {
   roomType?: string | null;
   guestsCount?: number;
   subtotal?: number;
+  applyIva?: boolean;
   status?: ReservationStatus;
   notes?: string | null;
 }): Promise<void> {
@@ -46,6 +47,7 @@ export async function notifyNewReservation(params: {
   }
 
   const subtotal = params.subtotal ?? 0;
+  const applyIva = params.applyIva ?? true;
   await sendNewReservationEmail({
     number: params.number,
     guestName: params.guestName,
@@ -60,8 +62,8 @@ export async function notifyNewReservation(params: {
     nights: nightsBetween(params.checkIn, params.checkOut),
     guestsCount: params.guestsCount ?? 1,
     subtotal,
-    iva: ivaOf(subtotal),
-    total: totalConIva(subtotal),
+    iva: applyIva ? ivaOf(subtotal) : 0,
+    total: totalDue(subtotal, applyIva),
     statusLabel: params.status ? RESERVATION_STATUS_META[params.status]?.label ?? params.status : "Pendiente",
     notes: params.notes,
   });

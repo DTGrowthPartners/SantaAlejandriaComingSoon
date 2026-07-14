@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser, canAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ROLE_META } from "@/lib/domain";
 import { SettingsPanel } from "@/components/settings/SettingsPanel";
@@ -15,8 +15,9 @@ export default async function SettingsPage() {
       user={{ name: user.name, email: user.email, roleLabel: ROLE_META[user.role].label }}
       hotelName={hotel?.name ?? "—"}
       reservationsCount={reservationsCount}
-      isAdmin={user.role === "ADMIN"}
+      isAdmin={canAdmin(user.role)}
       webPrepayFull={hotel?.webPrepayFull ?? false}
+      webApplyIva={hotel?.webApplyIva ?? true}
     />
   );
 }

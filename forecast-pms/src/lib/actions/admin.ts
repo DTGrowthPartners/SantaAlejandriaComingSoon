@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { getSession, canAdmin } from "@/lib/auth";
 
 export type ResetResult = { ok: boolean; error: string | null; deleted?: number };
 
@@ -17,12 +17,35 @@ export async function setWebPaymentModeAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const session = await getSession();
   if (!session) return { ok: false, error: "Sesión expirada, vuelve a entrar." };
-  if (session.role !== "ADMIN") {
-    return { ok: false, error: "Solo un Administrador puede cambiar el modo de pago." };
+  if (!canAdmin(session.role)) {
+    return { ok: false, error: "No tienes permiso para cambiar el modo de pago." };
   }
   await prisma.hotel.update({
     where: { id: session.hotelId },
     data: { webPrepayFull: prepayFull },
+  });
+  revalidatePath("/dashboard/settings");
+  return { ok: true };
+}
+
+/**
+ * Cambia si la reserva web cobra IVA 19% o queda exenta.
+ * applyIva=true (por defecto) → la web cobra con IVA.
+ * applyIva=false → la web cobra sin IVA.
+ * Solo afecta reservas web NUEVAS; las ya creadas conservan su propio `applyIva`.
+ * Solo ADMIN.
+ */
+export async function setWebIvaAction(
+  applyIva: boolean,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sesión expirada, vuelve a entrar." };
+  if (!canAdmin(session.role)) {
+    return { ok: false, error: "No tienes permiso para cambiar el IVA de la web." };
+  }
+  await prisma.hotel.update({
+    where: { id: session.hotelId },
+    data: { webApplyIva: applyIva },
   });
   revalidatePath("/dashboard/settings");
   return { ok: true };
@@ -36,8 +59,8 @@ export async function setWebPaymentModeAction(
 export async function resetDataAction(confirmText: string): Promise<ResetResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "Sesión expirada, vuelve a entrar." };
-  if (session.role !== "ADMIN") {
-    return { ok: false, error: "Solo un Administrador puede reiniciar los datos." };
+  if (!canAdmin(session.role)) {
+    return { ok: false, error: "No tienes permiso para reiniciar los datos." };
   }
   if (confirmText.trim() !== "REINICIAR") {
     return { ok: false, error: 'Escribe "REINICIAR" para confirmar.' };

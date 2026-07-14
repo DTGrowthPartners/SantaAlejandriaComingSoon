@@ -6,23 +6,26 @@ export const HOLD_MINUTES = 20;
 const CLEANUP_GRACE_MIN = 10;
 
 /**
- * Elimina los "holds" de reservas web con pago online que ya vencieron y siguen
- * sin pagar (PENDING_PAYMENT + holdExpiresAt + paidAmount 0). Así el cuarto se
- * libera y no quedan reservas fantasma. No toca reservas normales ni las que ya
- * tienen algún abono. Nunca lanza.
+ * Vence los "holds" de reservas web con pago online que ya pasaron su hora sin
+ * pagar (PENDING_PAYMENT + holdExpiresAt + paidAmount 0). Se marcan como EXPIRED
+ * (estado inactivo → libera el cuarto de disponibilidad), pero NO se borran: así,
+ * si el pago de Bold llega tarde, el webhook todavía encuentra la reserva y puede
+ * conciliar el pago (evita el "pago recibido pero reserva borrada"). No toca
+ * reservas normales ni las que ya tienen algún abono. Nunca lanza.
  */
 export async function expireStaleHolds(hotelId?: string): Promise<void> {
   try {
     const cutoff = new Date(Date.now() - CLEANUP_GRACE_MIN * 60_000);
-    await prisma.reservation.deleteMany({
+    await prisma.reservation.updateMany({
       where: {
         ...(hotelId ? { hotelId } : {}),
         reservationStatus: "PENDING_PAYMENT",
         paidAmount: 0,
         holdExpiresAt: { not: null, lt: cutoff },
       },
+      data: { reservationStatus: "EXPIRED", holdExpiresAt: null },
     });
   } catch (e) {
-    console.error("[holds] no se pudieron limpiar los holds vencidos:", e);
+    console.error("[holds] no se pudieron vencer los holds:", e);
   }
 }

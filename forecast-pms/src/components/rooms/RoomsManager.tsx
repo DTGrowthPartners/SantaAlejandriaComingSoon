@@ -13,11 +13,15 @@ export type RoomRow = {
   id: string;
   name: string;
   type: string | null;
+  directusSlug: string | null;
   capacity: number;
   sortOrder: number;
   active: boolean;
   reservations: number;
 };
+
+/** Tipo comercial publicado en la web (Directus). */
+type WebType = { slug: string; typeName: string; pmsRooms: string[] };
 
 const initialState: RoomActionState = { ok: false, error: null };
 
@@ -27,6 +31,32 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
   const [creating, setCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  // Tipos de habitación de la web (Directus) para vincular cada habitación del PMS.
+  const [webTypes, setWebTypes] = useState<WebType[]>([]);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/rates")
+      .then((r) => r.json())
+      .then((d) => {
+        if (alive && d?.ok && Array.isArray(d.rates)) {
+          setWebTypes(
+            d.rates.map((x: { slug: string; typeName: string; pmsRooms?: string[] }) => ({
+              slug: x.slug,
+              typeName: x.typeName,
+              pmsRooms: Array.isArray(x.pmsRooms) ? x.pmsRooms : [],
+            })),
+          );
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const webName = (slug: string | null) =>
+    slug ? webTypes.find((t) => t.slug === slug)?.typeName ?? slug : null;
+
   function toggle(id: string) {
     startTransition(async () => {
       const r = await toggleRoomActiveAction(id);
@@ -34,6 +64,29 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
       else alert(r.error);
     });
   }
+
+  // --- Consistencia web ↔ Directus ↔ PMS (solo cuando Directus ya respondió) ---
+  const ratesLoaded = webTypes.length > 0;
+  const activeLinkedSlugs = new Set(
+    rooms.filter((r) => r.active && r.directusSlug).map((r) => r.directusSlug as string),
+  );
+  const publishedSlugs = new Set(webTypes.map((t) => t.slug));
+  // #1 Tipo web sin ninguna habitación activa vinculada → se ve en la web pero nunca hay cupo.
+  const orphanTypes = ratesLoaded ? webTypes.filter((t) => !activeLinkedSlugs.has(t.slug)) : [];
+  // #3 Habitación con un vínculo que ya no existe en Directus (renombrado/despublicado).
+  const danglingRooms = ratesLoaded
+    ? rooms.filter((r) => r.directusSlug && !publishedSlugs.has(r.directusSlug))
+    : [];
+  // #2 El mapeo pms_rooms de Directus contradice el vínculo autoritativo del PMS.
+  const directusExpects = new Map<string, string>();
+  webTypes.forEach((t) => t.pmsRooms.forEach((n) => directusExpects.set(n, t.slug)));
+  const driftRooms = ratesLoaded
+    ? rooms.filter((r) => {
+        const exp = directusExpects.get(r.name);
+        return exp && exp !== (r.directusSlug ?? "");
+      })
+    : [];
+  const hasIssues = orphanTypes.length > 0 || danglingRooms.length > 0 || driftRooms.length > 0;
 
   return (
     <div className="mx-auto w-full max-w-4xl p-6">
@@ -50,12 +103,50 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
         )}
       </div>
 
+      {hasIssues && (
+        <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900">
+          <p className="mb-1.5 text-sm font-semibold">
+            <i className="fa-solid fa-triangle-exclamation mr-1.5" aria-hidden />
+            Revisar vínculos web ↔ PMS
+          </p>
+          <ul className="ml-1 flex flex-col gap-1.5 text-[13px] leading-snug">
+            {orphanTypes.length > 0 && (
+              <li>
+                <span className="font-medium">Tipos de la web sin habitación asignada:</span>{" "}
+                {orphanTypes.map((t) => t.typeName).join(", ")}. Aparecen en la web pero nunca muestran
+                disponibilidad — vincula al menos una habitación <span className="font-medium">activa</span>.
+              </li>
+            )}
+            {danglingRooms.length > 0 && (
+              <li>
+                <span className="font-medium">Habitaciones con vínculo inexistente en la web:</span>{" "}
+                {danglingRooms.map((r) => `${r.name} (${r.directusSlug})`).join(", ")}. Ese tipo ya no existe o
+                está despublicado en Directus — reasígnalas.
+              </li>
+            )}
+            {driftRooms.length > 0 && (
+              <li>
+                <span className="font-medium">Vínculo distinto al de Directus (pms_rooms):</span>{" "}
+                {driftRooms
+                  .map(
+                    (r) =>
+                      `${r.name} → PMS: ${r.directusSlug ? webName(r.directusSlug) : "sin vincular"} / Directus: ${directusExpects.get(r.name)}`,
+                  )
+                  .join("; ")}
+                . Manda el del PMS; actualiza <code>pms_rooms</code> en Directus para no confundir.
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-400">
             <tr>
               <th className="px-4 py-2.5">Hab.</th>
               <th className="px-4 py-2.5">Tipo</th>
+              <th className="px-4 py-2.5">En la web</th>
               <th className="px-4 py-2.5 text-center">Cap.</th>
               <th className="px-4 py-2.5 text-center">Orden</th>
               <th className="px-4 py-2.5 text-center">Reservas</th>
@@ -68,6 +159,15 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
               <tr key={r.id} className={r.active ? "" : "bg-slate-50/60 text-slate-400"}>
                 <td className="px-4 py-2.5 font-semibold text-slate-800">{r.name}</td>
                 <td className="px-4 py-2.5 text-slate-600">{r.type ?? "—"}</td>
+                <td className="px-4 py-2.5">
+                  {r.directusSlug ? (
+                    <span className="rounded-full bg-brand-light px-2 py-0.5 text-xs font-medium text-brand-dark">
+                      {webName(r.directusSlug)}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-slate-300">Sin vincular</span>
+                  )}
+                </td>
                 <td className="px-4 py-2.5 text-center">{r.capacity}</td>
                 <td className="px-4 py-2.5 text-center text-slate-500">{r.sortOrder}</td>
                 <td className="px-4 py-2.5 text-center text-slate-500">{r.reservations}</td>
@@ -101,10 +201,10 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
       </div>
 
       {creating && (
-        <RoomForm mode="create" onClose={() => setCreating(false)} onSuccess={() => { setCreating(false); router.refresh(); }} />
+        <RoomForm mode="create" webTypes={webTypes} onClose={() => setCreating(false)} onSuccess={() => { setCreating(false); router.refresh(); }} />
       )}
       {editing && (
-        <RoomForm mode="edit" room={editing} onClose={() => setEditing(null)} onSuccess={() => { setEditing(null); router.refresh(); }} />
+        <RoomForm mode="edit" room={editing} webTypes={webTypes} onClose={() => setEditing(null)} onSuccess={() => { setEditing(null); router.refresh(); }} />
       )}
     </div>
   );
@@ -113,11 +213,13 @@ export function RoomsManager({ rooms, canManage }: { rooms: RoomRow[]; canManage
 function RoomForm({
   mode,
   room,
+  webTypes,
   onClose,
   onSuccess,
 }: {
   mode: "create" | "edit";
   room?: RoomRow;
+  webTypes: WebType[];
   onClose: () => void;
   onSuccess: () => void;
 }) {
@@ -145,6 +247,22 @@ function RoomForm({
             <span className="text-xs font-medium text-slate-600">Tipo</span>
             <input name="type" defaultValue={room?.type ?? ""} className={field} placeholder="Doble Estándar" />
           </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-slate-600">Habitación en la web</span>
+            <select name="directusSlug" defaultValue={room?.directusSlug ?? ""} className={field}>
+              <option value="">— Sin vincular —</option>
+              {webTypes.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.typeName}
+                </option>
+              ))}
+            </select>
+            <span className="text-[11px] text-slate-400">
+              Las reservas de este tipo en la web entrarán a esta habitación.
+            </span>
+          </label>
+
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1">
               <span className="text-xs font-medium text-slate-600">Capacidad</span>

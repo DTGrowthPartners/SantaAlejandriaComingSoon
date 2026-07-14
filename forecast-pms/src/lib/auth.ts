@@ -64,10 +64,24 @@ export async function requireUser(): Promise<SessionPayload> {
   return session;
 }
 
-/** Permisos por rol (MVP). */
+/**
+ * Permisos por rol. Por pedido del hotel, todos los roles operativos
+ * (Gerencia, Recepción y Contabilidad) tienen las mismas capacidades que el
+ * Administrador. Solo VIEWER ("Solo lectura") queda restringido a consulta.
+ */
+export function canOperate(role: UserRole): boolean {
+  return role !== "VIEWER";
+}
 export function canEditReservations(role: UserRole): boolean {
-  return role === "ADMIN" || role === "MANAGER" || role === "RECEPTION";
+  return canOperate(role);
 }
 export function canManagePayments(role: UserRole): boolean {
-  return role === "ADMIN" || role === "ACCOUNTING" || role === "RECEPTION";
+  return canOperate(role);
+}
+export function canManageRooms(role: UserRole): boolean {
+  return canOperate(role);
+}
+/** Ajustes sensibles: modo de pago web y reinicio del sistema. */
+export function canAdmin(role: UserRole): boolean {
+  return canOperate(role);
 }

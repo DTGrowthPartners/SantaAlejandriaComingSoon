@@ -123,6 +123,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [payMode, setPayMode] = useState<"hotel" | "online" | "deposit">("deposit");
   const [prepayFull, setPrepayFull] = useState(false);
+  const [applyIva, setApplyIva] = useState(true);
   const [name, setName] = useState("");
   const [country, setCountry] = useState(COUNTRY_CODES[0].label);
   const [phone, setPhone] = useState("");
@@ -140,6 +141,8 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
         const full = Boolean(d.prepayFull);
         setPrepayFull(full);
         setPayMode(full ? "online" : "deposit");
+        // El IVA de la web lo controla el hotel en Configuración (por defecto: con IVA).
+        setApplyIva(d.applyIva === undefined ? true : Boolean(d.applyIva));
       })
       .catch(() => {});
   }, []);
@@ -164,7 +167,9 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
 
   const priceForNight = (isoDay: string): number => {
     const p = room.pricePeriods.find((pp) => pp.startDate <= isoDay && pp.endDate >= isoDay);
-    return p ? p.price : room.pricePerNight;
+    // Fuera de temporada: usar el precio BASE crudo (igual que el PMS `quoteStay`),
+    // NO el "precio vigente hoy" — así el total mostrado = el total que cobra Bold.
+    return p ? p.price : (room.basePricePerNight ?? room.pricePerNight);
   };
 
   const quote = useMemo(() => {
@@ -177,11 +182,11 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
       nights++;
       cur.setDate(cur.getDate() + 1);
     }
-    const iva = Math.round(subtotal * IVA_RATE);
+    const iva = applyIva ? Math.round(subtotal * IVA_RATE) : 0;
     // Abono = SOLO la 1.ª noche, sin IVA. El IVA y las noches restantes van al saldo.
     const depositTotal = priceForNight(toISO(checkIn));
     return { nights, subtotal, iva, total: subtotal + iva, depositTotal };
-  }, [checkIn, checkOut, room]);
+  }, [checkIn, checkOut, room, applyIva]);
 
   // Un día no sirve de check-in si TODAS las habitaciones del tipo están ocupadas esa noche.
   const allRoomsBusy = (d: Date) => roomsBusy.length > 0 && roomsBusy.every((bs) => bs.has(toISO(d)));
@@ -342,13 +347,15 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
       {quote && (
         <div className="mt-4 rounded-lg bg-primary/5 p-3 font-sans text-sm">
           <div className="flex justify-between text-muted-foreground">
-            <span>{quote.nights} {quote.nights === 1 ? "noche" : "noches"} (neto)</span>
+            <span>{quote.nights} {quote.nights === 1 ? "noche" : "noches"}{applyIva ? " (neto)" : ""}</span>
             <span>{formatCOP(quote.subtotal)}</span>
           </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>IVA 19%</span>
-            <span>{formatCOP(quote.iva)}</span>
-          </div>
+          {applyIva && (
+            <div className="flex justify-between text-muted-foreground">
+              <span>IVA 19%</span>
+              <span>{formatCOP(quote.iva)}</span>
+            </div>
+          )}
           <div className="mt-1 flex justify-between border-t border-border pt-1 font-serif text-base font-semibold text-foreground">
             <span>Total</span>
             <span className="text-accent">{formatCOP(quote.total)}</span>
@@ -415,7 +422,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                   {checkIn && format(checkIn, "d MMM", { locale: es })} →{" "}
                   {checkOut && format(checkOut, "d MMM yyyy", { locale: es })} ·{" "}
                   {quote.nights} {quote.nights === 1 ? "noche" : "noches"} ·{" "}
-                  <strong className="text-foreground">{formatCOP(quote.total)}</strong> (IVA inc.)
+                  <strong className="text-foreground">{formatCOP(quote.total)}</strong>{applyIva ? " (IVA inc.)" : ""}
                 </p>
               )}
 
@@ -511,7 +518,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                     <p className="font-sans text-[11px] text-muted-foreground">
                       Pagas {formatCOP(quote.depositTotal)} ahora (1.ª noche, sin IVA) para apartar. El saldo de{" "}
                       <strong className="text-foreground">{formatCOP(quote.total - quote.depositTotal)}</strong>{" "}
-                      (noches restantes + IVA) lo pagas al llegar al hotel.
+                      ({applyIva ? "noches restantes + IVA" : "noches restantes"}) lo pagas al llegar al hotel.
                     </p>
                   )}
                 </>

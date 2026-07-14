@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession, canManagePayments } from "@/lib/auth";
 import { getBoldLink, createBoldPaymentLink, invalidateBoldLinksCache } from "@/lib/bold";
-import { totalConIva, IVA_RATE } from "@/lib/domain";
+import { totalDue, IVA_RATE } from "@/lib/domain";
 import { formatCOP } from "@/lib/format";
 import { notifyPaymentReceived } from "@/lib/notify";
 
@@ -32,8 +32,9 @@ export async function createDepositLinkAction(input: {
   if (r.balanceAmount > 0 && amount > r.balanceAmount)
     return { ok: false, error: `El monto supera el saldo pendiente (${formatCOP(r.balanceAmount)}).` };
 
-  // El abono es un monto BRUTO (lo que paga el huésped); se separa el IVA proporcional.
-  const subtotal = Math.round(amount / (1 + IVA_RATE));
+  // El abono es un monto BRUTO (lo que paga el huésped). Si la reserva lleva IVA,
+  // se separa el IVA proporcional; si está exenta, todo es subtotal y el IVA es 0.
+  const subtotal = r.applyIva ? Math.round(amount / (1 + IVA_RATE)) : amount;
   const iva = amount - subtotal;
 
   let link;
@@ -136,11 +137,11 @@ export async function reconcileBoldPayments(): Promise<ReconcileResult> {
       // Usa el transaction_id de Bold como id del pago: es el MISMO que manda el
       // webhook, así ninguno de los dos procesa el pago dos veces (dedup común).
       const paymentId = bold.transaction_id ?? lnk;
-      const amount = bold.total ?? totalConIva(r.totalAmount);
+      const due = totalDue(r.totalAmount, r.applyIva);
+      const amount = bold.total ?? due;
       const newPaid = r.paidAmount + amount;
-      const totalDue = totalConIva(r.totalAmount);
-      const balance = Math.max(0, totalDue - newPaid);
-      const reservationStatus = r.totalAmount > 0 && newPaid >= totalDue ? "PAID" : "DEPOSIT_PAID";
+      const balance = Math.max(0, due - newPaid);
+      const reservationStatus = r.totalAmount > 0 && newPaid >= due ? "PAID" : "DEPOSIT_PAID";
 
       await prisma.$transaction([
         prisma.payment.create({

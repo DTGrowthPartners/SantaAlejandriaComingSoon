@@ -31,6 +31,8 @@ function toCartagenaRoom(r: DirectusRoom): RoomType {
     floor: r.floor ?? "",
     bedType: r.bed_type ?? "",
     pricePerNight: effectivePricePerNight(r),
+    // Precio base crudo (sin temporada de hoy) = fallback de cotización, alineado con el PMS.
+    basePricePerNight: r.price_per_night ?? 0,
     pricePeriods: publishedPricePeriods(r).map((p) => ({
       label: p.label,
       startDate: p.start_date,
@@ -94,6 +96,7 @@ interface CartagenaState {
   loading: boolean;
   error: Error | null;
   beds24PropertyId: string | null;
+  directBookingEnabled: boolean;
 }
 
 export function useCartagenaRooms(): CartagenaState {
@@ -102,6 +105,7 @@ export function useCartagenaRooms(): CartagenaState {
     loading: true,
     error: null,
     beds24PropertyId: null,
+    directBookingEnabled: false,
   });
   useEffect(() => {
     let cancelled = false;
@@ -109,17 +113,23 @@ export function useCartagenaRooms(): CartagenaState {
       .then((result) => {
         if (cancelled) return;
         if (!result) {
-          setState({ rooms: [], loading: false, error: null, beds24PropertyId: null });
+          setState({ rooms: [], loading: false, error: null, beds24PropertyId: null, directBookingEnabled: false });
           return;
         }
         const rooms = result.rooms
           .filter((r) => r.category === "room" || r.category === null)
           .map(toCartagenaRoom);
-        setState({ rooms, loading: false, error: null, beds24PropertyId: result.hotel.beds24_property_id ?? null });
+        setState({
+          rooms,
+          loading: false,
+          error: null,
+          beds24PropertyId: result.hotel.beds24_property_id ?? null,
+          directBookingEnabled: result.hotel.direct_booking_enabled === true,
+        });
       })
       .catch((err) => {
         if (cancelled) return;
-        setState({ rooms: [], loading: false, error: err, beds24PropertyId: null });
+        setState({ rooms: [], loading: false, error: err, beds24PropertyId: null, directBookingEnabled: false });
       });
     return () => {
       cancelled = true;

@@ -63,6 +63,8 @@ model Hotel {
   // true = temporada alta: la reserva web exige prepago total.
   // false = temporada baja: el cliente aparta pagando 1 noche y paga el resto al llegar.
   webPrepayFull Boolean @default(false)
+  // true = la reserva web cobra IVA 19% (por defecto). false = la web cobra exento de IVA.
+  webApplyIva   Boolean @default(true)
   rooms     Room[]
   users     User[]
   reservations Reservation[]
@@ -91,6 +93,10 @@ model Room {
   hotel        Hotel         @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   name         String // "101", "203", etc.
   type         String? // Nombre para el forecast (como lo conoce recepción)
+  // Tipo comercial de la web (slug del "rooms" de Directus) al que pertenece esta
+  // habitación. Es la fuente del ruteo web→PMS: una reserva web de este tipo entra
+  // a las habitaciones con este slug. Editable desde el PMS (pantalla Habitaciones).
+  directusSlug String?
   capacity     Int           @default(2)
   active       Boolean       @default(true)
   sortOrder    Int           @default(0)
@@ -100,6 +106,7 @@ model Room {
   updatedAt    DateTime      @updatedAt
 
   @@index([hotelId, sortOrder])
+  @@index([hotelId, directusSlug])
 }
 
 model Reservation {
@@ -118,12 +125,23 @@ model Reservation {
   nights               Int
   guestsCount          Int                  @default(1)
   totalAmount          Int                  @default(0) // en COP (sin decimales)
+  applyIva             Boolean              @default(true) // true = se cobra IVA 19%; false = exento
   depositRequired      Int                  @default(0)
   paidAmount           Int                  @default(0)
   balanceAmount        Int                  @default(0)
   reservationStatus    ReservationStatus    @default(PENDING)
   paymentStatus        PaymentStatus        @default(NO_PAYMENT)
   notes                String?
+  // Campos del FORMATO DE RESERVAS del hotel (recepción)
+  roomsCount           Int                  @default(1) // Cantidad de habitaciones
+  upgrade              Boolean              @default(false) // Up Grade
+  mealPlan             String? // Tipo de plan (alojamiento, desayuno, etc.)
+  arrivalTime          String? // Hora de llegada (HH:MM)
+  nationality          String? // Nacionalidad
+  extraNights          Int                  @default(0) // Noches extras
+  company              String? // Empresa
+  cardRef              String? // TC. No. (referencia de tarjeta)
+  virtualAdvance       Int                  @default(0) // Anticipo por cobro virtual (COP)
   paymentLink          String?
   paymentLinkExpiresAt DateTime?
   // Reserva web con pago online: se auto-elimina si no se paga antes de esta hora.
@@ -154,6 +172,7 @@ model Payment {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
+  @@unique([provider, providerPaymentId]) // idempotencia: un mismo pago de Bold no se registra dos veces (NULL = pagos manuales, no colisionan)
   @@index([reservationId])
 }
 

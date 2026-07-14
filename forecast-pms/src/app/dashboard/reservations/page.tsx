@@ -14,7 +14,7 @@ export default async function ReservationsPage() {
     prisma.room.findMany({
       where: { hotelId: user.hotelId, active: true },
       orderBy: { sortOrder: "asc" },
-      select: { id: true, name: true, type: true },
+      select: { id: true, name: true, type: true, directusSlug: true },
     }),
   ]);
 
@@ -34,10 +34,20 @@ export default async function ReservationsPage() {
     nights: r.nights,
     guestsCount: r.guestsCount,
     totalAmount: r.totalAmount,
+    applyIva: r.applyIva,
     depositRequired: r.depositRequired,
     paidAmount: r.paidAmount,
     balanceAmount: r.balanceAmount,
     notes: r.notes,
+    roomsCount: r.roomsCount,
+    upgrade: r.upgrade,
+    mealPlan: r.mealPlan,
+    arrivalTime: r.arrivalTime,
+    nationality: r.nationality,
+    extraNights: r.extraNights,
+    company: r.company,
+    cardRef: r.cardRef,
+    virtualAdvance: r.virtualAdvance,
   }));
 
   return (

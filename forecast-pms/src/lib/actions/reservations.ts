@@ -4,8 +4,14 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession, canEditReservations, canManagePayments } from "@/lib/auth";
-import { BOOKING_CHANNELS, EDITABLE_RESERVATION_STATUSES, totalConIva } from "@/lib/domain";
-import { parseDateInput, nightsBetween, addDays, findConflicts } from "@/lib/reservations";
+import { BOOKING_CHANNELS, EDITABLE_RESERVATION_STATUSES, totalDue } from "@/lib/domain";
+import {
+  parseDateInput,
+  nightsBetween,
+  addDays,
+  findConflictsWith,
+  lockRoom,
+} from "@/lib/reservations";
 import { notifyNewReservation, notifyReservationMoved } from "@/lib/notify";
 
 export type ActionState = { ok: boolean; error: string | null };
@@ -22,8 +28,19 @@ const baseFields = {
   checkOut: z.string().min(1, "Check-out requerido"),
   guestsCount: z.coerce.number().int().min(1).default(1),
   totalAmount: z.coerce.number().int().min(0).default(0),
+  applyIva: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()),
   depositRequired: z.coerce.number().int().min(0).default(0),
   notes: z.string().trim().optional().default(""),
+  // Campos del FORMATO DE RESERVAS
+  roomsCount: z.coerce.number().int().min(1).default(1),
+  upgrade: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()).default(false),
+  mealPlan: z.string().trim().optional().default(""),
+  arrivalTime: z.string().trim().optional().default(""),
+  nationality: z.string().trim().optional().default(""),
+  extraNights: z.coerce.number().int().min(0).default(0),
+  company: z.string().trim().optional().default(""),
+  cardRef: z.string().trim().optional().default(""),
+  virtualAdvance: z.coerce.number().int().min(0).default(0),
 };
 const createSchema = z.object(baseFields);
 const updateSchema = z.object({
@@ -58,46 +75,64 @@ export async function createReservationAction(
   });
   if (!room) return fail("Habitación inválida.");
 
-  const conflicts = await findConflicts({
-    hotelId: session.hotelId,
-    roomId: d.roomId,
-    checkIn,
-    checkOut,
-  });
-  if (conflicts.length > 0) {
-    return fail(`Cruce con ${conflicts[0].label}. La habitación ya está ocupada en esas fechas.`);
-  }
-
-  const created = await prisma.reservation.create({
-    data: {
+  // Anti-sobreventa: lock por cuarto + chequeo de cruce + insert, todo atómico.
+  // Dos recepcionistas (o web↔recepción) no pueden crear a la vez sobre el mismo cuarto/fechas.
+  const outcome = await prisma.$transaction(async (tx) => {
+    await lockRoom(tx, d.roomId);
+    const conflicts = await findConflictsWith(tx, {
       hotelId: session.hotelId,
       roomId: d.roomId,
-      guestName: d.guestName,
-      guestPhone: d.guestPhone || null,
-      guestEmail: d.guestEmail || null,
-      channel: d.channel,
       checkIn,
       checkOut,
-      nights: nightsBetween(checkIn, checkOut),
-      guestsCount: d.guestsCount,
-      totalAmount: d.totalAmount,
-      depositRequired: d.depositRequired,
-      paidAmount: 0,
-      balanceAmount: totalConIva(d.totalAmount), // saldo = total + IVA 19%
-      reservationStatus: "PENDING",
-      paymentStatus: "NO_PAYMENT",
-      notes: d.notes || null,
-      createdById: session.userId,
-      history: {
-        create: {
-          action: "created",
-          newData: { guestName: d.guestName, roomId: d.roomId, checkIn: d.checkIn, checkOut: d.checkOut },
-          userId: session.userId,
-          userName: session.name,
+    });
+    if (conflicts.length > 0) return { conflict: conflicts[0].label };
+    const created = await tx.reservation.create({
+      data: {
+        hotelId: session.hotelId,
+        roomId: d.roomId,
+        guestName: d.guestName,
+        guestPhone: d.guestPhone || null,
+        guestEmail: d.guestEmail || null,
+        channel: d.channel,
+        checkIn,
+        checkOut,
+        nights: nightsBetween(checkIn, checkOut),
+        guestsCount: d.guestsCount,
+        totalAmount: d.totalAmount,
+        applyIva: d.applyIva,
+        depositRequired: d.depositRequired,
+        paidAmount: 0,
+        balanceAmount: totalDue(d.totalAmount, d.applyIva), // saldo = total (+ IVA 19% si aplica)
+        reservationStatus: "PENDING",
+        paymentStatus: "NO_PAYMENT",
+        notes: d.notes || null,
+        roomsCount: d.roomsCount,
+        upgrade: d.upgrade,
+        mealPlan: d.mealPlan || null,
+        arrivalTime: d.arrivalTime || null,
+        nationality: d.nationality || null,
+        extraNights: d.extraNights,
+        company: d.company || null,
+        cardRef: d.cardRef || null,
+        virtualAdvance: d.virtualAdvance,
+        createdById: session.userId,
+        history: {
+          create: {
+            action: "created",
+            newData: { guestName: d.guestName, roomId: d.roomId, checkIn: d.checkIn, checkOut: d.checkOut },
+            userId: session.userId,
+            userName: session.name,
+          },
         },
       },
-    },
+    });
+    return { created };
   });
+
+  if ("conflict" in outcome) {
+    return fail(`Cruce con ${outcome.conflict}. La habitación ya está ocupada en esas fechas.`);
+  }
+  const created = outcome.created;
 
   await notifyNewReservation({
     hotelId: session.hotelId,
@@ -113,6 +148,7 @@ export async function createReservationAction(
     guestEmail: d.guestEmail || null,
     guestsCount: d.guestsCount,
     subtotal: d.totalAmount,
+    applyIva: d.applyIva,
     status: "PENDING",
     notes: d.notes || null,
   });
@@ -142,20 +178,21 @@ export async function updateReservationAction(
   const checkOut = parseDateInput(d.checkOut);
   if (checkOut <= checkIn) return fail("El check-out debe ser posterior al check-in.");
 
-  const conflicts = await findConflicts({
-    hotelId: session.hotelId,
-    roomId: d.roomId,
-    checkIn,
-    checkOut,
-    excludeId: d.id,
-  });
-  if (conflicts.length > 0) {
-    return fail(`Cruce con ${conflicts[0].label}. La habitación ya está ocupada en esas fechas.`);
-  }
+  const balance = Math.max(0, totalDue(d.totalAmount, d.applyIva) - existing.paidAmount);
 
-  const balance = Math.max(0, totalConIva(d.totalAmount) - existing.paidAmount);
+  // Anti-sobreventa: lock por cuarto + chequeo de cruce + update, atómico.
+  const conflict = await prisma.$transaction(async (tx) => {
+    await lockRoom(tx, d.roomId);
+    const conflicts = await findConflictsWith(tx, {
+      hotelId: session.hotelId,
+      roomId: d.roomId,
+      checkIn,
+      checkOut,
+      excludeId: d.id,
+    });
+    if (conflicts.length > 0) return conflicts[0].label;
 
-  await prisma.reservation.update({
+    await tx.reservation.update({
     where: { id: d.id },
     data: {
       roomId: d.roomId,
@@ -168,10 +205,20 @@ export async function updateReservationAction(
       nights: nightsBetween(checkIn, checkOut),
       guestsCount: d.guestsCount,
       totalAmount: d.totalAmount,
+      applyIva: d.applyIva,
       depositRequired: d.depositRequired,
       balanceAmount: balance,
       reservationStatus: d.reservationStatus,
       notes: d.notes || null,
+      roomsCount: d.roomsCount,
+      upgrade: d.upgrade,
+      mealPlan: d.mealPlan || null,
+      arrivalTime: d.arrivalTime || null,
+      nationality: d.nationality || null,
+      extraNights: d.extraNights,
+      company: d.company || null,
+      cardRef: d.cardRef || null,
+      virtualAdvance: d.virtualAdvance,
       history: {
         create: {
           action: "updated",
@@ -194,7 +241,13 @@ export async function updateReservationAction(
         },
       },
     },
+    });
+    return null;
   });
+
+  if (conflict) {
+    return fail(`Cruce con ${conflict}. La habitación ya está ocupada en esas fechas.`);
+  }
 
   revalidate();
   return OK;
@@ -223,44 +276,49 @@ export async function moveReservationAction(input: {
   const checkIn = parseDateInput(input.checkIn);
   const checkOut = addDays(checkIn, existing.nights);
 
-  const conflicts = await findConflicts({
-    hotelId: session.hotelId,
-    roomId: input.roomId,
-    checkIn,
-    checkOut,
-    excludeId: input.id,
-  });
-  if (conflicts.length > 0) {
-    return fail(
-      "No se puede mover la reserva. La habitación ya está ocupada en esas fechas.",
-    );
-  }
-
   const fromRoom = await prisma.room.findFirst({
     where: { id: existing.roomId },
     select: { name: true },
   });
 
-  await prisma.reservation.update({
-    where: { id: input.id },
-    data: {
+  // Anti-sobreventa: lock del cuarto destino + chequeo + update, atómico.
+  const conflict = await prisma.$transaction(async (tx) => {
+    await lockRoom(tx, input.roomId);
+    const conflicts = await findConflictsWith(tx, {
+      hotelId: session.hotelId,
       roomId: input.roomId,
       checkIn,
       checkOut,
-      history: {
-        create: {
-          action: "moved",
-          oldData: {
-            roomId: existing.roomId,
-            checkIn: existing.checkIn.toISOString().slice(0, 10),
+      excludeId: input.id,
+    });
+    if (conflicts.length > 0) return true;
+
+    await tx.reservation.update({
+      where: { id: input.id },
+      data: {
+        roomId: input.roomId,
+        checkIn,
+        checkOut,
+        history: {
+          create: {
+            action: "moved",
+            oldData: {
+              roomId: existing.roomId,
+              checkIn: existing.checkIn.toISOString().slice(0, 10),
+            },
+            newData: { roomId: input.roomId, checkIn: input.checkIn },
+            userId: session.userId,
+            userName: session.name,
           },
-          newData: { roomId: input.roomId, checkIn: input.checkIn },
-          userId: session.userId,
-          userName: session.name,
         },
       },
-    },
+    });
+    return false;
   });
+
+  if (conflict) {
+    return fail("No se puede mover la reserva. La habitación ya está ocupada en esas fechas.");
+  }
 
   await notifyReservationMoved({
     hotelId: session.hotelId,
@@ -324,11 +382,11 @@ export async function registerManualPaymentAction(input: {
   if (!r) return fail("La reserva no existe.");
 
   const newPaid = r.paidAmount + amount;
-  const totalDue = totalConIva(r.totalAmount); // el pago total incluye IVA 19%
-  const balance = Math.max(0, totalDue - newPaid);
+  const due = totalDue(r.totalAmount, r.applyIva); // el pago total incluye IVA 19% si aplica
+  const balance = Math.max(0, due - newPaid);
 
   let reservationStatus = r.reservationStatus;
-  if (r.totalAmount > 0 && newPaid >= totalDue) reservationStatus = "PAID";
+  if (r.totalAmount > 0 && newPaid >= due) reservationStatus = "PAID";
   else if (newPaid >= r.depositRequired && r.depositRequired > 0) reservationStatus = "DEPOSIT_PAID";
 
   await prisma.$transaction([

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { resetDataAction, setWebPaymentModeAction } from "@/lib/actions/admin";
+import { resetDataAction, setWebPaymentModeAction, setWebIvaAction } from "@/lib/actions/admin";
 
 export function SettingsPanel({
   user,
@@ -10,12 +10,14 @@ export function SettingsPanel({
   reservationsCount,
   isAdmin,
   webPrepayFull,
+  webApplyIva,
 }: {
   user: { name: string; email: string; roleLabel: string };
   hotelName: string;
   reservationsCount: number;
   isAdmin: boolean;
   webPrepayFull: boolean;
+  webApplyIva: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -25,6 +27,8 @@ export function SettingsPanel({
   const [done, setDone] = useState<number | null>(null);
   const [prepayFull, setPrepayFull] = useState(webPrepayFull);
   const [savingMode, setSavingMode] = useState(false);
+  const [applyIva, setApplyIva] = useState(webApplyIva);
+  const [savingIva, setSavingIva] = useState(false);
 
   function toggleMode() {
     const next = !prepayFull;
@@ -34,6 +38,18 @@ export function SettingsPanel({
       const res = await setWebPaymentModeAction(next);
       if (!res.ok) setPrepayFull(!next); // revierte si falla
       setSavingMode(false);
+      router.refresh();
+    });
+  }
+
+  function toggleIva() {
+    const next = !applyIva;
+    setApplyIva(next); // optimista
+    setSavingIva(true);
+    startTransition(async () => {
+      const res = await setWebIvaAction(next);
+      if (!res.ok) setApplyIva(!next); // revierte si falla
+      setSavingIva(false);
       router.refresh();
     });
   }
@@ -99,6 +115,43 @@ export function SettingsPanel({
             {prepayFull
               ? "Enciende = temporada alta. Apágalo para volver a temporada baja (apartar con 1 noche)."
               : "Apagado = temporada baja. Enciéndelo en temporada alta para exigir prepago total."}
+          </p>
+        </section>
+      )}
+
+      {isAdmin && (
+        <section className="mb-5 rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-400">
+            <i className="fa-solid fa-receipt text-gold" aria-hidden />
+            IVA de la reserva web
+          </h2>
+          <div className="mt-3 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-800">
+                {applyIva ? "Cobra IVA 19%" : "Exento de IVA"}
+              </p>
+              <p className="mt-0.5 text-sm text-slate-500">
+                {applyIva
+                  ? "La reserva web suma el IVA 19% al total que paga el cliente."
+                  : "La reserva web cobra el total sin IVA (exento)."}
+              </p>
+            </div>
+            <button
+              onClick={toggleIva}
+              disabled={savingIva}
+              role="switch"
+              aria-checked={applyIva}
+              className={`relative mt-1 h-7 w-12 shrink-0 rounded-full transition ${applyIva ? "bg-brand" : "bg-slate-300"} disabled:opacity-60`}
+              title="Cobrar IVA en la web"
+            >
+              <span
+                className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${applyIva ? "left-[22px]" : "left-0.5"}`}
+              />
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-slate-400">
+            Solo afecta a las reservas web <span className="font-medium">nuevas</span>. Las ya creadas
+            conservan el IVA con el que se registraron.
           </p>
         </section>
       )}

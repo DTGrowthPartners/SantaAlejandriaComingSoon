@@ -79,6 +79,8 @@ export interface DirectusHotel {
   is_closed: boolean | null;
   closed_message: string | null;
   reopen_date: string | null;
+  // Switch (Directus) que enciende/apaga el widget de reserva directa por la web.
+  direct_booking_enabled: boolean | null;
   // Datos del About
   checkin_time: string | null;
   checkout_time: string | null;
@@ -101,7 +103,7 @@ const FIELDS_ROOMS =
   "id,status,sort,slug,name,name_en,short_name,short_name_en,description,description_en,floor,bed_type,price_per_night,price_per_month,max_guests,quantity,highlights,highlights_en,amenities,variants,category,ambientes,hotel,beds24_room_id,images.id,images.directus_files_id,price_overrides.id,price_overrides.status,price_overrides.sort,price_overrides.label,price_overrides.start_date,price_overrides.end_date,price_overrides.price_per_night";
 
 const FIELDS_HOTELS =
-  "id,slug,name,tagline,tagline_en,description,description_en,city,address,address_line2,phone,phone_tel,phone_landline,phone_landline_tel,email,reservation_email,instagram_url,whatsapp_number,whatsapp_message,maps_url,maps_embed_url,hero_image,gallery.id,gallery.directus_files_id,beds24_property_id,is_closed,closed_message,reopen_date,checkin_time,checkout_time,stats,nearby_places,hero_tagline_es,hero_tagline_en,about_heading_es,about_heading_en,about_p1_es,about_p1_en,about_p2_es,about_p2_en,cta_subtitle_es,cta_subtitle_en";
+  "id,slug,name,tagline,tagline_en,description,description_en,city,address,address_line2,phone,phone_tel,phone_landline,phone_landline_tel,email,reservation_email,instagram_url,whatsapp_number,whatsapp_message,maps_url,maps_embed_url,hero_image,gallery.id,gallery.directus_files_id,beds24_property_id,is_closed,closed_message,reopen_date,direct_booking_enabled,checkin_time,checkout_time,stats,nearby_places,hero_tagline_es,hero_tagline_en,about_heading_es,about_heading_en,about_p1_es,about_p1_en,about_p2_es,about_p2_en,cta_subtitle_es,cta_subtitle_en";
 
 // ---- Servicios ----
 export interface DirectusService {

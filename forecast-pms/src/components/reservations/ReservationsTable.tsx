@@ -6,7 +6,7 @@ import {
   CHANNEL_META,
   RESERVATION_STATUS_META,
   EDITABLE_RESERVATION_STATUSES,
-  totalConIva,
+  totalDue,
 } from "@/lib/domain";
 import { formatCOP, formatDate } from "@/lib/format";
 import { cancelReservationAction } from "@/lib/actions/reservations";
@@ -30,10 +30,20 @@ export type ReservationRow = {
   nights: number;
   guestsCount: number;
   totalAmount: number;
+  applyIva: boolean;
   depositRequired: number;
   paidAmount: number;
   balanceAmount: number;
   notes: string | null;
+  roomsCount: number;
+  upgrade: boolean;
+  mealPlan: string | null;
+  arrivalTime: string | null;
+  nationality: string | null;
+  extraNights: number;
+  company: string | null;
+  cardRef: string | null;
+  virtualAdvance: number;
 };
 
 export function ReservationsTable({
@@ -43,7 +53,7 @@ export function ReservationsTable({
   canPay = false,
 }: {
   reservations: ReservationRow[];
-  rooms: { id: string; name: string; type: string | null }[];
+  rooms: { id: string; name: string; type: string | null; directusSlug: string | null }[];
   canEdit: boolean;
   canPay?: boolean;
 }) {
@@ -74,9 +84,19 @@ export function ReservationsTable({
       checkOut: r.checkOut.slice(0, 10),
       guestsCount: r.guestsCount,
       totalAmount: r.totalAmount,
+      applyIva: r.applyIva,
       depositRequired: r.depositRequired,
       notes: r.notes ?? "",
       reservationStatus: r.reservationStatus,
+      roomsCount: r.roomsCount,
+      upgrade: r.upgrade,
+      mealPlan: r.mealPlan ?? "",
+      arrivalTime: r.arrivalTime ?? "",
+      nationality: r.nationality ?? "",
+      extraNights: r.extraNights,
+      company: r.company ?? "",
+      cardRef: r.cardRef ?? "",
+      virtualAdvance: r.virtualAdvance,
     };
   }
 
@@ -121,7 +141,7 @@ export function ReservationsTable({
               <th className="px-3 py-2.5">Salida</th>
               <th className="px-3 py-2.5 text-center">Canal</th>
               <th className="px-3 py-2.5 text-center">Estado</th>
-              <th className="px-3 py-2.5 text-right">Total (IVA inc.)</th>
+              <th className="px-3 py-2.5 text-right">Total</th>
               <th className="px-3 py-2.5 text-right">Saldo</th>
               {(canEdit || canPay) && <th className="px-3 py-2.5" />}
             </tr>
@@ -145,7 +165,10 @@ export function ReservationsTable({
                   <td className="px-3 py-2.5 text-center">
                     <span className="rounded-full px-2 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: st.color }}>{st.label}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right text-slate-700">{formatCOP(totalConIva(r.totalAmount))}</td>
+                  <td className="px-3 py-2.5 text-right text-slate-700">
+                    {formatCOP(totalDue(r.totalAmount, r.applyIva))}
+                    {!r.applyIva && <span className="ml-1 text-[10px] text-slate-400">sin IVA</span>}
+                  </td>
                   <td className="px-3 py-2.5 text-right font-semibold text-slate-900">{formatCOP(r.balanceAmount)}</td>
                   {(canEdit || canPay) && (
                     <td className="whitespace-nowrap px-3 py-2.5 text-right">

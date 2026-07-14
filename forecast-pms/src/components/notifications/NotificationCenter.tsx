@@ -29,6 +29,7 @@ function timeAgo(iso: string): string {
 
 export function NotificationCenter() {
   const [items, setItems] = useState<Notif[]>([]);
+  const [open, setOpen] = useState(false);
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const seen = useRef<Set<string>>(new Set());
   const first = useRef(true);
@@ -45,7 +46,7 @@ export function NotificationCenter() {
         const fresh = list.filter((n) => !seen.current.has(n.id)).map((n) => n.id);
         list.forEach((n) => seen.current.add(n.id));
         if (!first.current && fresh.length) {
-          setNewIds(new Set(fresh));
+          setNewIds((prev) => new Set([...prev, ...fresh]));
           // Refresca los datos de servidor (grid del forecast, listas, etc.)
           // para que la reserva nueva/movida aparezca sin recargar la página.
           router.refresh();
@@ -83,53 +84,106 @@ export function NotificationCenter() {
     };
   }, []);
 
-  async function dismiss(id: string) {
+  // Al abrir la bandeja, deja de resaltar las "nuevas".
+  useEffect(() => {
+    if (open) setNewIds(new Set());
+  }, [open]);
+
+  // Cerrar con Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  async function remove(id: string) {
     setItems((i) => i.filter((x) => x.id !== id));
+    seen.current.delete(id);
     await dismissNotification(id);
   }
   async function clearAll() {
     setItems([]);
+    setOpen(false);
     await dismissAllNotifications();
   }
 
-  if (items.length === 0) return null;
-  const visible = items.slice(0, 5);
-  const extra = items.length - visible.length;
+  const count = items.length;
+  const badge = count > 9 ? "9+" : String(count);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2">
-      {visible.map((n) => (
-        <div key={n.id} className={newIds.has(n.id) ? "animate-fade-up" : ""}>
-          <div className="flex items-start gap-3 rounded-2xl border border-brand-light bg-white p-3 shadow-xl ring-1 ring-black/5">
-            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand">
-              <i className={`fa-solid ${ICON[n.kind] ?? "fa-bell"}`} aria-hidden />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-800">{n.title}</p>
-              <p className="text-xs leading-snug text-slate-500">{n.message}</p>
-              <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-400">{timeAgo(n.createdAt)}</p>
-            </div>
-            <button
-              onClick={() => dismiss(n.id)}
-              className="shrink-0 rounded-md p-1 text-slate-300 transition hover:bg-slate-100 hover:text-red-500"
-              title="Descartar"
-              aria-label="Descartar notificación"
-            >
-              <i className="fa-solid fa-xmark" aria-hidden />
-            </button>
-          </div>
-        </div>
-      ))}
+    <>
+      {/* Fondo para cerrar la bandeja al hacer clic fuera */}
+      {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden />}
 
-      <div className="flex items-center justify-between rounded-full bg-brand-dark px-3.5 py-1.5 text-xs text-white shadow-lg">
-        <span>
-          {extra > 0 ? `+${extra} más · ` : ""}
-          {items.length} {items.length === 1 ? "notificación" : "notificaciones"}
-        </span>
-        <button onClick={clearAll} className="font-semibold text-gold-soft hover:underline">
-          Limpiar todas
+      <div className="fixed right-4 top-4 z-50">
+        {/* Campanita */}
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="relative flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg ring-1 ring-black/5 transition hover:bg-slate-50 hover:text-brand"
+          title="Notificaciones"
+          aria-label={`Notificaciones${count ? ` (${count})` : ""}`}
+          aria-expanded={open}
+        >
+          <i className="fa-solid fa-bell text-[17px]" aria-hidden />
+          {count > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-[18px] text-white ring-2 ring-white">
+              {badge}
+            </span>
+          )}
         </button>
+
+        {/* Bandeja */}
+        {open && (
+          <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ring-1 ring-black/5">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+              <p className="text-sm font-bold text-slate-800">
+                Notificaciones{count > 0 && <span className="ml-1.5 text-slate-400">({count})</span>}
+              </p>
+              {count > 0 && (
+                <button onClick={clearAll} className="text-xs font-semibold text-brand hover:underline">
+                  Limpiar todas
+                </button>
+              )}
+            </div>
+
+            {count === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
+                <i className="fa-regular fa-bell-slash text-2xl text-slate-300" aria-hidden />
+                <p className="text-sm text-slate-400">Sin notificaciones</p>
+              </div>
+            ) : (
+              <ul className="max-h-[70vh] divide-y divide-slate-100 overflow-y-auto">
+                {items.map((n) => (
+                  <li
+                    key={n.id}
+                    className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-slate-50 ${
+                      newIds.has(n.id) ? "bg-brand-light/40" : ""
+                    }`}
+                  >
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand">
+                      <i className={`fa-solid ${ICON[n.kind] ?? "fa-bell"}`} aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-slate-800">{n.title}</p>
+                      <p className="text-xs leading-snug text-slate-500">{n.message}</p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-400">{timeAgo(n.createdAt)}</p>
+                    </div>
+                    <button
+                      onClick={() => remove(n.id)}
+                      className="shrink-0 rounded-md p-1 text-slate-300 transition hover:bg-slate-100 hover:text-red-500"
+                      title="Eliminar"
+                      aria-label="Eliminar notificación"
+                    >
+                      <i className="fa-solid fa-xmark" aria-hidden />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }
