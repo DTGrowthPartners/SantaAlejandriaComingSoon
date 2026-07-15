@@ -53,6 +53,13 @@ enum BookingChannel {
   OTHER // Otro/Comply     → gris   #9CA3AF
 }
 
+// Tipo de sección del ledger "Ingresos y Gastos" (Excel editable del hotel).
+enum LedgerSectionKind {
+  INCOME  // suma a ingresos del día (valor por habitación, otros ingresos)
+  EXPENSE // suma a gastos del día (desayunos, aseo, cocina, nómina...)
+  DATA    // operativo, no suma dinero (ocupación, PAX, desayunos x hab, turnos)
+}
+
 // ────────────────────────────── Modelos ──────────────────────────────
 
 model Hotel {
@@ -68,6 +75,7 @@ model Hotel {
   rooms     Room[]
   users     User[]
   reservations Reservation[]
+  ledgerSheets LedgerSheet[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -215,4 +223,56 @@ model Notification {
   createdAt         DateTime @default(now())
 
   @@index([hotelId, dismissed, createdAt])
+}
+
+// ───────────────── Ledger "Ingresos y Gastos por día" (Excel editable) ─────────────────
+// Réplica editable del Excel mensual del hotel: una hoja por mes, compuesta de
+// secciones (bloques del Excel), cada una con filas (habitación/categoría/empleado)
+// y celdas por día guardadas en JSON. Totalmente manual e independiente de las
+// reservas: recepción agrega/quita/mueve/edita todo a mano. Los totales por día,
+// fila y mes se calculan en vivo (no se guardan) para que nunca se descuadren.
+
+model LedgerSheet {
+  id          String          @id @default(cuid())
+  hotelId     String
+  hotel       Hotel           @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  year        Int
+  month       Int // 1-12
+  daysInMonth Int             @default(31)
+  note        String? // observaciones libres de la hoja del mes
+  sections    LedgerSection[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([hotelId, year, month])
+  @@index([hotelId, year, month])
+}
+
+model LedgerSection {
+  id        String            @id @default(cuid())
+  sheetId   String
+  sheet     LedgerSheet       @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  title     String
+  kind      LedgerSectionKind @default(DATA)
+  isText    Boolean           @default(false) // true = celdas de texto (control de turnos)
+  sortOrder Int               @default(0)
+  rows      LedgerRow[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([sheetId, sortOrder])
+}
+
+model LedgerRow {
+  id        String        @id @default(cuid())
+  sectionId String
+  section   LedgerSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  label     String
+  roomId    String? // link opcional a Room (por número de habitación)
+  sortOrder Int           @default(0)
+  cells     Json          @default("{}") // { "1": 150480, "2": 150000, ... } o texto por día
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([sectionId, sortOrder])
 }

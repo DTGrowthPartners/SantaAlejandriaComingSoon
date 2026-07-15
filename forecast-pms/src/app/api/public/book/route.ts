@@ -14,6 +14,7 @@ import {
 import { lockRoomType } from "@/lib/reservations";
 import { createBoldPaymentLink } from "@/lib/bold";
 import { notifyNewReservation } from "@/lib/notify";
+import { sendGuestConfirmationEmail } from "@/lib/email";
 import { expireStaleHolds, HOLD_MINUTES } from "@/lib/holds";
 
 export const runtime = "nodejs";
@@ -172,6 +173,37 @@ export async function POST(req: NextRequest) {
     }
     const roomName = physical.find((p) => p.id === reservation.roomId)?.name ?? "";
 
+    // Correo de confirmación al CLIENTE (huésped). Se adapta al modo de pago e
+    // incluye el link cuando ya se generó. Nunca lanza; no envía si no hay email.
+    const mailGuest = async (paymentUrl: string | null) => {
+      if (!data.guestEmail) return;
+      await sendGuestConfirmationEmail({
+        to: data.guestEmail,
+        number: reservation.number,
+        guestName: data.guestName,
+        roomName,
+        roomType: dRoom.short_name,
+        checkIn,
+        checkOut,
+        nights,
+        guestsCount: data.guestsCount,
+        subtotal: quote.subtotal,
+        iva,
+        total,
+        payMode: data.payMode,
+        amountToPay: payOnline ? chargeTotal : 0,
+        balanceAtHotel:
+          data.payMode === "deposit"
+            ? total - chargeTotal
+            : data.payMode === "hotel"
+              ? total
+              : 0,
+        paymentUrl,
+        linkExpiresMinutes: payOnline ? HOLD_MINUTES : null,
+        hotelName: hotel.name,
+      });
+    };
+
     // Notificación de reserva NUEVA por la web (no aplica a importaciones).
     await notifyNewReservation({
       hotelId: hotel.id,
@@ -228,6 +260,8 @@ export async function POST(req: NextRequest) {
           }),
         ]);
 
+        await mailGuest(link.url);
+
         revalidatePath("/dashboard/forecast");
         return corsJson(origin, {
           ok: true,
@@ -243,6 +277,7 @@ export async function POST(req: NextRequest) {
         });
       } catch (e) {
         console.error("[public/book] Bold error:", e);
+        await mailGuest(null);
         // La reserva queda creada; el hotel puede cobrar por otro medio.
         return corsJson(origin, {
           ok: true,
@@ -257,6 +292,8 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+
+    await mailGuest(null);
 
     revalidatePath("/dashboard/forecast");
     return corsJson(origin, {

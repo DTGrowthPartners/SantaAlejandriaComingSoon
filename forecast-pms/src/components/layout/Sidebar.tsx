@@ -14,6 +14,7 @@ const NAV = [
   { href: "/dashboard/reservations", label: "Reservas", icon: "fa-solid fa-clipboard-list" },
   { href: "/dashboard/payments", label: "Pagos", icon: "fa-solid fa-credit-card" },
   { href: "/dashboard/rooms", label: "Habitaciones", icon: "fa-solid fa-bed" },
+  { href: "/dashboard/ledger", label: "Ingresos y Gastos", icon: "fa-solid fa-file-invoice-dollar" },
   { href: "/dashboard/reports", label: "Reportes", icon: "fa-solid fa-chart-column" },
   { href: "/dashboard/settings", label: "Configuración", icon: "fa-solid fa-gear" },
 ];

@@ -7,6 +7,7 @@ import {
   AlertCircle,
   Hotel,
   CreditCard,
+  Mail,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -15,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/LanguageContext";
 import type { RoomType } from "@/data/cartagena-rooms";
 
 const PMS_API =
@@ -107,6 +109,7 @@ const COUNTRY_CODES: { code: string; label: string }[] = [
 ];
 
 export default function DirectBookingWidget({ room }: { room: RoomType }) {
+  const { lang } = useTranslation();
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -462,7 +465,7 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                   />
                 </div>
                 <input
-                  placeholder="Correo"
+                  placeholder={lang === "en" ? "Email" : "Correo"}
                   type="email"
                   name="email"
                   autoComplete="email"
@@ -471,6 +474,15 @@ export default function DirectBookingWidget({ room }: { room: RoomType }) {
                   className="rounded-md border border-border bg-background px-3 py-2 font-sans text-sm outline-none focus:border-accent"
                 />
               </div>
+
+              <p className="flex items-start gap-1.5 font-sans text-xs text-muted-foreground">
+                <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                <span>
+                  {lang === "en"
+                    ? "Your booking confirmation will be sent to your email (please check your spam folder if you don't see it)."
+                    : "La confirmación de tu reserva llegará a tu correo (revisa la carpeta de spam en caso de ser necesario)."}
+                </span>
+              </p>
 
               {/* Elección de pago según temporada */}
               {prepayFull ? (

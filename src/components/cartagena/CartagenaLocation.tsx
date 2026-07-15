@@ -18,7 +18,7 @@ const CartagenaLocation = () => {
 
   const phoneDisplay = hotel?.phone || "+57 312 6915453";
   const phoneTel = hotel?.phone_tel || "573126915453";
-  const email = hotel?.reservation_email || "reservatiosantaalejandria@gmail.com";
+  const email = hotel?.reservation_email || "reservationsantaalejandria@gmail.com";
   const mapEmbed = hotel?.maps_embed_url || MAP_EMBED_URL;
   const instagramUrl =
     hotel?.instagram_url || "https://www.instagram.com/santaalejandriahotelctg/";

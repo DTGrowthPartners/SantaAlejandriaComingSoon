@@ -8,8 +8,6 @@ import { IVA_RATE } from "@/lib/domain";
 import { formatCOP } from "@/lib/format";
 import { reconcileBoldPaymentsCore, type ReconcileResult } from "@/lib/reconcile";
 
-export type { ReconcileResult };
-
 /**
  * Genera un link de pago de Bold por un monto (abono/anticipo) sobre una
  * reserva existente. Cuando el huésped paga, el webhook lo suma como abono.
